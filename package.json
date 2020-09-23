@@ -1,9 +1,9 @@
 {
-  "name": "mist-form",
+  "name": "@mistio/mist-form",
   "version": "0.0.0",
   "description": "Webcomponent mist-form following open-wc recommendations",
   "author": "mist-form",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "index.js",
   "module": "index.js",
   "scripts": {
@@ -57,5 +57,17 @@
       "prettier --write",
       "git add"
     ]
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.ops.mist.io:mistio/mist-form.git"
+  },
+  "keywords": [
+    "jsonschema",
+    "form",
+    "mist"
+  ]
 }
