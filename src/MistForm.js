@@ -1,4 +1,5 @@
 import { html, css, LitElement } from 'lit-element';
+import './TextInput.js';
 
 export class MistForm extends LitElement {
   static get styles() {
@@ -13,25 +14,50 @@ export class MistForm extends LitElement {
 
   static get properties() {
     return {
-      title: { type: String },
-      counter: { type: Number },
+      src: { type: String },
+      data: { type: Object },
     };
   }
 
-  constructor() {
-    super();
-    this.title = 'Hey there';
-    this.counter = 5;
+  connectedCallback() {
+    super.connectedCallback();
+    // TODO: Check if this is the right place to load the JSON file?
+    this.__getJSON(this.src);
   }
 
-  __increment() {
-    this.counter += 1;
+  __getJSON(url) {
+    // TODO: Validate data, add nicer loader, do something if data isn't valid
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        this.data = data;
+      });
   }
 
   render() {
-    return html`
-      <h2>${this.title} Nr. ${this.counter}!</h2>
-      <button @click=${this.__increment}>increment</button>
-    `;
+    // Map the inputs to the appropriate web component
+    // For now we only have text inputs
+    // TODO: Check why form validation isn't working
+    if (this.data) {
+      // The data here will come validated so no checks required
+      const jsonData = this.data.properties;
+      const inputs = Object.keys(jsonData).map(key => [key, jsonData[key]]);
+      return html`
+        <form action="">
+          <h3>${this.title}</h3>
+          ${inputs.map(input => {
+            const { id, title, required } = input[1];
+            return html`<text-input
+              .id=${id}
+              .title=${title}
+              .required=${required}
+            >
+            </text-input>`;
+          })}
+          <input type="submit" />
+        </form>
+      `;
+    }
+    return 'Loading data...';
   }
 }
