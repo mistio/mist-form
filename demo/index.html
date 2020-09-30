@@ -1,29 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      background: #fafafa;
-    }
-  </style>
-</head>
-<body>
-  <div id="demo"></div>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="demo"></div>
 
-  <script type="module">
-    import { html, render } from 'lit-html';
-    import '../mist-form.js';
+    <script type="module">
+      import { html, render } from 'lit-html';
+      import '@polymer/paper-styles/typography.js';
+      import '@polymer/paper-styles/default-theme.js';
+      import '@polymer/paper-styles/shadow.js';
+      import '@polymer/paper-styles/demo-pages.js';
+      import '@polymer/paper-styles/color.js';
+      import '@polymer/paper-input/paper-input.js';
+      import '@polymer/paper-button/paper-button.js';
+      import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+      import '@polymer/paper-item/paper-item.js';
+      import '@polymer/paper-listbox/paper-listbox.js';
+      import '@polymer/paper-checkbox/paper-checkbox.js';
+      import '../mist-form.js';
 
-    const title = 'Hello owc World!';
-    render(
-      html`
-        <mist-form .title=${title}>
-          some more light-dom
-        </mist-form>
-      `,
-      document.querySelector('#demo')
-    );
-  </script>
-</body>
+      const jsonUrl = 'space-camp-application.json';
+      const title = 'Mist Form';
+
+      render(
+        html`<mist-form .title=${title} .src=${jsonUrl}> </mist-form> `,
+        document.querySelector('#demo')
+      );
+    </script>
+  </body>
 </html>

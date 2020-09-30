@@ -1,0 +1,67 @@
+{
+  "type": "object",
+  "id": "space-camp-application",
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "label": "Space Camp Scholarship Application",
+  "description": "Please provide as much detail as possible",
+  "links": [
+    {
+      "rel": "self",
+      "label": "Apply",
+      "href": "http://localhost:8080/223423423342",
+      "method": "PUT"
+    }
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "label": "Title",
+      "id": "order1",
+      "type": "string",
+      "required": true,
+      "error-message": "letters only!",
+      "autoValidate": true,
+      "enum": ["Dr", "Mr", "Mrs", "Ms"]
+    },
+    "firstName": {
+      "label": "First name",
+      "id": "order2",
+      "type": "string",
+      "required": true,
+      "description": "John"
+    },
+    "surname": {
+      "label": "Surname",
+      "id": "order3",
+      "type": "string",
+      "required": true,
+      "description": "Appleseed"
+    },
+    "email": {
+      "label": "Email",
+      "id": "order4",
+      "type": "string",
+      "format": "email",
+      "required": true,
+      "description": "example@domain.com"
+    },
+    "phone": {
+      "label": "Telephone",
+      "id": "order5",
+      "type": "string"
+    },
+    "message": {
+      "label": "Experience",
+      "id": "order6",
+      "type": "string",
+      "format": "textarea",
+      "required": false,
+      "maxLength": 100
+    },
+    "checkbox": {
+      "label": "Check this",
+      "id": "order7",
+      "type": "boolean"
+    }
+  }
+}
