@@ -35,6 +35,7 @@ export class MistForm extends LitElement {
   }
 
   _closeForm() {
+    // TODO: This should actually close the form
     console.log(this);
   }
 

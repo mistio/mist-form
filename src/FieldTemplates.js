@@ -1,6 +1,6 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
-
+// TODO: For now I only spread props, I should spread attributes too
 export const FieldTemplates = {
   string: props => {
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
