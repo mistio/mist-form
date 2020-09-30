@@ -1,37 +1,71 @@
-import { html, css, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
+import { FieldTemplates } from './FieldTemplates.js';
 
 export class MistForm extends LitElement {
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-        padding: 25px;
-        color: var(--mist-form-text-color, #000);
-      }
-    `;
-  }
-
   static get properties() {
     return {
-      title: { type: String },
-      counter: { type: Number },
+      src: { type: String },
+      data: { type: Object },
     };
   }
 
-  constructor() {
-    super();
-    this.title = 'Hey there';
-    this.counter = 5;
+  connectedCallback() {
+    super.connectedCallback();
+    // TODO: Check if this is the right place to load the JSON file?
+    this._getJSON(this.src);
   }
 
-  __increment() {
-    this.counter += 1;
+  _getJSON(url) {
+    // TODO: Validate data, add nicer loader, do something if data isn't valid
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        this.data = data;
+      });
+  }
+
+  static _getTemplate(properties) {
+    return FieldTemplates[properties.type](properties);
+  }
+
+  _submitForm() {
+    this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
+      input.validate();
+    });
+  }
+
+  _closeForm() {
+    // TODO: This should actually close the form
+    console.log(this);
   }
 
   render() {
-    return html`
-      <h2>${this.title} Nr. ${this.counter}!</h2>
-      <button @click=${this.__increment}>increment</button>
-    `;
+    // Map the inputs to the appropriate web component
+    // For now we only have text inputs
+    // TODO: Check why form validation isn't working
+    if (this.data) {
+      // The data here will come validated so no checks required
+      const jsonData = this.data.properties;
+      const inputs = Object.keys(jsonData).map(key => [key, jsonData[key]]);
+      return html`
+        <div>${this.title}</div>
+        ${inputs.map(input => MistForm._getTemplate(input[1]))}
+
+        <paper-button
+          class="submit-btn btn-block"
+          raised
+          @tap="${this._closeForm}"
+          >Cancel</paper-button
+        >
+
+        <paper-button
+          class="submit-btn btn-block"
+          raised
+          @tap="${this._submitForm}"
+          >Submit</paper-button
+        >
+      `;
+    }
+    return 'Loading data...';
   }
 }
