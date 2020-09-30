@@ -34,6 +34,10 @@ export class MistForm extends LitElement {
     });
   }
 
+  _closeForm() {
+    console.log(this);
+  }
+
   render() {
     // Map the inputs to the appropriate web component
     // For now we only have text inputs
@@ -44,7 +48,14 @@ export class MistForm extends LitElement {
       const inputs = Object.keys(jsonData).map(key => [key, jsonData[key]]);
       return html`
         <div>${this.title}</div>
-        ${inputs.map(input => this._getTemplate(input[1]))}
+        ${inputs.map(input => MistForm._getTemplate(input[1]))}
+
+        <paper-button
+          class="submit-btn btn-block"
+          raised
+          @tap="${this._closeForm}"
+          >Cancel</paper-button
+        >
 
         <paper-button
           class="submit-btn btn-block"
