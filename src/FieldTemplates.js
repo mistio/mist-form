@@ -15,8 +15,13 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
     ></paper-input> `;
   },
+  textarea: props => html`<paper-textarea
+    always-float-label
+    ...="${spreadProps(props)}"
+  ></paper-textarea> `,
   boolean: props =>
     html`<paper-checkbox ...="${spreadProps(props)}"
       >${props.label}</paper-checkbox
     >`,
+  spinner: html`<paper-spinner active></paper-spinner>`,
 };
