@@ -25,18 +25,24 @@ export class MistForm extends LitElement {
   }
 
   static _getTemplate(properties) {
-    return FieldTemplates[properties.type](properties);
+    // TODO: Do something if the fieldType doesn't exist or just ignore?
+    return (
+      FieldTemplates[properties.type] &&
+      FieldTemplates[properties.type](properties)
+    );
+  }
+
+  static _displayCancelButton(canClose = true) {
+    if (canClose) {
+      return FieldTemplates.button('Cancel');
+    }
+    return '';
   }
 
   _submitForm() {
     this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
       input.validate();
     });
-  }
-
-  _closeForm() {
-    // TODO: This should actually close the form
-    console.log(this);
   }
 
   render() {
@@ -47,25 +53,16 @@ export class MistForm extends LitElement {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
       const inputs = Object.keys(jsonData).map(key => [key, jsonData[key]]);
+
       return html`
-        <div>${this.title}</div>
+        <div>${this.data.label}</div>
         ${inputs.map(input => MistForm._getTemplate(input[1]))}
-
-        <paper-button
-          class="submit-btn btn-block"
-          raised
-          @tap="${this._closeForm}"
-          >Cancel</paper-button
-        >
-
-        <paper-button
-          class="submit-btn btn-block"
-          raised
-          @tap="${this._submitForm}"
-          >Submit</paper-button
-        >
+        <div>
+          ${MistForm._displayCancelButton(this.data.canClose)}
+          ${FieldTemplates.button('Submit', this._submitForm)}
+        </div>
       `;
     }
-    return 'Loading data...';
+    return FieldTemplates.spinner;
   }
 }
