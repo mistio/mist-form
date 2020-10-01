@@ -20,6 +20,7 @@
       "id": "order1",
       "type": "string",
       "required": true,
+      "error-message": "letters only!",
       "autoValidate": true,
       "enum": ["Dr", "Mr", "Mrs", "Ms"]
     },
