@@ -2,7 +2,7 @@ import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 // TODO: For now I only spread props, I should spread attributes too
 
-// Some of the props need to be converted because they conflict/are not equivalent to the JSON Schema attributes
+// Some of the props need to be converted from their JSON Schema equivalents
 const getConvertedProps = props => {
   const newProps = {
     ...props,
@@ -26,15 +26,17 @@ export const FieldTemplates = {
         </paper-listbox>
       </paper-dropdown-menu>`;
     }
+    if (props.format === 'textarea') {
+      return html`<paper-textarea
+        always-float-label
+        ...="${spreadProps(getConvertedProps(props))}"
+      ></paper-textarea>`;
+    }
     return html`<paper-input
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
-    ></paper-input> `;
+    ></paper-input>`;
   },
-  textarea: props => html`<paper-textarea
-    always-float-label
-    ...="${spreadProps(getConvertedProps(props))}"
-  ></paper-textarea> `,
   boolean: props =>
     html`<paper-checkbox ...="${spreadProps(props)}"
       >${props.label}</paper-checkbox

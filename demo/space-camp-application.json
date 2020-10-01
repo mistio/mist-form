@@ -51,7 +51,7 @@
       "label": "Email",
       "id": "order4",
       "type": "string",
-      "type": "email",
+      "format": "email",
       "required": true,
       "description": "example@domain.com"
     },
@@ -63,7 +63,7 @@
     "message": {
       "label": "Experience",
       "id": "order6",
-      "type": "textarea",
+      "type": "string",
       "format": "textarea",
       "required": false,
       "maxLength": 100
