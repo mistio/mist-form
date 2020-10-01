@@ -4,7 +4,7 @@
   "$schema": "http://json-schema.org/draft-03/schema#",
   "label": "Space Camp Scholarship Application",
   "description": "Please provide as much detail as possible",
-  "noClose": true,
+  "canClose": true,
   "links": [
     {
       "rel": "self",

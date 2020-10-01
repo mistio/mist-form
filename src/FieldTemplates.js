@@ -24,4 +24,10 @@ export const FieldTemplates = {
       >${props.label}</paper-checkbox
     >`,
   spinner: html`<paper-spinner active></paper-spinner>`,
+  button: (title = 'Submit', tapFunc) => html` <paper-button
+    class="submit-btn btn-block"
+    raised
+    @tap="${tapFunc}"
+    >${title}</paper-button
+  >`,
 };

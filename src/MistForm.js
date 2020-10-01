@@ -38,9 +38,11 @@ export class MistForm extends LitElement {
     });
   }
 
-  _closeForm() {
-    // TODO: This should actually close the form
-    console.log(this);
+  static _displayCancelButton(canClose = true) {
+    if (canClose) {
+      return FieldTemplates.button('Cancel');
+    }
+    return '';
   }
 
   render() {
@@ -56,20 +58,8 @@ export class MistForm extends LitElement {
         <div>${this.data.label}</div>
         ${inputs.map(input => MistForm._getTemplate(input[1]))}
         <div>
-          <paper-button
-            class="submit-btn btn-block"
-            ?hidden=${this.data.noClose}
-            raised
-            @tap="${this._closeForm}"
-            >Cancel</paper-button
-          >
-
-          <paper-button
-            class="submit-btn btn-block"
-            raised
-            @tap="${this._submitForm}"
-            >Submit</paper-button
-          >
+          ${MistForm._displayCancelButton(this.data.canClose)}
+          ${FieldTemplates.button('Submit')}
         </div>
       `;
     }
