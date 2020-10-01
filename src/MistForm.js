@@ -27,15 +27,9 @@ export class MistForm extends LitElement {
   static _getTemplate(properties) {
     // TODO: Do something if the fieldType doesn't exist or just ignore?
     return (
-      FieldTemplates[properties.fieldType] &&
-      FieldTemplates[properties.fieldType](properties)
+      FieldTemplates[properties.type] &&
+      FieldTemplates[properties.type](properties)
     );
-  }
-
-  _submitForm() {
-    this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
-      input.validate();
-    });
   }
 
   static _displayCancelButton(canClose = true) {
@@ -43,6 +37,12 @@ export class MistForm extends LitElement {
       return FieldTemplates.button('Cancel');
     }
     return '';
+  }
+
+  _submitForm() {
+    this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
+      input.validate();
+    });
   }
 
   render() {
@@ -59,7 +59,7 @@ export class MistForm extends LitElement {
         ${inputs.map(input => MistForm._getTemplate(input[1]))}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
-          ${FieldTemplates.button('Submit')}
+          ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
       `;
     }
