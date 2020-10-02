@@ -27,11 +27,9 @@ export class MistForm extends LitElement {
   }
 
   static _getTemplate(properties) {
-    // TODO: Do something if the fieldType doesn't exist or just ignore?
-    return (
-      FieldTemplates[properties.type] &&
-      FieldTemplates[properties.type](properties)
-    );
+    return FieldTemplates[properties.type]
+      ? FieldTemplates[properties.type](properties)
+      : console.error(`Invalid field type: ${properties.type}`);
   }
 
   static _displayCancelButton(canClose = true) {

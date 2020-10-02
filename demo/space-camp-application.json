@@ -18,7 +18,7 @@
     "title": {
       "label": "Title",
       "id": "order1",
-      "type": "string",
+      "type": "strjing",
       "required": true,
       "error-message": "letters only!",
       "autoValidate": true,
