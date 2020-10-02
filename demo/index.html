@@ -29,9 +29,18 @@
       import '../mist-form.js';
 
       const jsonUrl = 'space-camp-application.json';
-
+      const id = 'test-mist-form';
       render(
-        html`<mist-form .src=${jsonUrl}> </mist-form> `,
+        html`<mist-form
+          id=${id}
+          .src=${jsonUrl}
+          .method=${'POST'}
+          .url=${'api/v1/clouds'}
+          .onResponse=${_onResponse}
+          .onRequest=${_onRequest}
+          .onError=${_onError}
+        >
+        </mist-form> `,
         document.querySelector('#demo')
       );
     </script>
