@@ -6,21 +6,24 @@ export class MistForm extends LitElement {
     return {
       src: { type: String },
       data: { type: Object },
+      dataError: { type: Object },
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    // TODO: Check if this is the right place to load the JSON file?
+  firstUpdated() {
     this._getJSON(this.src);
   }
 
   _getJSON(url) {
-    // TODO: Validate data, add nicer loader, do something if data isn't valid
+    // TODO: Validate data,  do something if data isn't valid
     fetch(url)
       .then(response => response.json())
       .then(data => {
         this.data = data;
+      })
+      .catch(error => {
+        this.dataError = error;
+        console.error('Error loading data:', error);
       });
   }
 
@@ -62,6 +65,9 @@ export class MistForm extends LitElement {
           ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
       `;
+    }
+    if (this.dataError) {
+      return html`We couldn't load the form. Please try again`;
     }
     return FieldTemplates.spinner;
   }
