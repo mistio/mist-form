@@ -15,7 +15,6 @@ export class MistForm extends LitElement {
   }
 
   _getJSON(url) {
-    // TODO: Validate data,  do something if data isn't valid
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -43,15 +42,21 @@ export class MistForm extends LitElement {
   }
 
   _submitForm() {
+    let allFieldsValid = true;
     this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
-      input.validate();
+      const isValid = input.validate();
+      if (!isValid) {
+        allFieldsValid = false;
+      }
     });
+
+    if (allFieldsValid) {
+      // TODO: Make this generic and not specific to iron-ajax
+      this.parentNode.querySelector('[slot="formRequest"]').generateRequest();
+    }
   }
 
   render() {
-    // Map the inputs to the appropriate web component
-    // For now we only have text inputs
-    // TODO: Check why form validation isn't working
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
@@ -64,6 +69,7 @@ export class MistForm extends LitElement {
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
+        <slot name="formRequest"></slot>
       `;
     }
     if (this.dataError) {
