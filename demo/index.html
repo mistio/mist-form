@@ -42,6 +42,7 @@
             .contentType="application/json"
             .submit=${this}
             @mist-form-request=${function (e) {
+              this.params = e.detail.params;
               this.generateRequest();
             }}
             @response=${() => {

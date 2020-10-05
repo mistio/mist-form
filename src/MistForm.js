@@ -41,21 +41,35 @@ export class MistForm extends LitElement {
 
   _submitForm() {
     let allFieldsValid = true;
-    this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
-      const isValid = input.validate();
-      if (!isValid) {
-        allFieldsValid = false;
-      }
-    });
+    const params = [];
+
+    this.shadowRoot
+      .querySelectorAll(FieldTemplates.inputFields.join(','))
+      .forEach(input => {
+        const isValid = input.validate();
+        if (!isValid) {
+          allFieldsValid = false;
+        } else {
+          params.push({
+            [input.id]:
+              input.getAttribute('role') === 'checkbox'
+                ? input.checked
+                : input.value,
+          });
+        }
+      });
 
     if (allFieldsValid) {
-      // TODO: Make this generic and not specific to iron-ajax
       const slot = this.shadowRoot
         .querySelector('slot[name="formRequest"]')
         .assignedNodes()[0];
 
-      const formRequestEvent = new CustomEvent('mist-form-request');
-      slot.dispatchEvent(formRequestEvent);
+      const event = new CustomEvent('mist-form-request', {
+        detail: {
+          params,
+        },
+      });
+      slot.dispatchEvent(event);
     }
   }
 
