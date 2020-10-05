@@ -18,6 +18,12 @@ const getConvertedProps = props => {
   return newProps;
 };
 export const FieldTemplates = {
+  inputFields: [
+    'paper-dropdown-menu',
+    'paper-textarea',
+    'paper-input',
+    'paper-checkbox',
+  ],
   string: props => {
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
       return html`<paper-dropdown-menu ...="${spreadProps(props)}">
@@ -38,7 +44,7 @@ export const FieldTemplates = {
     ></paper-input>`;
   },
   boolean: props =>
-    html`<paper-checkbox ...="${spreadProps(props)}"
+    html`<paper-checkbox ...="${spreadProps(props)}" value=""
       >${props.label}</paper-checkbox
     >`,
   spinner: html`<paper-spinner active></paper-spinner>`,

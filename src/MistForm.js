@@ -6,30 +6,30 @@ export class MistForm extends LitElement {
     return {
       src: { type: String },
       data: { type: Object },
+      dataError: { type: Object },
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    // TODO: Check if this is the right place to load the JSON file?
+  firstUpdated() {
     this._getJSON(this.src);
   }
 
   _getJSON(url) {
-    // TODO: Validate data, add nicer loader, do something if data isn't valid
     fetch(url)
       .then(response => response.json())
       .then(data => {
         this.data = data;
+      })
+      .catch(error => {
+        this.dataError = error;
+        console.error('Error loading data:', error);
       });
   }
 
   static _getTemplate(properties) {
-    // TODO: Do something if the fieldType doesn't exist or just ignore?
-    return (
-      FieldTemplates[properties.type] &&
-      FieldTemplates[properties.type](properties)
-    );
+    return FieldTemplates[properties.type]
+      ? FieldTemplates[properties.type](properties)
+      : console.error(`Invalid field type: ${properties.type}`);
   }
 
   static _displayCancelButton(canClose = true) {
@@ -40,15 +40,40 @@ export class MistForm extends LitElement {
   }
 
   _submitForm() {
-    this.shadowRoot.querySelectorAll('paper-input').forEach(input => {
-      input.validate();
-    });
+    let allFieldsValid = true;
+    const params = [];
+
+    this.shadowRoot
+      .querySelectorAll(FieldTemplates.inputFields.join(','))
+      .forEach(input => {
+        const isValid = input.validate();
+        if (!isValid) {
+          allFieldsValid = false;
+        } else {
+          params.push({
+            [input.id]:
+              input.getAttribute('role') === 'checkbox'
+                ? input.checked
+                : input.value,
+          });
+        }
+      });
+
+    if (allFieldsValid) {
+      const slot = this.shadowRoot
+        .querySelector('slot[name="formRequest"]')
+        .assignedNodes()[0];
+
+      const event = new CustomEvent('mist-form-request', {
+        detail: {
+          params,
+        },
+      });
+      slot.dispatchEvent(event);
+    }
   }
 
   render() {
-    // Map the inputs to the appropriate web component
-    // For now we only have text inputs
-    // TODO: Check why form validation isn't working
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
@@ -61,7 +86,11 @@ export class MistForm extends LitElement {
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
+        <slot name="formRequest"></slot>
       `;
+    }
+    if (this.dataError) {
+      return html`We couldn't load the form. Please try again`;
     }
     return FieldTemplates.spinner;
   }

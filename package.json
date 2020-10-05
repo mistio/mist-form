@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@open-wc/lit-helpers": "^0.3.11",
+    "@polymer/iron-ajax": "^3.0.1",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-checkbox": "^3.1.0",
     "@polymer/paper-dropdown-menu": "^3.1.0",
@@ -46,6 +47,20 @@
     "@open-wc/demoing-storybook": "^2.0.0"
   },
   "eslintConfig": {
+    "rules": {
+      "no-console": [
+        1,
+        {
+          "allow": [
+            "info",
+            "warn",
+            "error",
+            "exception",
+            "log"
+          ]
+        }
+      ]
+    },
     "extends": [
       "@open-wc/eslint-config",
       "eslint-config-prettier"

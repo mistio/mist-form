@@ -26,12 +26,36 @@
       import '@polymer/paper-listbox/paper-listbox.js';
       import '@polymer/paper-checkbox/paper-checkbox.js';
       import '@polymer/paper-spinner/paper-spinner.js';
+      import '@polymer/iron-ajax/iron-ajax.js';
       import '../mist-form.js';
 
       const jsonUrl = 'space-camp-application.json';
-
+      const id = 'test-mist-form';
+      const method = 'POST';
+      const submitUrl = 'api/v1/clouds';
       render(
-        html`<mist-form .src=${jsonUrl}> </mist-form> `,
+        html`<mist-form id=${id} .src=${jsonUrl} .method=${method}>
+          <iron-ajax
+            slot="formRequest"
+            id="formAjax"
+            .url="${submitUrl}"
+            .contentType="application/json"
+            .submit=${this}
+            @mist-form-request=${function (e) {
+              this.params = e.detail.params;
+              this.generateRequest();
+            }}
+            @response=${() => {
+              console.log('on response');
+            }}
+            @request=${() => {
+              console.log('on request');
+            }}
+            @error=${() => {
+              console.log('on error');
+            }}
+          ></iron-ajax>
+        </mist-form> `,
         document.querySelector('#demo')
       );
     </script>
