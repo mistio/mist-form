@@ -12,6 +12,19 @@ export class MistForm extends LitElement {
 
   firstUpdated() {
     this._getJSON(this.src);
+
+    console.log(
+      'sfgd ',
+      this.shadowRoot.querySelectorAll('conditional-handler')
+    );
+    const event = new CustomEvent('value-changed', {
+      detail: {
+        test: 'te',
+      },
+    });
+    this.shadowRoot
+      .querySelectorAll('conditional-handler')[0]
+      .dispatchEvent(event);
   }
 
   _getJSON(url) {
@@ -87,6 +100,11 @@ export class MistForm extends LitElement {
           ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
         <slot name="formRequest"></slot>
+        <conditional-handler
+          @value-changed=${function () {
+            this.handleConditional();
+          }}
+        ></conditional-handler>
       `;
     }
     if (this.dataError) {
