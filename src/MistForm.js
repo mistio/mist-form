@@ -50,7 +50,12 @@ export class MistForm extends LitElement {
 
     if (allFieldsValid) {
       // TODO: Make this generic and not specific to iron-ajax
-      this.parentNode.querySelector('[slot="formRequest"]').generateRequest();
+      const slot = this.shadowRoot
+        .querySelector('slot[name="formRequest"]')
+        .assignedNodes()[0];
+
+      const formRequestEvent = new CustomEvent('mist-form-request');
+      slot.dispatchEvent(formRequestEvent);
     }
   }
 

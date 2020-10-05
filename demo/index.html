@@ -41,6 +41,9 @@
             .url="${submitUrl}"
             .contentType="application/json"
             .submit=${this}
+            @mist-form-request=${function (e) {
+              this.generateRequest();
+            }}
             @response=${() => {
               console.log('on response');
             }}
