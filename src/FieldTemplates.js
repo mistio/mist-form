@@ -28,11 +28,12 @@ export const FieldTemplates = {
   string: (name, props) => {
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
       return html`<paper-dropdown-menu
-        .name=${name}
+        name=${name}
         ...="${spreadProps(props)}"
         @value-changed=${function (e) {
           const fieldName = e.path[0].name;
           const { value } = e.detail;
+          // TODO: Check why this event gets fired twice
           this.dispatchValueChangedEvent(fieldName, value);
         }}
       >
@@ -43,20 +44,20 @@ export const FieldTemplates = {
     }
     if (props.format === 'textarea') {
       return html`<paper-textarea
-        .name=${name}
+        name=${name}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
       ></paper-textarea>`;
     }
     return html`<paper-input
-      .name=${name}
+      name=${name}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
     ></paper-input>`;
   },
   boolean: (name, props) =>
     html`<paper-checkbox
-      .name=${name}
+      name=${name}
       ...="${spreadProps(props)}"
       @checked-changed=${function (e) {
         const fieldName = e.path[0].name;
@@ -73,4 +74,14 @@ export const FieldTemplates = {
     @tap="${tapFunc}"
     >${title}</paper-button
   >`,
+  convertPropName: propName => {
+    const propMap = {
+      maximum: 'max',
+      minimum: 'min',
+      format: 'type',
+      multipleOf: 'multiple',
+    };
+
+    return propMap[propName] || propName;
+  },
 };

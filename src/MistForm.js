@@ -1,5 +1,4 @@
 import { html, LitElement } from 'lit-element';
-import { ConditionalHandler } from './ConditionalHandler.js';
 import { FieldTemplates } from './FieldTemplates.js';
 
 export class MistForm extends LitElement {
@@ -28,15 +27,24 @@ export class MistForm extends LitElement {
   }
 
   dispatchValueChangedEvent(field, value) {
-    const event = new CustomEvent('conditional-value-changed', {
-      detail: {
-        field,
-        value,
-      },
+    const { allOf } = this.data;
+    allOf.forEach(el => {
+      const condition = el.if.properties;
+      const result = el.then.properties;
+      // TODO: Find some better variable names...
+      const ifPart = Object.keys(condition).map(key => [key, condition[key]]);
+      const thenPart = Object.keys(result).map(key => [key, result[key]]);
+
+      if (ifPart[0][0] === field && ifPart[0][1].const === value) {
+        const input = this.shadowRoot.querySelector(
+          `[name="${thenPart[0][0]}"]`
+        );
+        for (const [key, val] of Object.entries(thenPart[0][1])) {
+          const convertedKey = FieldTemplates.convertPropName(key);
+          input[convertedKey] = val;
+        }
+      }
     });
-    this.shadowRoot
-      .querySelectorAll('conditional-handler')[0]
-      .dispatchEvent(event);
   }
 
   static _getTemplate(name, properties) {
@@ -100,11 +108,6 @@ export class MistForm extends LitElement {
           ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
         <slot name="formRequest"></slot>
-        <conditional-handler
-          @conditional-value-changed=${function (e) {
-            ConditionalHandler.handleConditional(e);
-          }}
-        ></conditional-handler>
       `;
     }
     if (this.dataError) {

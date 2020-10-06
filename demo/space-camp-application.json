@@ -74,5 +74,39 @@
       "id": "order7",
       "type": "boolean"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "title": {
+            "const": "Dr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "age": {
+            "maximum": 20
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "title": {
+            "const": "Mr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "age": {
+            "maximum": 90
+          }
+        }
+      }
+    }
+  ]
 }
