@@ -8,8 +8,8 @@ export class ConditionalHandler extends LitElement {
     };
   }
 
-  static handleConditional() {
-    console.log('condition handled ');
+  static handleConditional(e) {
+    console.log('condition handled ', e);
   }
 
   render() {}

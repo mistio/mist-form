@@ -3,6 +3,7 @@ import { html } from 'lit-element';
 // TODO: For now I only spread props, I should spread attributes too
 
 // Some of the props need to be converted from their JSON Schema equivalents
+
 const getConvertedProps = props => {
   const newProps = {
     ...props,
@@ -24,9 +25,17 @@ export const FieldTemplates = {
     'paper-input',
     'paper-checkbox',
   ],
-  string: props => {
+  string: (name, props) => {
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
-      return html`<paper-dropdown-menu ...="${spreadProps(props)}">
+      return html`<paper-dropdown-menu
+        .name=${name}
+        ...="${spreadProps(props)}"
+        @value-changed=${function (e) {
+          const fieldName = e.path[0].name;
+          const { value } = e.detail;
+          this.dispatchValueChangedEvent(fieldName, value);
+        }}
+      >
         <paper-listbox slot="dropdown-content" selected="1">
           ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
         </paper-listbox>
@@ -34,17 +43,27 @@ export const FieldTemplates = {
     }
     if (props.format === 'textarea') {
       return html`<paper-textarea
+        .name=${name}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
       ></paper-textarea>`;
     }
     return html`<paper-input
+      .name=${name}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
     ></paper-input>`;
   },
-  boolean: props =>
-    html`<paper-checkbox ...="${spreadProps(props)}" value=""
+  boolean: (name, props) =>
+    html`<paper-checkbox
+      .name=${name}
+      ...="${spreadProps(props)}"
+      @checked-changed=${function (e) {
+        const fieldName = e.path[0].name;
+        const { value } = e.detail;
+        this.dispatchValueChangedEvent(fieldName, value);
+      }}
+      value=""
       >${props.label}</paper-checkbox
     >`,
   spinner: html`<paper-spinner active></paper-spinner>`,

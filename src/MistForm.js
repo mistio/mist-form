@@ -1,4 +1,5 @@
 import { html, LitElement } from 'lit-element';
+import { ConditionalHandler } from './ConditionalHandler.js';
 import { FieldTemplates } from './FieldTemplates.js';
 
 export class MistForm extends LitElement {
@@ -12,19 +13,6 @@ export class MistForm extends LitElement {
 
   firstUpdated() {
     this._getJSON(this.src);
-
-    console.log(
-      'sfgd ',
-      this.shadowRoot.querySelectorAll('conditional-handler')
-    );
-    const event = new CustomEvent('value-changed', {
-      detail: {
-        test: 'te',
-      },
-    });
-    this.shadowRoot
-      .querySelectorAll('conditional-handler')[0]
-      .dispatchEvent(event);
   }
 
   _getJSON(url) {
@@ -39,9 +27,21 @@ export class MistForm extends LitElement {
       });
   }
 
-  static _getTemplate(properties) {
+  dispatchValueChangedEvent(field, value) {
+    const event = new CustomEvent('conditional-value-changed', {
+      detail: {
+        field,
+        value,
+      },
+    });
+    this.shadowRoot
+      .querySelectorAll('conditional-handler')[0]
+      .dispatchEvent(event);
+  }
+
+  static _getTemplate(name, properties) {
     return FieldTemplates[properties.type]
-      ? FieldTemplates[properties.type](properties)
+      ? FieldTemplates[properties.type](name, properties)
       : console.error(`Invalid field type: ${properties.type}`);
   }
 
@@ -94,15 +94,15 @@ export class MistForm extends LitElement {
 
       return html`
         <div>${this.data.label}</div>
-        ${inputs.map(input => MistForm._getTemplate(input[1]))}
+        ${inputs.map(input => MistForm._getTemplate(input[0], input[1]))}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button('Submit', this._submitForm)}
         </div>
         <slot name="formRequest"></slot>
         <conditional-handler
-          @value-changed=${function () {
-            this.handleConditional();
+          @conditional-value-changed=${function (e) {
+            ConditionalHandler.handleConditional(e);
           }}
         ></conditional-handler>
       `;
