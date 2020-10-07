@@ -88,6 +88,9 @@
         "properties": {
           "age": {
             "maximum": 20
+          },
+          "message": {
+            "hidden": false
           }
         }
       }
@@ -104,6 +107,9 @@
         "properties": {
           "age": {
             "maximum": 90
+          },
+          "message": {
+            "hidden": true
           }
         }
       }

@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
-
+// TODO: Clean up code when I'm done
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -27,24 +27,25 @@ export class MistForm extends LitElement {
   }
 
   dispatchValueChangedEvent(field, value) {
-    const { allOf } = this.data;
-    allOf.forEach(el => {
-      const condition = el.if.properties;
-      const result = el.then.properties;
-      // TODO: Find some better variable names...
+    this.data.allOf.forEach(conditional => {
+      const condition = conditional.if.properties;
+      const result = conditional.then.properties;
+      // TODO: Find some better variable names and try to clean this ups...
       const ifPart = Object.keys(condition).map(key => [key, condition[key]]);
       const thenPart = Object.keys(result).map(key => [key, result[key]]);
+      const ifField = ifPart[0][0];
+      const ifValue = ifPart[0][1].enum || [ifPart[0][1].const];
 
-      if (ifPart[0][0] === field && ifPart[0][1].const === value) {
-        const input = this.shadowRoot.querySelector(
-          `[name="${thenPart[0][0]}"]`
-        );
-        for (const [key, val] of Object.entries(thenPart[0][1])) {
-          const convertedKey = FieldTemplates.convertPropName(key);
-          input[convertedKey] = val;
-        }
+      if (ifField === field && ifValue.includes(value)) {
+        thenPart.forEach(obj => {
+          for (const [key, val] of Object.entries(obj[1])) {
+            // Maybe I should return a new object instead of changing in place
+            this.data.properties[obj[0]][key] = val;
+          }
+        });
       }
     });
+    this.requestUpdate();
   }
 
   static _getTemplate(name, properties) {

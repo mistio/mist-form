@@ -26,6 +26,9 @@ export const FieldTemplates = {
     'paper-checkbox',
   ],
   string: (name, props) => {
+    if (props.hidden) {
+      return '';
+    }
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
       return html`<paper-dropdown-menu
         name=${name}
@@ -56,17 +59,19 @@ export const FieldTemplates = {
     ></paper-input>`;
   },
   boolean: (name, props) =>
-    html`<paper-checkbox
-      name=${name}
-      ...="${spreadProps(props)}"
-      @checked-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        this.dispatchValueChangedEvent(fieldName, value);
-      }}
-      value=""
-      >${props.label}</paper-checkbox
-    >`,
+    props.hidden
+      ? ''
+      : html`<paper-checkbox
+          name=${name}
+          ...="${spreadProps(props)}"
+          @checked-changed=${function (e) {
+            const fieldName = e.path[0].name;
+            const { value } = e.detail;
+            this.dispatchValueChangedEvent(fieldName, value);
+          }}
+          value=""
+          >${props.label}</paper-checkbox
+        >`,
   spinner: html`<paper-spinner active></paper-spinner>`,
   button: (title = 'Submit', tapFunc) => html` <paper-button
     class="submit-btn btn-block"
@@ -74,14 +79,4 @@ export const FieldTemplates = {
     @tap="${tapFunc}"
     >${title}</paper-button
   >`,
-  convertPropName: propName => {
-    const propMap = {
-      maximum: 'max',
-      minimum: 'min',
-      format: 'type',
-      multipleOf: 'multiple',
-    };
-
-    return propMap[propName] || propName;
-  },
 };
