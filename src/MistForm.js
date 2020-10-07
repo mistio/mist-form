@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
-
+// TODO: Clean up code when I'm done
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -26,9 +26,31 @@ export class MistForm extends LitElement {
       });
   }
 
-  static _getTemplate(properties) {
+  dispatchValueChangedEvent(field, value) {
+    this.data.allOf.forEach(conditional => {
+      const condition = conditional.if.properties;
+      const result = conditional.then.properties;
+      // TODO: Find some better variable names and try to clean this ups...
+      const ifPart = Object.keys(condition).map(key => [key, condition[key]]);
+      const thenPart = Object.keys(result).map(key => [key, result[key]]);
+      const ifField = ifPart[0][0];
+      const ifValue = ifPart[0][1].enum || [ifPart[0][1].const];
+
+      if (ifField === field && ifValue.includes(value)) {
+        thenPart.forEach(obj => {
+          for (const [key, val] of Object.entries(obj[1])) {
+            // Maybe I should return a new object instead of changing in place
+            this.data.properties[obj[0]][key] = val;
+          }
+        });
+      }
+    });
+    this.requestUpdate();
+  }
+
+  static _getTemplate(name, properties) {
     return FieldTemplates[properties.type]
-      ? FieldTemplates[properties.type](properties)
+      ? FieldTemplates[properties.type](name, properties)
       : console.error(`Invalid field type: ${properties.type}`);
   }
 
@@ -81,7 +103,7 @@ export class MistForm extends LitElement {
 
       return html`
         <div>${this.data.label}</div>
-        ${inputs.map(input => MistForm._getTemplate(input[1]))}
+        ${inputs.map(input => MistForm._getTemplate(input[0], input[1]))}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button('Submit', this._submitForm)}

@@ -18,7 +18,7 @@
     "title": {
       "label": "Title",
       "id": "order1",
-      "type": "strjing",
+      "type": "string",
       "required": true,
       "error-message": "letters only!",
       "autoValidate": true,
@@ -74,5 +74,45 @@
       "id": "order7",
       "type": "boolean"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "title": {
+            "const": "Dr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "age": {
+            "maximum": 20
+          },
+          "message": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "title": {
+            "const": "Mr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "age": {
+            "maximum": 90
+          },
+          "message": {
+            "hidden": true
+          }
+        }
+      }
+    }
+  ]
 }
