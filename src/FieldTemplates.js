@@ -8,7 +8,7 @@ const getConvertedProps = props => {
   const newProps = {
     ...props,
     max: props.maximum,
-    min: props.minumum,
+    min: props.minimum,
     type: props.format,
     multiple: props.multipleOf,
   };
@@ -55,15 +55,17 @@ export const FieldTemplates = {
         .label="${props.required ? `${props.label} *` : props.label}"
       ></paper-textarea>`;
     }
+    // TODO: Style helpText better
     return html`<paper-input
-      name=${name}
-      always-float-label
-      ...="${spreadProps(getConvertedProps(props))}"
-      .label="${props.required ? `${props.label} *` : props.label}"
-    >
-      ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
-      ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
-    </paper-input>`;
+        name=${name}
+        always-float-label
+        ...="${spreadProps(getConvertedProps(props))}"
+        .label="${props.required ? `${props.label} *` : props.label}"
+      >
+        ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
+        ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+      </paper-input>
+      <div class="helptext">${props.helpText}</div>`;
   },
   boolean: (name, props) => {
     if (props.hidden) {

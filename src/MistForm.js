@@ -28,6 +28,7 @@ export class MistForm extends LitElement {
   }
 
   dispatchValueChangedEvent(field, value) {
+    // TODO: Show and hide subforms
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
       const result = conditional.then.properties;
