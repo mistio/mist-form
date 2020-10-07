@@ -1,0 +1,95 @@
+{
+  "type": "object",
+  "id": "create-volume-form",
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "label": "Create Volume",
+  "description": "",
+  "canClose": true,
+  "links": [
+    {
+      "rel": "self",
+      "label": "Apply",
+      "href": "http://localhost:8080/223423423342",
+      "method": "PUT"
+    }
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "cloud": {
+      "label": "Select Cloud",
+      "id": "order1",
+      "type": "string",
+      "enum": ["Azure", "GCE"]
+    },
+    "name": {
+      "label": "Name",
+      "id": "order2",
+      "type": "string",
+      "required": true,
+      "description": "John"
+    },
+    "location": {
+      "label": "Location",
+      "id": "order3",
+      "type": "string",
+      "enum": ["us-central1-a", "us-central1-b", "europe-west1-b"]
+    },
+    "size": {
+      "label": "Size in GB",
+      "id": "order3",
+      "type": "string",
+      "format": "number",
+      "required": true,
+      "value": 1,
+      "minimum": 1,
+      "errorMessage": "Please enter a number above 1",
+      "description": "Appleseed"
+    },
+    "externalDiskType": {
+      "label": "External disk type",
+      "id": "order3",
+      "type": "string",
+      "enum": ["pd-ssd", "pd-standard (default)"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "title": {
+            "const": "Dr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "age": {
+            "maximum": 20
+          },
+          "message": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "title": {
+            "const": "Mr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "age": {
+            "maximum": 90
+          },
+          "message": {
+            "hidden": true
+          }
+        }
+      }
+    }
+  ]
+}

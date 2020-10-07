@@ -1,6 +1,7 @@
 import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
 // TODO: Clean up code when I'm done
+
 export class MistForm extends LitElement {
   static get properties() {
     return {

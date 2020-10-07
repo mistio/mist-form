@@ -23,12 +23,13 @@ export const FieldTemplates = {
     'paper-dropdown-menu',
     'paper-textarea',
     'paper-input',
-    'paper-checkbox',
+    'paper-toggle-button',
   ],
   string: (name, props) => {
     if (props.hidden) {
       return '';
     }
+
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
       return html`<paper-dropdown-menu
         name=${name}
@@ -45,33 +46,39 @@ export const FieldTemplates = {
         </paper-listbox>
       </paper-dropdown-menu>`;
     }
+
     if (props.format === 'textarea') {
       return html`<paper-textarea
         name=${name}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
+        .label="${props.required ? `${props.label} *` : props.label}"
       ></paper-textarea>`;
     }
     return html`<paper-input
       name=${name}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
+      .label="${props.required ? `${props.label} *` : props.label}"
     ></paper-input>`;
   },
-  boolean: (name, props) =>
-    props.hidden
-      ? ''
-      : html`<paper-toggle-button
-          name=${name}
-          ...="${spreadProps(props)}"
-          @checked-changed=${function (e) {
-            const fieldName = e.path[0].name;
-            const { value } = e.detail;
-            this.dispatchValueChangedEvent(fieldName, value);
-          }}
-          value=""
-          >${props.label}</paper-toggle-button
-        >`,
+  boolean: (name, props) => {
+    if (props.hidden) {
+      return '';
+    }
+
+    return html`<paper-toggle-button
+      name=${name}
+      ...="${spreadProps(props)}"
+      @checked-changed=${function (e) {
+        const fieldName = e.path[0].name;
+        const { value } = e.detail;
+        this.dispatchValueChangedEvent(fieldName, value);
+      }}
+      value=""
+      >${props.label}</paper-toggle-button
+    >`;
+  },
   spinner: html`<paper-spinner active></paper-spinner>`,
   button: (title = 'Submit', tapFunc) => html` <paper-button
     class="submit-btn btn-block"
