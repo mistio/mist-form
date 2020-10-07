@@ -61,7 +61,7 @@ export const FieldTemplates = {
   boolean: (name, props) =>
     props.hidden
       ? ''
-      : html`<paper-checkbox
+      : html`<paper-toggle-button
           name=${name}
           ...="${spreadProps(props)}"
           @checked-changed=${function (e) {
@@ -70,7 +70,7 @@ export const FieldTemplates = {
             this.dispatchValueChangedEvent(fieldName, value);
           }}
           value=""
-          >${props.label}</paper-checkbox
+          >${props.label}</paper-toggle-button
         >`,
   spinner: html`<paper-spinner active></paper-spinner>`,
   button: (title = 'Submit', tapFunc) => html` <paper-button
