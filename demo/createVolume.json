@@ -43,7 +43,7 @@
       "value": 1,
       "minimum": 1,
       "errorMessage": "Please enter a number above 1",
-      "description": "Appleseed"
+      "suffix": "GB"
     },
     "externalDiskType": {
       "label": "External disk type",

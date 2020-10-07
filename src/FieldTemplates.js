@@ -60,7 +60,10 @@ export const FieldTemplates = {
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
       .label="${props.required ? `${props.label} *` : props.label}"
-    ></paper-input>`;
+    >
+      ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
+      ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+    </paper-input>`;
   },
   boolean: (name, props) => {
     if (props.hidden) {
