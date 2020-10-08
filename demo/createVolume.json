@@ -42,7 +42,7 @@
       "required": true,
       "value": 1,
       "minimum": 1,
-      "errorMessage": "Please enter a number above 1",
+      "autoValidate": true,
       "helpText": "A minimum of 1 GB is required.",
       "suffix": "GB"
     },
