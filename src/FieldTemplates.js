@@ -18,6 +18,7 @@ const getConvertedProps = props => {
 
   return newProps;
 };
+// TODO: Add radio group
 export const FieldTemplates = {
   inputFields: [
     'paper-dropdown-menu',
@@ -29,7 +30,7 @@ export const FieldTemplates = {
     if (props.hidden) {
       return '';
     }
-
+    // Value doesn't get updated when options change
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
       return html`<paper-dropdown-menu
         name=${name}
@@ -37,11 +38,12 @@ export const FieldTemplates = {
         @value-changed=${function (e) {
           const fieldName = e.path[0].name;
           const { value } = e.detail;
+
           // TODO: Check why this event gets fired twice
           this.dispatchValueChangedEvent(fieldName, value);
         }}
       >
-        <paper-listbox slot="dropdown-content" selected="1">
+        <paper-listbox slot="dropdown-content" selected="${props.selected}">
           ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
         </paper-listbox>
       </paper-dropdown-menu>`;

@@ -17,13 +17,15 @@
   "properties": {
     "cloud": {
       "label": "Select Cloud",
-      "id": "order1",
+      "id": "cloud",
       "type": "string",
-      "enum": ["Azure", "GCE"]
+      "alwaysFloatLabel": true,
+      "selected": 0,
+      "enum": ["Digital Ocean", "GCE"]
     },
     "name": {
       "label": "Name",
-      "id": "order2",
+      "id": "name",
       "type": "string",
       "required": true,
       "invalid": true,
@@ -31,13 +33,15 @@
     },
     "location": {
       "label": "Location",
-      "id": "order3",
+      "id": "location",
       "type": "string",
-      "enum": ["us-central1-a", "us-central1-b", "europe-west1-b"]
+      "enum": ["us-central1-a", "us-central1-b", "europe-west1-b"],
+      "required": true,
+      "noLabelFloat": true
     },
     "size": {
       "label": "Size in GB",
-      "id": "order3",
+      "id": "size",
       "type": "string",
       "format": "number",
       "required": true,
@@ -49,26 +53,43 @@
     },
     "externalDiskType": {
       "label": "External disk type",
-      "id": "order3",
+      "id": "externalDiskType",
       "type": "string",
-      "enum": ["pd-ssd", "pd-standard (default)"]
+      "enum": ["pd-ssd", "pd-standard (default)"],
+      "hidden": true,
+      "selected": 0
+    },
+    "fileSystemType": {
+      "label": "Filesystem type",
+      "id": "fileSystemType",
+      "type": "string",
+      "hidden": true,
+      "selected": 0,
+      "enum": [
+        "Do not automatically format.",
+        "Ext4 filesystem type",
+        "XFS filesystem type"
+      ]
     }
   },
   "allOf": [
     {
       "if": {
         "properties": {
-          "title": {
-            "const": "Dr"
+          "cloud": {
+            "const": "Digital Ocean"
           }
         }
       },
       "then": {
         "properties": {
-          "age": {
-            "maximum": 20
+          "location": {
+            "enum": ["Amsterdam", "Bangalore 1", "Frankfurt 1"]
           },
-          "message": {
+          "externalDiskType": {
+            "hidden": true
+          },
+          "fileSystemType": {
             "hidden": false
           }
         }
@@ -77,17 +98,20 @@
     {
       "if": {
         "properties": {
-          "title": {
-            "const": "Mr"
+          "cloud": {
+            "const": "GCE"
           }
         }
       },
       "then": {
         "properties": {
-          "age": {
-            "maximum": 90
+          "location": {
+            "enum": ["us-central1-a", "us-central1-b", "europe-west1-b"]
           },
-          "message": {
+          "externalDiskType": {
+            "hidden": false
+          },
+          "fileSystemType": {
             "hidden": true
           }
         }
