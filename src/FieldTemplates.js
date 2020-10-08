@@ -1,7 +1,7 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 // TODO: For now I only spread props, I should spread attributes too
-
+// I should style helpText better
 // Some of the props need to be converted from their JSON Schema equivalents
 
 const getConvertedProps = props => {
@@ -58,6 +58,11 @@ export const FieldTemplates = {
     // TODO: Style helpText better
     return html`<paper-input
         name=${name}
+        @invalid-changed=${function (e) {
+          const fieldName = e.path[0].name;
+          const { value } = e.detail;
+          this.toggleSubmitButton(fieldName, !value);
+        }}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
         .label="${props.required ? `${props.label} *` : props.label}"
@@ -85,10 +90,12 @@ export const FieldTemplates = {
     >`;
   },
   spinner: html`<paper-spinner active></paper-spinner>`,
-  button: (title = 'Submit', tapFunc) => html` <paper-button
+  // Submit button should be disabled until all required fields are filled
+  button: (title = 'Submit', tapFunc, isDisabled = false) => html` <paper-button
     class="submit-btn btn-block"
     raised
     @tap="${tapFunc}"
+    ?disabled=${isDisabled}
     >${title}</paper-button
   >`,
 };

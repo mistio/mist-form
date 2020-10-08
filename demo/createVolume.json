@@ -26,7 +26,8 @@
       "id": "order2",
       "type": "string",
       "required": true,
-      "description": "John"
+      "invalid": true,
+      "autoValidate": true
     },
     "location": {
       "label": "Location",

@@ -11,7 +11,14 @@ export class MistForm extends LitElement {
       src: { type: String },
       data: { type: Object },
       dataError: { type: Object },
+      allFieldsValid: { type: Boolean },
+      fieldsValid: { type: Object },
     };
+  }
+
+  constructor() {
+    super();
+    this.fieldsValid = {};
   }
 
   firstUpdated() {
@@ -28,6 +35,13 @@ export class MistForm extends LitElement {
         this.dataError = error;
         console.error('Error loading data:', error);
       });
+  }
+
+  toggleSubmitButton(fieldName, value) {
+    this.fieldsValid[fieldName] = value;
+    this.allFieldsValid = Object.values(this.fieldsValid).every(
+      val => val === true
+    );
   }
 
   dispatchValueChangedEvent(field, value) {
@@ -113,7 +127,11 @@ export class MistForm extends LitElement {
         ${inputs.map(input => MistForm._getTemplate(input[0], input[1]))}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
-          ${FieldTemplates.button('Submit', this._submitForm)}
+          ${FieldTemplates.button(
+            'Submit',
+            this._submitForm,
+            !this.allFieldsValid
+          )}
         </div>
         <slot name="formRequest"></slot>
       `;
