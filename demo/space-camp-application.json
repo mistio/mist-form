@@ -22,6 +22,7 @@
       "required": true,
       "error-message": "letters only!",
       "autoValidate": true,
+      "format": "dropdown",
       "enum": ["Dr", "Mr", "Mrs", "Ms"]
     },
     "firstName": {
@@ -73,6 +74,16 @@
       "label": "Check this",
       "id": "order7",
       "type": "boolean"
+    },
+    "radio": {
+      "label": "Radio",
+      "id": "order8",
+      "type": "string",
+      "required": true,
+      "error-message": "letters only!",
+      "autoValidate": true,
+      "format": "radioGroup",
+      "enum": ["Option 1", "Option 2", "Option 3"]
     }
   },
   "allOf": [

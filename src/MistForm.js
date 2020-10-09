@@ -46,6 +46,7 @@ export class MistForm extends LitElement {
 
   dispatchValueChangedEvent(field, value) {
     // TODO: Show and hide subforms
+    const newData = JSON.parse(JSON.stringify(this.data));
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
       const result = conditional.then.properties;
@@ -56,17 +57,18 @@ export class MistForm extends LitElement {
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
       const targetField = conditionMap[0][0];
       const targetValue = conditionMap[0][1].enum || [conditionMap[0][1].const];
-
       if (targetField === field && targetValue.includes(value)) {
         resultMap.forEach(obj => {
           for (const [key, val] of Object.entries(obj[1])) {
             // Maybe I should return a new object instead of changing in place
-            this.data.properties[obj[0]][key] = val;
+
+            newData.properties[obj[0]][key] = val;
+            newData.properties[obj[0]].selected = -1;
           }
         });
       }
     });
-    this.requestUpdate();
+    this.data = newData;
   }
 
   static _getTemplate(name, properties) {

@@ -25,28 +25,50 @@ export const FieldTemplates = {
     'paper-textarea',
     'paper-input',
     'paper-toggle-button',
+    'paper-radio-group',
   ],
+  dropdown: (name, props) => html`<paper-dropdown-menu
+    name=${name}
+    ...="${spreadProps(props)}"
+    @value-changed=${function (e) {
+      const fieldName = e.path[0].name;
+      const { value } = e.detail;
+
+      // TODO: Check why this event gets fired twice
+      this.dispatchValueChangedEvent(fieldName, value);
+    }}
+  >
+    <paper-listbox slot="dropdown-content" selected="${props.selected}">
+      ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
+    </paper-listbox>
+  </paper-dropdown-menu>`,
+  radioGroup: (name, props) => html` <label>${props.label}</label>
+    <paper-radio-group
+      selected="small"
+      name=${name}
+      ...="${spreadProps(props)}"
+      @value-changed=${function (e) {
+        const fieldName = e.path[0].name;
+        const { value } = e.detail;
+
+        // TODO: Check why this event gets fired twice
+        this.dispatchValueChangedEvent(fieldName, value);
+      }}
+    >
+      ${props.enum.map(
+        item =>
+          html`<paper-radio-button name=${item.split(' ').join('')}
+            >${item}</paper-radio-button
+          >`
+      )}
+    </paper-radio-group>`,
   string: (name, props) => {
     if (props.hidden) {
       return '';
     }
     // Value doesn't get updated when options change
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
-      return html`<paper-dropdown-menu
-        name=${name}
-        ...="${spreadProps(props)}"
-        @value-changed=${function (e) {
-          const fieldName = e.path[0].name;
-          const { value } = e.detail;
-
-          // TODO: Check why this event gets fired twice
-          this.dispatchValueChangedEvent(fieldName, value);
-        }}
-      >
-        <paper-listbox slot="dropdown-content" selected="${props.selected}">
-          ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
-        </paper-listbox>
-      </paper-dropdown-menu>`;
+      return FieldTemplates[props.format](name, props);
     }
 
     if (props.format === 'textarea') {
