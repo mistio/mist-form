@@ -1,9 +1,10 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
+
 // TODO: For now I only spread props, I should spread attributes too
 // I should style helpText better
-// Some of the props need to be converted from their JSON Schema equivalents
 
+// Some of the props need to be converted from their JSON Schema equivalents
 const getConvertedProps = props => {
   const newProps = {
     ...props,
@@ -27,24 +28,29 @@ export const FieldTemplates = {
     'paper-toggle-button',
     'paper-radio-group',
   ],
-  dropdown: (name, props) => html`<paper-dropdown-menu
-    name=${name}
-    ...="${spreadProps(props)}"
-    @value-changed=${function (e) {
-      const fieldName = e.path[0].name;
-      const { value } = e.detail;
-
-      // TODO: Check why this event gets fired twice
-      this.dispatchValueChangedEvent(fieldName, value);
-    }}
-  >
-    <paper-listbox slot="dropdown-content" selected="${props.selected}">
-      ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
-    </paper-listbox>
-  </paper-dropdown-menu>`,
+  dropdown: (name, props) => {
+    console.log('props ', props);
+    return html`<paper-dropdown-menu
+      name=${name}
+      ...="${spreadProps(props)}"
+      @value-changed=${function (e) {
+        const fieldName = e.path[0].name;
+        const { value } = e.detail;
+        // TODO: Check why this event gets fired twice sometimes, for instance when selecting a cloud
+        this.dispatchValueChangedEvent(fieldName, value);
+      }}
+    >
+      <paper-listbox
+        class="dropdown-content"
+        .selected="${props.selected}"
+        slot="dropdown-content"
+      >
+        ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
+      </paper-listbox>
+    </paper-dropdown-menu>`;
+  },
   radioGroup: (name, props) => html` <label>${props.label}</label>
     <paper-radio-group
-      selected="small"
       name=${name}
       ...="${spreadProps(props)}"
       @value-changed=${function (e) {
@@ -68,7 +74,8 @@ export const FieldTemplates = {
     }
     // Value doesn't get updated when options change
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
-      return FieldTemplates[props.format](name, props);
+      const format = props.format || 'dropdown';
+      return FieldTemplates[format](name, props);
     }
 
     if (props.format === 'textarea') {

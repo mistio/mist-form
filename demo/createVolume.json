@@ -20,7 +20,6 @@
       "id": "cloud",
       "type": "string",
       "alwaysFloatLabel": true,
-      "selected": 0,
       "enum": ["Digital Ocean", "GCE"]
     },
     "name": {
@@ -56,15 +55,13 @@
       "id": "externalDiskType",
       "type": "string",
       "enum": ["pd-ssd", "pd-standard (default)"],
-      "hidden": true,
-      "selected": 0
+      "hidden": true
     },
     "fileSystemType": {
       "label": "Filesystem type",
       "id": "fileSystemType",
       "type": "string",
       "hidden": true,
-      "selected": 0,
       "enum": [
         "Do not automatically format.",
         "Ext4 filesystem type",

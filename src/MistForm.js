@@ -1,5 +1,6 @@
 import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
+
 // TODO: Clean up code when I'm done
 // - Check if I actually need some functions to be static
 // - Follow the same naming convention for functions
@@ -63,7 +64,8 @@ export class MistForm extends LitElement {
             // Maybe I should return a new object instead of changing in place
 
             newData.properties[obj[0]][key] = val;
-            newData.properties[obj[0]].selected = -1;
+            newData.properties[obj[0]].selected = null;
+            // newData.properties[obj[0]].value = '';
           }
         });
       }
@@ -119,6 +121,7 @@ export class MistForm extends LitElement {
   }
 
   render() {
+    console.log('in render');
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
