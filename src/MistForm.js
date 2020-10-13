@@ -47,6 +47,9 @@ export class MistForm extends LitElement {
 
   dispatchValueChangedEvent(field, value) {
     // TODO: Show and hide subforms
+    if (!this.data.allOf) {
+      return;
+    }
     const newData = JSON.parse(JSON.stringify(this.data));
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
@@ -133,7 +136,7 @@ export class MistForm extends LitElement {
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button(
-            'Submit',
+            this.data.submitButtonLabel || 'Submit',
             this._submitForm,
             !this.allFieldsValid
           )}
