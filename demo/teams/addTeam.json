@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "id": "create-volume-form",
+  "id": "add-team-form",
   "$schema": "http://json-schema.org/draft-03/schema#",
   "label": "Add Team",
   "description": "",
