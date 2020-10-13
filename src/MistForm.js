@@ -45,9 +45,17 @@ export class MistForm extends LitElement {
     );
   }
 
+  _clearDropdown(id) {
+    // TODO: Check if I need to do this for radio buttons
+    if (this.shadowRoot.querySelector(`#${id}`)) {
+      this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
+    }
+  }
+
   dispatchValueChangedEvent(field, value) {
     // TODO: Show and hide subforms
-    const newData = JSON.parse(JSON.stringify(this.data));
+    let update = false;
+
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
       const result = conditional.then.properties;
@@ -59,18 +67,22 @@ export class MistForm extends LitElement {
       const targetField = conditionMap[0][0];
       const targetValue = conditionMap[0][1].enum || [conditionMap[0][1].const];
       if (targetField === field && targetValue.includes(value)) {
+        update = true;
         resultMap.forEach(obj => {
           for (const [key, val] of Object.entries(obj[1])) {
-            // Maybe I should return a new object instead of changing in place
+            this.data.properties[obj[0]][key] = val;
 
-            newData.properties[obj[0]][key] = val;
-            newData.properties[obj[0]].selected = null;
-            // newData.properties[obj[0]].value = '';
+            const props = this.data.properties[obj[0]];
+            if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
+              this._clearDropdown(props.id);
+            }
           }
         });
       }
     });
-    this.data = newData;
+    if (update) {
+      this.requestUpdate();
+    }
   }
 
   static _getTemplate(name, properties) {
@@ -121,7 +133,6 @@ export class MistForm extends LitElement {
   }
 
   render() {
-    console.log('in render');
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;

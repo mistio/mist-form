@@ -29,7 +29,6 @@ export const FieldTemplates = {
     'paper-radio-group',
   ],
   dropdown: (name, props) => {
-    console.log('props ', props);
     return html`<paper-dropdown-menu
       name=${name}
       ...="${spreadProps(props)}"
@@ -40,11 +39,7 @@ export const FieldTemplates = {
         this.dispatchValueChangedEvent(fieldName, value);
       }}
     >
-      <paper-listbox
-        class="dropdown-content"
-        .selected="${props.selected}"
-        slot="dropdown-content"
-      >
+      <paper-listbox class="dropdown-content" slot="dropdown-content">
         ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
       </paper-listbox>
     </paper-dropdown-menu>`;
