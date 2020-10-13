@@ -49,6 +49,7 @@ export class MistForm extends LitElement {
     // TODO: Check if I need to do this for radio buttons
     if (this.shadowRoot.querySelector(`#${id}`)) {
       this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
+      this.shadowRoot.querySelector(`#${id}`).value = null;
     }
   }
 
