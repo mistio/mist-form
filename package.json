@@ -22,8 +22,10 @@
   "dependencies": {
     "@open-wc/lit-helpers": "^0.3.11",
     "@polymer/iron-ajax": "^3.0.1",
+    "@polymer/iron-icons": "^3.0.1",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-dropdown-menu": "^3.1.0",
+    "@polymer/paper-icon-button": "^3.0.2",
     "@polymer/paper-input": "^3.2.1",
     "@polymer/paper-item": "^3.0.1",
     "@polymer/paper-listbox": "^3.0.1",

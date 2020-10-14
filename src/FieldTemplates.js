@@ -128,4 +128,18 @@ export const FieldTemplates = {
     ?disabled=${isDisabled}
     >${title}</paper-button
   >`,
+  helpText: (url, text) =>
+    url
+      ? html` <div>
+          ${text}<a href="${url}" target="new">
+            <paper-icon-button
+              icon="icons:help"
+              alt="open docs"
+              title="open docs"
+              class="docs"
+            >
+            </paper-icon-button>
+          </a>
+        </div>`
+      : html`<div>${text}</div>`,
 };

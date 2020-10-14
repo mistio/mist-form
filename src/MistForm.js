@@ -79,8 +79,10 @@ export class MistForm extends LitElement {
   // TODO: Style helpText better
   static _getTemplate(name, properties) {
     return FieldTemplates[properties.type]
-      ? html`${FieldTemplates[properties.type](name, properties)}
-          <div>${properties.helpText}</div>`
+      ? html`${FieldTemplates[properties.type](
+          name,
+          properties
+        )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
       : console.error(`Invalid field type: ${properties.type}`);
   }
 
