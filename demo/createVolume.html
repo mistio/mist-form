@@ -8,9 +8,11 @@
       }
     </style>
   </head>
+
   <body>
     <div id="demo"></div>
-
+    <!-- Web-animations is a dependency for the paper-dropdown-menu/paper-listbox components -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.2/web-animations-next-lite.min.js"></script>
     <script type="module">
       import { html, render } from 'lit-html';
       import '@polymer/paper-styles/typography.js';
@@ -30,7 +32,7 @@
       import '@polymer/iron-ajax/iron-ajax.js';
       import '../mist-form.js';
 
-      const jsonUrl = 'space-camp-application.json';
+      const jsonUrl = 'createVolume.json';
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';

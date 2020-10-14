@@ -1,13 +1,25 @@
 import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
+
 // TODO: Clean up code when I'm done
+// - Check if I actually need some functions to be static
+// - Follow the same naming convention for functions
+// -...
+
 export class MistForm extends LitElement {
   static get properties() {
     return {
       src: { type: String },
       data: { type: Object },
       dataError: { type: Object },
+      allFieldsValid: { type: Boolean },
+      fieldsValid: { type: Object },
     };
+  }
+
+  constructor() {
+    super();
+    this.fieldsValid = {};
   }
 
   firstUpdated() {
@@ -26,26 +38,52 @@ export class MistForm extends LitElement {
       });
   }
 
+  toggleSubmitButton(fieldName, value) {
+    this.fieldsValid[fieldName] = value;
+    this.allFieldsValid = Object.values(this.fieldsValid).every(
+      val => val === true
+    );
+  }
+
+  _clearDropdown(id) {
+    // TODO: Check if I need to do this for radio buttons
+    if (this.shadowRoot.querySelector(`#${id}`)) {
+      this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
+      this.shadowRoot.querySelector(`#${id}`).value = null;
+    }
+  }
+
   dispatchValueChangedEvent(field, value) {
+    // TODO: Show and hide subforms
+    let update = false;
+
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
       const result = conditional.then.properties;
-      // TODO: Find some better variable names and try to clean this ups...
-      const ifPart = Object.keys(condition).map(key => [key, condition[key]]);
-      const thenPart = Object.keys(result).map(key => [key, result[key]]);
-      const ifField = ifPart[0][0];
-      const ifValue = ifPart[0][1].enum || [ifPart[0][1].const];
-
-      if (ifField === field && ifValue.includes(value)) {
-        thenPart.forEach(obj => {
+      const conditionMap = Object.keys(condition).map(key => [
+        key,
+        condition[key],
+      ]);
+      const resultMap = Object.keys(result).map(key => [key, result[key]]);
+      const targetField = conditionMap[0][0];
+      const targetValue = conditionMap[0][1].enum || [conditionMap[0][1].const];
+      if (targetField === field && targetValue.includes(value)) {
+        update = true;
+        resultMap.forEach(obj => {
           for (const [key, val] of Object.entries(obj[1])) {
-            // Maybe I should return a new object instead of changing in place
             this.data.properties[obj[0]][key] = val;
+
+            const props = this.data.properties[obj[0]];
+            if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
+              this._clearDropdown(props.id);
+            }
           }
         });
       }
     });
-    this.requestUpdate();
+    if (update) {
+      this.requestUpdate();
+    }
   }
 
   static _getTemplate(name, properties) {
@@ -106,7 +144,11 @@ export class MistForm extends LitElement {
         ${inputs.map(input => MistForm._getTemplate(input[0], input[1]))}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
-          ${FieldTemplates.button('Submit', this._submitForm)}
+          ${FieldTemplates.button(
+            'Submit',
+            this._submitForm,
+            !this.allFieldsValid
+          )}
         </div>
         <slot name="formRequest"></slot>
       `;
