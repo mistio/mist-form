@@ -45,12 +45,27 @@ export class MistForm extends LitElement {
     );
   }
 
+  _clearDropdown({ id, format }) {
+    // TODO: Check if I need to do this for radio buttons
+    if (this.shadowRoot.querySelector(`#${id}`)) {
+      if (format === 'dropdown') {
+        this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
+      } else if (format === 'radioGroup') {
+        // TODO
+      }
+
+      this.shadowRoot.querySelector(`#${id}`).value = null;
+    }
+  }
+
   dispatchValueChangedEvent(field, value) {
     // TODO: Show and hide subforms
     if (!this.data.allOf) {
       return;
     }
-    const newData = JSON.parse(JSON.stringify(this.data));
+
+    let update = false;
+
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
       const result = conditional.then.properties;
@@ -64,15 +79,23 @@ export class MistForm extends LitElement {
         conditionMap[0][1].const,
       ];
       if (targetField === field && targetValues.includes(value)) {
+        update = true;
         resultMap.forEach(obj => {
           for (const [key, val] of Object.entries(obj[1])) {
-            newData.properties[obj[0]][key] = val;
-            newData.properties[obj[0]].selected = null;
+            this.data.properties[obj[0]][key] = val;
+
+            const props = this.data.properties[obj[0]];
+            console.log('props ', props);
+            if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
+              this._clearDropdown(props);
+            }
           }
         });
       }
     });
-    this.data = newData;
+    if (update) {
+      this.requestUpdate();
+    }
   }
 
   // TODO: Style helpText better

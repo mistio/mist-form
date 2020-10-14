@@ -34,7 +34,7 @@
       "label": "Location",
       "id": "location",
       "type": "string",
-      "enum": ["us-central1-a", "us-central1-b", "europe-west1-b"],
+      "enum": [],
       "required": true,
       "noLabelFloat": true
     },
