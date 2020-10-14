@@ -20,7 +20,7 @@
     },
     "privateKey": {
       "label": "Private Key",
-      "id": "description",
+      "id": "privateKey",
       "required": true,
       "type": "string",
       "format": "textarea",

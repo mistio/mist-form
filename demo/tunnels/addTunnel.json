@@ -36,7 +36,7 @@
       "helpText": "Mist.io will choose 2 random IPv4 address for the end points of the VPN tunnel. Optionally define CIDRs to exclude from the random selection, in order to avoid conflicts.",
       "type": "string"
     },
-    "protocols": {
+    "protocol": {
       "id": "protocol",
       "type": "string",
       "helpText": "Please choose the VPN tunnel's underlying protocol. This option may seem useful in case of security restrictions, such as protocol-specific, blocking firewall rules",
