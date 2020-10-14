@@ -2,7 +2,7 @@ import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 
 // TODO: For now I only spread props, I should spread attributes too
-// I should style helpText better
+// TODO: This file is starting to get too big. Maybe I should split it up
 
 // Some of the props need to be converted from their JSON Schema equivalents
 const getConvertedProps = props => {
@@ -86,22 +86,21 @@ export const FieldTemplates = {
         .label="${props.required ? `${props.label} *` : props.label}"
       ></paper-textarea>`;
     }
-    // TODO: Style helpText better
+
     return html`<paper-input
-        name=${name}
-        @invalid-changed=${function (e) {
-          const fieldName = e.path[0].name;
-          const { value } = e.detail;
-          this.toggleSubmitButton(fieldName, !value);
-        }}
-        always-float-label
-        ...="${spreadProps(getConvertedProps(props))}"
-        .label="${props.required ? `${props.label} *` : props.label}"
-      >
-        ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
-        ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
-      </paper-input>
-      <div class="helptext">${props.helpText}</div>`;
+      name=${name}
+      @invalid-changed=${function (e) {
+        const fieldName = e.path[0].name;
+        const { value } = e.detail;
+        this.toggleSubmitButton(fieldName, !value);
+      }}
+      always-float-label
+      ...="${spreadProps(getConvertedProps(props))}"
+      .label="${props.required ? `${props.label} *` : props.label}"
+    >
+      ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
+      ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+    </paper-input>`;
   },
   boolean: (name, props) => {
     if (props.hidden) {

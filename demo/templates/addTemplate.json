@@ -14,7 +14,7 @@
       "type": "string",
       "enum": ["Kubernetes blueprint", "Cloudify Blueprint example"],
       "alwaysFloatLabel": true,
-      "description": "You can optionally select from our template catalogue."
+      "helpText": "You can optionally select from our template catalogue."
     },
     "name": {
       "label": "Template Name",
@@ -26,13 +26,13 @@
     "description": {
       "label": "Template Description",
       "id": "description",
-      "description": "Please enter template's description",
+      "helpText": "Please enter template's description",
       "type": "string"
     },
     "type": {
       "label": "Type",
       "id": "type",
-      "description": "Please enter template's exec_type",
+      "helpText": "Please enter template's exec_type",
       "required": true,
       "type": "string",
       "enum": ["Cloudify Blueprint"]
@@ -40,7 +40,7 @@
     "location_type": {
       "id": "location_type",
       "type": "string",
-      "description": "Please enter template's location_type",
+      "helpText": "Please enter template's location_type",
       "format": "radioGroup",
       "enum": ["Git", "URL", "Inline"]
     },
@@ -50,7 +50,7 @@
       "type": "string",
       "required": true,
       "value": "https://github.com/owner/repo",
-      "description": "Please enter a git repo",
+      "helpText": "Please enter a git repo",
       "error-message": "Please enter a git repo"
     },
     "entryPoint": {
@@ -58,7 +58,7 @@
       "id": "entryPoint",
       "type": "string",
       "required": true,
-      "description": "Please enter entry point",
+      "helpText": "Please enter entry point",
       "error-message": "Please enter entry point"
     },
     "url": {
@@ -67,7 +67,7 @@
       "type": "string",
       "required": true,
       "value": "http://",
-      "description": "Please enter a url",
+      "helpText": "Please enter a url",
       "error-message": "Please enter a url"
     },
     "template": {
@@ -84,7 +84,7 @@
       "label": "Let run as owner",
       "id": "runAsOwner",
       "type": "boolean",
-      "description": "Enable to allow team members to run this template with owner rights."
+      "helpText": "Enable to allow team members to run this template with owner rights."
     }
   }
 }

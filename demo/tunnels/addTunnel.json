@@ -19,13 +19,13 @@
     "description": {
       "label": "Tunnel Decsription",
       "id": "description",
-      "description": "Optional.",
+      "helpText": "Optional.",
       "type": "string"
     },
     "cidrs": {
       "label": "CIDRs",
       "id": "cidrs",
-      "description": "These are the IPv4 address ranges that Mist.io will be able to access through the tunnel. Example: 172.17.3.0/24. A CIDR with /0 will redirect ALL your traffic through the tunnel.",
+      "helpText": "These are the IPv4 address ranges that Mist.io will be able to access through the tunnel. Example: 172.17.3.0/24. A CIDR with /0 will redirect ALL your traffic through the tunnel.",
       "type": "string",
       "required": "true",
       "error-message": "Please enter tunnel's cidrs"
@@ -33,13 +33,13 @@
     "excludedCidrs": {
       "label": "Excluded CIDRs",
       "id": "excludedCidrs",
-      "description": "Mist.io will choose 2 random IPv4 address for the end points of the VPN tunnel. Optionally define CIDRs to exclude from the random selection, in order to avoid conflicts.",
+      "helpText": "Mist.io will choose 2 random IPv4 address for the end points of the VPN tunnel. Optionally define CIDRs to exclude from the random selection, in order to avoid conflicts.",
       "type": "string"
     },
     "protocols": {
       "id": "protocol",
       "type": "string",
-      "description": "Please choose the VPN tunnel's underlying protocol. This option may seem useful in case of security restrictions, such as protocol-specific, blocking firewall rules",
+      "helpText": "Please choose the VPN tunnel's underlying protocol. This option may seem useful in case of security restrictions, such as protocol-specific, blocking firewall rules",
       "format": "radioGroup",
       "enum": ["TCP", "UDP"]
     }
