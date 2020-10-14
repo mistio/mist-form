@@ -49,17 +49,10 @@
       "id": "gitRepo",
       "type": "string",
       "required": true,
+      "hidden": true,
       "value": "https://github.com/owner/repo",
       "helpText": "Please enter a git repo",
       "error-message": "Please enter a git repo"
-    },
-    "entryPoint": {
-      "label": "Entry point",
-      "id": "entryPoint",
-      "type": "string",
-      "required": true,
-      "helpText": "Please enter entry point",
-      "error-message": "Please enter entry point"
     },
     "url": {
       "label": "Url",
@@ -67,11 +60,21 @@
       "type": "string",
       "required": true,
       "value": "http://",
+      "hidden": "true",
       "helpText": "Please enter a url",
       "error-message": "Please enter a url"
     },
+    "entryPoint": {
+      "label": "Entry point",
+      "id": "entryPoint",
+      "type": "string",
+      "required": true,
+      "hidden": true,
+      "helpText": "Please enter entry point",
+      "error-message": "Please enter entry point"
+    },
     "template": {
-      "label": "Script",
+      "label": "Template",
       "id": "template",
       "type": "string",
       "format": "textarea",
@@ -86,5 +89,138 @@
       "type": "boolean",
       "helpText": "Enable to allow team members to run this template with owner rights."
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "catalogue": {
+            "const": "Kubernetes blueprint"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "name": {
+            "value": "Kubernetes blueprint"
+          },
+          "description": {
+            "value": "This template contains a cloud agnostic blueprint to deploy Kubernetes cluster through Mist.io"
+          },
+          "gitRepo": {
+            "value": "https://github.com/mistio/kubernetes-blueprint"
+          },
+          "entryPoint": {
+            "value": "blueprint.yaml"
+          },
+          "location_type": {
+            "value": "Git"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "catalogue": {
+            "const": "Cloudify Blueprint example"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "name": {
+            "value": "Cloudify Blueprint example"
+          },
+          "description": {
+            "value": "Simple Cloudify Blueprint example for provisioning resources through Mist.io"
+          },
+          "gitRepo": {
+            "value": "https://github.com/mistio/simple-resource-provisioning-blueprint"
+          },
+          "entryPoint": {
+            "value": "blueprint.yaml"
+          },
+          "location_type": {
+            "value": "Git"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "location_type": {
+            "const": "Git"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": true
+          },
+          "gitRepo": {
+            "hidden": false
+          },
+          "entryPoint": {
+            "hidden": false
+          },
+          "template": {
+            "hidden": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "location_type": {
+            "const": "URL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": false
+          },
+          "gitRepo": {
+            "hidden": true
+          },
+          "entryPoint": {
+            "hidden": false
+          },
+          "template": {
+            "hidden": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "location_type": {
+            "const": "Inline"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": true
+          },
+          "gitRepo": {
+            "hidden": true
+          },
+          "entryPoint": {
+            "hidden": true
+          },
+          "template": {
+            "hidden": false
+          }
+        }
+      }
+    }
+  ]
 }

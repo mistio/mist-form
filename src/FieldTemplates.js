@@ -29,9 +29,8 @@ export const FieldTemplates = {
     'paper-radio-group',
   ],
   dropdown: (name, props) => {
-    console.log('props ', props);
     return html`<paper-dropdown-menu
-      name=${name}
+      .name=${name}
       ...="${spreadProps(props)}"
       @value-changed=${function (e) {
         const fieldName = e.path[0].name;
@@ -51,19 +50,18 @@ export const FieldTemplates = {
   },
   radioGroup: (name, props) => html` <label>${props.label}</label>
     <paper-radio-group
-      name=${name}
+      .name=${name}
       ...="${spreadProps(props)}"
-      @value-changed=${function (e) {
+      @selected-changed=${function (e) {
         const fieldName = e.path[0].name;
         const { value } = e.detail;
-
         // TODO: Check why this event gets fired twice
         this.dispatchValueChangedEvent(fieldName, value);
       }}
     >
       ${props.enum.map(
         item =>
-          html`<paper-radio-button name=${item.split(' ').join('')}
+          html`<paper-radio-button .name=${item.split(' ').join('')}
             >${item}</paper-radio-button
           >`
       )}
@@ -80,7 +78,7 @@ export const FieldTemplates = {
 
     if (props.format === 'textarea') {
       return html`<paper-textarea
-        name=${name}
+        .name=${name}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
         .label="${props.required ? `${props.label} *` : props.label}"
@@ -88,7 +86,7 @@ export const FieldTemplates = {
     }
 
     return html`<paper-input
-      name=${name}
+      .name=${name}
       @invalid-changed=${function (e) {
         const fieldName = e.path[0].name;
         const { value } = e.detail;
@@ -108,7 +106,7 @@ export const FieldTemplates = {
     }
 
     return html`<paper-toggle-button
-      name=${name}
+      .name=${name}
       ...="${spreadProps(props)}"
       @checked-changed=${function (e) {
         const fieldName = e.path[0].name;

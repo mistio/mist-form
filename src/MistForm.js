@@ -60,15 +60,14 @@ export class MistForm extends LitElement {
       ]);
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
       const targetField = conditionMap[0][0];
-      const targetValue = conditionMap[0][1].enum || [conditionMap[0][1].const];
-      if (targetField === field && targetValue.includes(value)) {
+      const targetValues = conditionMap[0][1].enum || [
+        conditionMap[0][1].const,
+      ];
+      if (targetField === field && targetValues.includes(value)) {
         resultMap.forEach(obj => {
           for (const [key, val] of Object.entries(obj[1])) {
-            // Maybe I should return a new object instead of changing in place
-
             newData.properties[obj[0]][key] = val;
             newData.properties[obj[0]].selected = null;
-            // newData.properties[obj[0]].value = '';
           }
         });
       }
@@ -78,12 +77,15 @@ export class MistForm extends LitElement {
 
   // TODO: Style helpText better
   static _getTemplate(name, properties) {
-    return FieldTemplates[properties.type]
-      ? html`${FieldTemplates[properties.type](
-          name,
-          properties
-        )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
-      : console.error(`Invalid field type: ${properties.type}`);
+    if (!properties.hidden) {
+      return FieldTemplates[properties.type]
+        ? html`${FieldTemplates[properties.type](
+            name,
+            properties
+          )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
+        : console.error(`Invalid field type: ${properties.type}`);
+    }
+    return '';
   }
 
   static _displayCancelButton(canClose = true) {
@@ -128,7 +130,6 @@ export class MistForm extends LitElement {
   }
 
   render() {
-    console.log('in render');
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
