@@ -31,18 +31,14 @@ export class MistForm extends LitElement {
       .then(response => response.json())
       .then(data => {
         this.data = data;
+        Object.keys(data.properties).forEach(fieldName => {
+          this.fieldsValid[fieldName] = false;
+        });
       })
       .catch(error => {
         this.dataError = error;
         console.error('Error loading data:', error);
       });
-  }
-
-  toggleSubmitButton(fieldName, value) {
-    this.fieldsValid[fieldName] = value;
-    this.allFieldsValid = Object.values(this.fieldsValid).every(
-      val => val === true
-    );
   }
 
   _clearDropdown({ id, format }) {
@@ -60,6 +56,10 @@ export class MistForm extends LitElement {
 
   dispatchValueChangedEvent(field, value) {
     // TODO: Show and hide subforms
+    this.allFieldsValid = Object.values(this.fieldsValid).every(
+      val => val === true
+    );
+
     if (!this.data.allOf) {
       return;
     }
@@ -81,13 +81,20 @@ export class MistForm extends LitElement {
       if (targetField === field && targetValues.includes(value)) {
         update = true;
         resultMap.forEach(obj => {
+          const fieldName = obj[0];
           for (const [key, val] of Object.entries(obj[1])) {
-            this.data.properties[obj[0]][key] = val;
+            this.data.properties[fieldName][key] = val;
 
-            const props = this.data.properties[obj[0]];
-            console.log('props ', props);
+            const props = this.data.properties[fieldName];
             if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
               this._clearDropdown(props);
+            }
+            if (
+              key === 'hidden' &&
+              !val &&
+              !Object.prototype.hasOwnProperty.call(this, fieldName)
+            ) {
+              this.fieldsValid[fieldName] = false;
             }
           }
         });
@@ -111,12 +118,8 @@ export class MistForm extends LitElement {
     return '';
   }
 
-  static _displayCancelButton(canClose = true) {
-    if (canClose) {
-      return FieldTemplates.button('Cancel');
-    }
-    return '';
-  }
+  static _displayCancelButton = (canClose = true) =>
+    canClose ? FieldTemplates.button('Cancel') : '';
 
   _submitForm() {
     let allFieldsValid = true;
@@ -160,7 +163,14 @@ export class MistForm extends LitElement {
 
       return html`
         <div>${this.data.label}</div>
-        ${inputs.map(input => MistForm._getTemplate(input[0], input[1]))}
+        ${inputs.map(input => {
+          const name = input[0];
+          const properties = input[1];
+          if (properties.hidden) {
+            delete this.fieldsValid[name];
+          }
+          return MistForm._getTemplate(name, properties);
+        })}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button(
