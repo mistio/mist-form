@@ -23,7 +23,7 @@ const getConvertedProps = props => {
 const getLabel = props => (props.required ? `${props.label} *` : props.label);
 // TODO: Add radio group
 export const FieldTemplates = {
-  inputFields: [
+  getInputFields: () => [
     'paper-dropdown-menu',
     'paper-textarea',
     'paper-input',
@@ -36,11 +36,8 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
       @value-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
         // TODO: Check why this event gets fired twice sometimes, for instance when selecting a cloud
-        this.fieldsValid[fieldName] = e.path[0].validate(value);
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
     >
       <paper-listbox class="dropdown-content" slot="dropdown-content">
@@ -54,11 +51,7 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
       @selected-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        // TODO: Check why this event gets fired twice
-        this.fieldsValid[fieldName] = e.path[0].validate(value);
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
     >
       ${props.enum.map(
@@ -85,11 +78,7 @@ export const FieldTemplates = {
         ...="${spreadProps(getConvertedProps(props))}"
         .label="${getLabel(props)}"
         @value-changed=${function (e) {
-          const fieldName = e.path[0].name;
-          const { value } = e.detail;
-          // TODO: Check why this event gets fired twice
-          this.fieldsValid[fieldName] = e.path[0].validate(value);
-          this.dispatchValueChangedEvent(fieldName, value);
+          this.dispatchValueChangedEvent(e);
         }}
       ></paper-textarea>`;
     }
@@ -97,11 +86,7 @@ export const FieldTemplates = {
     return html`<paper-input
       .name=${name}
       @value-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        // TODO: Check why this event gets fired twice
-        this.fieldsValid[fieldName] = e.path[0].validate(value);
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
@@ -120,10 +105,7 @@ export const FieldTemplates = {
       .name=${name}
       ...="${spreadProps(props)}"
       @checked-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        this.fieldsValid[fieldName] = e.path[0].validate(value);
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
       value=""
       >${props.label}</paper-toggle-button

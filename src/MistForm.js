@@ -13,7 +13,6 @@ export class MistForm extends LitElement {
       data: { type: Object },
       dataError: { type: Object },
       allFieldsValid: { type: Boolean },
-      fieldsValid: { type: Object },
     };
   }
 
@@ -54,7 +53,10 @@ export class MistForm extends LitElement {
     }
   }
 
-  dispatchValueChangedEvent(field, value) {
+  dispatchValueChangedEvent(e) {
+    const field = e.path[0].name;
+    const { value } = e.detail;
+    this.fieldsValid[field] = e.path[0].validate(value);
     // TODO: Show and hide subforms
     this.allFieldsValid = Object.values(this.fieldsValid).every(
       val => val === true
@@ -125,7 +127,7 @@ export class MistForm extends LitElement {
     const params = [];
 
     this.shadowRoot
-      .querySelectorAll(FieldTemplates.inputFields.join(','))
+      .querySelectorAll(FieldTemplates.getInputFields().join(','))
       .forEach(input => {
         const isValid = input.validate();
         if (!isValid) {
