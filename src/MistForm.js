@@ -74,15 +74,14 @@ export class MistForm extends LitElement {
         condition[key],
       ]);
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
-      const targetField = conditionMap[0][0];
-      const targetValues = conditionMap[0][1].enum || [
-        conditionMap[0][1].const,
-      ];
-      if (targetField === field && targetValues.includes(value)) {
+      const [targetField, targetValues] = conditionMap[0];
+
+      const targetValuesArray = targetValues.enum || [targetValues.const];
+      if (targetField === field && targetValuesArray.includes(value)) {
         update = true;
         resultMap.forEach(obj => {
-          const fieldName = obj[0];
-          for (const [key, val] of Object.entries(obj[1])) {
+          const [fieldName, prop] = obj;
+          for (const [key, val] of Object.entries(prop)) {
             this.data.properties[fieldName][key] = val;
 
             const props = this.data.properties[fieldName];
@@ -164,8 +163,8 @@ export class MistForm extends LitElement {
       return html`
         <div>${this.data.label}</div>
         ${inputs.map(input => {
-          const name = input[0];
-          const properties = input[1];
+          const [name, properties] = input;
+
           if (properties.hidden) {
             delete this.fieldsValid[name];
           }
