@@ -49,14 +49,6 @@
       "error-message": "Please enter a github repo",
       "hidden": true
     },
-    "entryPoint": {
-      "label": "Entry point",
-      "id": "entryPoint",
-      "type": "string",
-      "placeholder": "main.yaml",
-      "helpText": "Specify the .yml entrypoint file, otherwise 'main.yml' will be used as default.",
-      "hidden": true
-    },
     "url": {
       "label": "Url",
       "id": "url",
@@ -65,6 +57,14 @@
       "placeholder": "http://",
       "helpText": "Specify the url where the script is located.",
       "error-message": "Please enter a url",
+      "hidden": true
+    },
+    "entryPoint": {
+      "label": "Entry point",
+      "id": "entryPoint",
+      "type": "string",
+      "placeholder": "main.yaml",
+      "helpText": "Specify the .yml entrypoint file, otherwise 'main.yml' will be used as default.",
       "hidden": true
     },
     "script": {
@@ -126,6 +126,12 @@
           },
           "entryPoint": {
             "hidden": false
+          },
+          "script": {
+            "hidden": true
+          },
+          "url": {
+            "hidden": true
           }
         }
       }
@@ -140,10 +146,16 @@
       },
       "then": {
         "properties": {
-          "url": {
-            "hidden": false
+          "githubRepo": {
+            "hidden": true
           },
           "entryPoint": {
+            "hidden": false
+          },
+          "script": {
+            "hidden": true
+          },
+          "url": {
             "hidden": false
           }
         }
@@ -159,8 +171,17 @@
       },
       "then": {
         "properties": {
+          "githubRepo": {
+            "hidden": true
+          },
+          "entryPoint": {
+            "hidden": true
+          },
           "script": {
             "hidden": false
+          },
+          "url": {
+            "hidden": true
           }
         }
       }
