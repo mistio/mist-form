@@ -56,7 +56,7 @@ export const FieldTemplates = {
     >
       ${props.enum.map(
         item =>
-          html`<paper-radio-button .name=${item.split(' ').join('')}
+          html`<paper-radio-button .id=${item.split(' ').join('-')}
             >${item}</paper-radio-button
           >`
       )}

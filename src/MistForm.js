@@ -46,7 +46,7 @@ export class MistForm extends LitElement {
       if (format === 'dropdown') {
         this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
       } else if (format === 'radioGroup') {
-        // TODO
+        // The radio button seems to be cleared without doing anything
       }
 
       this.shadowRoot.querySelector(`#${id}`).value = null;
@@ -56,7 +56,7 @@ export class MistForm extends LitElement {
   dispatchValueChangedEvent(e) {
     const field = e.path[0].name;
     const { value } = e.detail;
-    this.fieldsValid[field] = e.path[0].validate(value);
+    this.fieldsValid[field] = e.path[0].validate && e.path[0].validate(value);
     // TODO: Show and hide subforms
     this.allFieldsValid = Object.values(this.fieldsValid).every(
       val => val === true
