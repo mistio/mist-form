@@ -61,7 +61,7 @@ export const FieldTemplates = {
           >`
       )}
     </paper-radio-group>`,
-  string: (name, props) => {
+  string: (name, props, dynamicDataNamespace, cb) => {
     if (props.hidden) {
       return '';
     }
@@ -70,8 +70,19 @@ export const FieldTemplates = {
       const format = props.format || 'dropdown';
       return FieldTemplates[format](name, props);
     }
+    if (Object.prototype.hasOwnProperty.call(props, 'x-mist-enum')) {
+      // Excpect the response of a promise and then pass the values and render the dropdown
+      console.log('dynamicDataNamespace ', dynamicDataNamespace);
+      console.log("props['x-mist-enum'] ", props['x-mist-enum']);
 
-    if (props.format === 'textarea') {
+      dynamicDataNamespace[props['x-mist-enum']]
+        .then(enumData => {
+          cb(enumData);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    } else if (props.format === 'textarea') {
       return html`<paper-textarea
         .name=${name}
         always-float-label
@@ -81,20 +92,21 @@ export const FieldTemplates = {
           this.dispatchValueChangedEvent(e);
         }}
       ></paper-textarea>`;
+    } else {
+      return html`<paper-input
+        .name=${name}
+        @value-changed=${function (e) {
+          this.dispatchValueChangedEvent(e);
+        }}
+        always-float-label
+        ...="${spreadProps(getConvertedProps(props))}"
+        .label="${getLabel(props)}"
+      >
+        ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
+        ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+      </paper-input>`;
     }
-
-    return html`<paper-input
-      .name=${name}
-      @value-changed=${function (e) {
-        this.dispatchValueChangedEvent(e);
-      }}
-      always-float-label
-      ...="${spreadProps(getConvertedProps(props))}"
-      .label="${getLabel(props)}"
-    >
-      ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
-      ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
-    </paper-input>`;
+    return FieldTemplates.spinner;
   },
   boolean: (name, props) => {
     if (props.hidden) {

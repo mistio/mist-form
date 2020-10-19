@@ -84,6 +84,13 @@
       "autoValidate": true,
       "format": "radioGroup",
       "enum": ["Option 1", "Option 2", "Option 3"]
+    },
+    "dynamicData": {
+      "label": "Dynamic data",
+      "id": "order9",
+      "type": "string",
+      "format": "dropdown",
+      "x-mist-enum": "getTestData"
     }
   },
   "allOf": [
