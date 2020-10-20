@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="demo"></div>
+    <!-- Web-animations is a dependency for the paper-dropdown-menu/paper-listbox components -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.2/web-animations-next-lite.min.js"></script>
+    <script type="module">
+      import { html, render } from 'lit-html';
+      import '@polymer/paper-styles/typography.js';
+      import '@polymer/paper-styles/default-theme.js';
+      import '@polymer/paper-styles/shadow.js';
+      import '@polymer/paper-styles/demo-pages.js';
+      import '@polymer/paper-styles/color.js';
+      import '@polymer/paper-input/paper-input.js';
+      import '@polymer/paper-input/paper-textarea.js';
+      import '@polymer/paper-button/paper-button.js';
+      import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+      import '@polymer/paper-item/paper-item.js';
+      import '@polymer/paper-radio-group/paper-radio-group.js';
+      import '@polymer/paper-listbox/paper-listbox.js';
+      import '@polymer/paper-toggle-button/paper-toggle-button.js';
+      import '@polymer/paper-spinner/paper-spinner.js';
+      import '@polymer/iron-ajax/iron-ajax.js';
+      import '@polymer/paper-icon-button/paper-icon-button.js';
+      import '@polymer/iron-icons/iron-icons.js';
+      import '../../mist-form.js';
+
+      const jsonUrl = 'addScript.json';
+      const id = 'test-mist-form';
+      const method = 'POST';
+      const submitUrl = 'api/v1/clouds';
+      render(
+        html`<mist-form id=${id} .src=${jsonUrl} .method=${method}>
+          <iron-ajax
+            slot="formRequest"
+            id="formAjax"
+            .url="${submitUrl}"
+            .contentType="application/json"
+            .submit=${this}
+            @mist-form-request=${function (e) {
+              this.params = e.detail.params;
+              this.generateRequest();
+            }}
+            @response=${() => {
+              console.log('on response');
+            }}
+            @request=${() => {
+              console.log('on request');
+            }}
+            @error=${() => {
+              console.log('on error');
+            }}
+          ></iron-ajax>
+        </mist-form> `,
+        document.querySelector('#demo')
+      );
+    </script>
+  </body>
+</html>

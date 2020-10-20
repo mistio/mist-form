@@ -9,56 +9,21 @@
     </style>
   </head>
   <body>
-    <div id="demo"></div>
-
-    <script type="module">
-      import { html, render } from 'lit-html';
-      import '@polymer/paper-styles/typography.js';
-      import '@polymer/paper-styles/default-theme.js';
-      import '@polymer/paper-styles/shadow.js';
-      import '@polymer/paper-styles/demo-pages.js';
-      import '@polymer/paper-styles/color.js';
-      import '@polymer/paper-input/paper-input.js';
-      import '@polymer/paper-input/paper-textarea.js';
-      import '@polymer/paper-button/paper-button.js';
-      import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-      import '@polymer/paper-item/paper-item.js';
-      import '@polymer/paper-radio-group/paper-radio-group.js';
-      import '@polymer/paper-listbox/paper-listbox.js';
-      import '@polymer/paper-toggle-button/paper-toggle-button.js';
-      import '@polymer/paper-spinner/paper-spinner.js';
-      import '@polymer/iron-ajax/iron-ajax.js';
-      import '../mist-form.js';
-
-      const jsonUrl = 'space-camp-application.json';
-      const id = 'test-mist-form';
-      const method = 'POST';
-      const submitUrl = 'api/v1/clouds';
-      render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method}>
-          <iron-ajax
-            slot="formRequest"
-            id="formAjax"
-            .url="${submitUrl}"
-            .contentType="application/json"
-            .submit=${this}
-            @mist-form-request=${function (e) {
-              this.params = e.detail.params;
-              this.generateRequest();
-            }}
-            @response=${() => {
-              console.log('on response');
-            }}
-            @request=${() => {
-              console.log('on request');
-            }}
-            @error=${() => {
-              console.log('on error');
-            }}
-          ></iron-ajax>
-        </mist-form> `,
-        document.querySelector('#demo')
-      );
-    </script>
+    <div id="demo-index"></div>
+    <h2><a href="keys/addKey.html" target="_blank">Add Key form</a></h2>
+    <h2>
+      <a href="scripts/addScript.html" target="_blank">Add Script form</a>
+    </h2>
+    <h2><a href="teams/addTeam.html" target="_blank">Add Team form</a></h2>
+    <h2>
+      <a href="templates/addTemplate.html" target="_blank">Add Template form</a>
+    </h2>
+    <h2>
+      <a href="tunnels/addTunnel.html" target="_blank">Add Tunnel form</a>
+    </h2>
+    <h2>
+      <a href="volumes/createVolume.html" target="_blank">Create Volume form</a>
+    </h2>
+    <h2><a href="demo.html" target="_blank">Demo form with dummy data</a></h2>
   </body>
 </html>

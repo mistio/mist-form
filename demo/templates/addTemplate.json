@@ -1,0 +1,226 @@
+{
+  "type": "object",
+  "id": "add-template-form",
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "label": "Add Template",
+  "description": "Only TOSCA based templates are currently supported.",
+  "submitButtonLabel": "Add",
+  "canClose": false,
+  "additionalProperties": false,
+  "properties": {
+    "catalogue": {
+      "label": "Catalogue Templates",
+      "id": "catalogue",
+      "type": "string",
+      "enum": ["Kubernetes blueprint", "Cloudify Blueprint example"],
+      "alwaysFloatLabel": true,
+      "helpText": "You can optionally select from our template catalogue."
+    },
+    "name": {
+      "label": "Template Name",
+      "id": "name",
+      "type": "string",
+      "required": true,
+      "error-message": "Please enter template's name"
+    },
+    "description": {
+      "label": "Template Description",
+      "id": "description",
+      "helpText": "Please enter template's description",
+      "type": "string"
+    },
+    "type": {
+      "label": "Type",
+      "id": "type",
+      "helpText": "Please enter template's exec_type",
+      "required": true,
+      "type": "string",
+      "enum": ["Cloudify Blueprint"]
+    },
+    "location_type": {
+      "id": "location_type",
+      "type": "string",
+      "helpText": "Please enter template's location_type",
+      "format": "radioGroup",
+      "enum": ["Git", "URL", "Inline"]
+    },
+    "gitRepo": {
+      "label": "Git Repo",
+      "id": "gitRepo",
+      "type": "string",
+      "required": true,
+      "hidden": true,
+      "value": "https://github.com/owner/repo",
+      "helpText": "Please enter a git repo",
+      "error-message": "Please enter a git repo"
+    },
+    "url": {
+      "label": "Url",
+      "id": "url",
+      "type": "string",
+      "required": true,
+      "value": "http://",
+      "hidden": "true",
+      "helpText": "Please enter a url",
+      "error-message": "Please enter a url"
+    },
+    "entryPoint": {
+      "label": "Entry point",
+      "id": "entryPoint",
+      "type": "string",
+      "required": true,
+      "hidden": true,
+      "helpText": "Please enter entry point",
+      "error-message": "Please enter entry point"
+    },
+    "template": {
+      "label": "Template",
+      "id": "template",
+      "type": "string",
+      "format": "textarea",
+      "required": true,
+      "helpText": "Please enter inline template",
+      "error-message": "Please enter inline template",
+      "hidden": true
+    },
+    "runAsOwner": {
+      "label": "Let run as owner",
+      "id": "runAsOwner",
+      "type": "boolean",
+      "helpText": "Enable to allow team members to run this template with owner rights."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "catalogue": {
+            "const": "Kubernetes blueprint"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "name": {
+            "value": "Kubernetes blueprint"
+          },
+          "description": {
+            "value": "This template contains a cloud agnostic blueprint to deploy Kubernetes cluster through Mist.io"
+          },
+          "gitRepo": {
+            "value": "https://github.com/mistio/kubernetes-blueprint"
+          },
+          "entryPoint": {
+            "value": "blueprint.yaml"
+          },
+          "location_type": {
+            "value": "Git"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "catalogue": {
+            "const": "Cloudify Blueprint example"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "name": {
+            "value": "Cloudify Blueprint example"
+          },
+          "description": {
+            "value": "Simple Cloudify Blueprint example for provisioning resources through Mist.io"
+          },
+          "gitRepo": {
+            "value": "https://github.com/mistio/simple-resource-provisioning-blueprint"
+          },
+          "entryPoint": {
+            "value": "blueprint.yaml"
+          },
+          "location_type": {
+            "value": "Git"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "location_type": {
+            "const": "Git"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": true
+          },
+          "gitRepo": {
+            "hidden": false
+          },
+          "entryPoint": {
+            "hidden": false
+          },
+          "template": {
+            "hidden": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "location_type": {
+            "const": "URL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": false
+          },
+          "gitRepo": {
+            "hidden": true
+          },
+          "entryPoint": {
+            "hidden": false
+          },
+          "template": {
+            "hidden": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "location_type": {
+            "const": "Inline"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": true
+          },
+          "gitRepo": {
+            "hidden": true
+          },
+          "entryPoint": {
+            "hidden": true
+          },
+          "template": {
+            "hidden": false
+          }
+        }
+      }
+    }
+  ]
+}

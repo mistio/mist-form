@@ -1,0 +1,169 @@
+{
+  "type": "object",
+  "id": "add-script-form",
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "label": "Add Script",
+  "description": "You can add scripts inline or from a url.",
+  "submitButtonLabel": "Add",
+  "canClose": false,
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "label": "Script Name",
+      "id": "name",
+      "type": "string",
+      "required": true,
+      "alwaysFloatLabel": true
+    },
+    "description": {
+      "label": "Script Description",
+      "id": "description",
+      "type": "string"
+    },
+    "type": {
+      "label": "Type",
+      "id": "type",
+      "type": "string",
+      "enum": ["Executable", "Ansible Playbook"],
+      "required": true,
+      "noLabelFloat": true,
+      "helpText": "Choose the type of your script. Consult the docs, on adding your scripts",
+      "helpUrl": "https://docs.mist.io/category/57-executable-scripts"
+    },
+    "source": {
+      "label": "Source",
+      "id": "source",
+      "type": "string",
+      "enum": ["Github", "URL", "Inline"],
+      "required": true,
+      "noLabelFloat": true,
+      "helpText": "Specify the type of your script source."
+    },
+    "githubRepo": {
+      "label": "Github Repo",
+      "id": "githubRepo",
+      "type": "string",
+      "required": true,
+      "placeholder": "https://github.com/owner/repo",
+      "helpText": "Specify the github repo where the script is located.",
+      "error-message": "Please enter a github repo",
+      "hidden": true
+    },
+    "entryPoint": {
+      "label": "Entry point",
+      "id": "entryPoint",
+      "type": "string",
+      "placeholder": "main.yaml",
+      "helpText": "Specify the .yml entrypoint file, otherwise 'main.yml' will be used as default.",
+      "hidden": true
+    },
+    "url": {
+      "label": "Url",
+      "id": "url",
+      "type": "string",
+      "required": true,
+      "placeholder": "http://",
+      "helpText": "Specify the url where the script is located.",
+      "error-message": "Please enter a url",
+      "hidden": true
+    },
+    "script": {
+      "label": "Script",
+      "id": "script",
+      "type": "string",
+      "format": "textarea",
+      "required": true,
+      "helpText": "Copy paste your script. Make sure the script's format is alligned to the examples",
+      "error-message": "Please enter inline script",
+      "hidden": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "Executable"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "script": {
+            "value": "- name: Dummy ansible playbook \nhosts: localhost\ntasks:\n- name: Dummy task\ndebug:\nmsg: 'Hello World'"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "script": {
+            "const": "Ansible Playbook"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "script": {
+            "value": "#!/bin/bash\necho 'hello world'"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "Github"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "githubRepo": {
+            "hidden": false
+          },
+          "entryPoint": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "URL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "hidden": false
+          },
+          "entryPoint": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "Inline"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "script": {
+            "hidden": false
+          }
+        }
+      }
+    }
+  ]
+}

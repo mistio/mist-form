@@ -45,16 +45,25 @@ export class MistForm extends LitElement {
     );
   }
 
-  _clearDropdown(id) {
+  _clearDropdown({ id, format }) {
     // TODO: Check if I need to do this for radio buttons
     if (this.shadowRoot.querySelector(`#${id}`)) {
-      this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
+      if (format === 'dropdown') {
+        this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
+      } else if (format === 'radioGroup') {
+        // TODO
+      }
+
       this.shadowRoot.querySelector(`#${id}`).value = null;
     }
   }
 
   dispatchValueChangedEvent(field, value) {
     // TODO: Show and hide subforms
+    if (!this.data.allOf) {
+      return;
+    }
+
     let update = false;
 
     this.data.allOf.forEach(conditional => {
@@ -66,16 +75,19 @@ export class MistForm extends LitElement {
       ]);
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
       const targetField = conditionMap[0][0];
-      const targetValue = conditionMap[0][1].enum || [conditionMap[0][1].const];
-      if (targetField === field && targetValue.includes(value)) {
+      const targetValues = conditionMap[0][1].enum || [
+        conditionMap[0][1].const,
+      ];
+      if (targetField === field && targetValues.includes(value)) {
         update = true;
         resultMap.forEach(obj => {
           for (const [key, val] of Object.entries(obj[1])) {
             this.data.properties[obj[0]][key] = val;
 
             const props = this.data.properties[obj[0]];
+            console.log('props ', props);
             if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
-              this._clearDropdown(props.id);
+              this._clearDropdown(props);
             }
           }
         });
@@ -86,10 +98,17 @@ export class MistForm extends LitElement {
     }
   }
 
+  // TODO: Style helpText better
   static _getTemplate(name, properties) {
-    return FieldTemplates[properties.type]
-      ? FieldTemplates[properties.type](name, properties)
-      : console.error(`Invalid field type: ${properties.type}`);
+    if (!properties.hidden) {
+      return FieldTemplates[properties.type]
+        ? html`${FieldTemplates[properties.type](
+            name,
+            properties
+          )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
+        : console.error(`Invalid field type: ${properties.type}`);
+    }
+    return '';
   }
 
   static _displayCancelButton(canClose = true) {
@@ -145,7 +164,7 @@ export class MistForm extends LitElement {
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button(
-            'Submit',
+            this.data.submitButtonLabel || 'Submit',
             this._submitForm,
             !this.allFieldsValid
           )}
