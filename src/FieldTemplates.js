@@ -71,16 +71,13 @@ export const FieldTemplates = {
       return FieldTemplates[format](name, props);
     }
     if (Object.prototype.hasOwnProperty.call(props, 'x-mist-enum')) {
-      // Excpect the response of a promise and then pass the values and render the dropdown
-      console.log('dynamicDataNamespace ', dynamicDataNamespace);
-      console.log("props['x-mist-enum'] ", props['x-mist-enum']);
-
+      // Expect the response of a promise and then pass the values and render the dropdown
       dynamicDataNamespace[props['x-mist-enum']]
         .then(enumData => {
           cb(enumData);
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.error('Error loading dynamic data: ', error);
         });
     } else if (props.format === 'textarea') {
       return html`<paper-textarea

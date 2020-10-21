@@ -118,7 +118,6 @@ export class MistForm extends LitElement {
             enumData => {
               this.data.properties[name].enum = enumData;
               this.requestUpdate();
-              console.log('enumData ', enumData);
             }
           )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
         : console.error(`Invalid field type: ${properties.type}`);
@@ -164,7 +163,6 @@ export class MistForm extends LitElement {
   }
 
   render() {
-    console.log('render ');
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
