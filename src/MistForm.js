@@ -13,7 +13,6 @@ export class MistForm extends LitElement {
       data: { type: Object },
       dataError: { type: Object },
       allFieldsValid: { type: Boolean },
-      fieldsValid: { type: Object },
     };
   }
 
@@ -31,18 +30,14 @@ export class MistForm extends LitElement {
       .then(response => response.json())
       .then(data => {
         this.data = data;
+        Object.keys(data.properties).forEach(fieldName => {
+          this.fieldsValid[fieldName] = false;
+        });
       })
       .catch(error => {
         this.dataError = error;
         console.error('Error loading data:', error);
       });
-  }
-
-  toggleSubmitButton(fieldName, value) {
-    this.fieldsValid[fieldName] = value;
-    this.allFieldsValid = Object.values(this.fieldsValid).every(
-      val => val === true
-    );
   }
 
   _clearDropdown({ id, format }) {
@@ -51,15 +46,22 @@ export class MistForm extends LitElement {
       if (format === 'dropdown') {
         this.shadowRoot.querySelector(`#${id} paper-listbox`).selected = null;
       } else if (format === 'radioGroup') {
-        // TODO
+        // The radio button seems to be cleared without doing anything
       }
 
       this.shadowRoot.querySelector(`#${id}`).value = null;
     }
   }
 
-  dispatchValueChangedEvent(field, value) {
+  dispatchValueChangedEvent(e) {
+    const field = e.path[0].name;
+    const { value } = e.detail;
+    this.fieldsValid[field] = e.path[0].validate && e.path[0].validate(value);
     // TODO: Show and hide subforms
+    this.allFieldsValid = Object.values(this.fieldsValid).every(
+      val => val === true
+    );
+
     if (!this.data.allOf) {
       return;
     }
@@ -74,20 +76,26 @@ export class MistForm extends LitElement {
         condition[key],
       ]);
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
-      const targetField = conditionMap[0][0];
-      const targetValues = conditionMap[0][1].enum || [
-        conditionMap[0][1].const,
-      ];
-      if (targetField === field && targetValues.includes(value)) {
+      const [targetField, targetValues] = conditionMap[0];
+
+      const targetValuesArray = targetValues.enum || [targetValues.const];
+      if (targetField === field && targetValuesArray.includes(value)) {
         update = true;
         resultMap.forEach(obj => {
-          for (const [key, val] of Object.entries(obj[1])) {
-            this.data.properties[obj[0]][key] = val;
+          const [fieldName, prop] = obj;
+          for (const [key, val] of Object.entries(prop)) {
+            this.data.properties[fieldName][key] = val;
 
-            const props = this.data.properties[obj[0]];
-            console.log('props ', props);
+            const props = this.data.properties[fieldName];
             if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
               this._clearDropdown(props);
+            }
+            if (
+              key === 'hidden' &&
+              !val &&
+              !Object.prototype.hasOwnProperty.call(this, fieldName)
+            ) {
+              this.fieldsValid[fieldName] = false;
             }
           }
         });
@@ -111,19 +119,15 @@ export class MistForm extends LitElement {
     return '';
   }
 
-  static _displayCancelButton(canClose = true) {
-    if (canClose) {
-      return FieldTemplates.button('Cancel');
-    }
-    return '';
-  }
+  static _displayCancelButton = (canClose = true) =>
+    canClose ? FieldTemplates.button('Cancel') : '';
 
   _submitForm() {
     let allFieldsValid = true;
     const params = [];
 
     this.shadowRoot
-      .querySelectorAll(FieldTemplates.inputFields.join(','))
+      .querySelectorAll(FieldTemplates.getInputFields().join(','))
       .forEach(input => {
         const isValid = input.validate();
         if (!isValid) {
@@ -160,7 +164,14 @@ export class MistForm extends LitElement {
 
       return html`
         <div>${this.data.label}</div>
-        ${inputs.map(input => MistForm._getTemplate(input[0], input[1]))}
+        ${inputs.map(input => {
+          const [name, properties] = input;
+
+          if (properties.hidden) {
+            delete this.fieldsValid[name];
+          }
+          return MistForm._getTemplate(name, properties);
+        })}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button(

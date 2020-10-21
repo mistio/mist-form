@@ -19,9 +19,11 @@ const getConvertedProps = props => {
 
   return newProps;
 };
+
+const getLabel = props => (props.required ? `${props.label} *` : props.label);
 // TODO: Add radio group
 export const FieldTemplates = {
-  inputFields: [
+  getInputFields: () => [
     'paper-dropdown-menu',
     'paper-textarea',
     'paper-input',
@@ -32,11 +34,10 @@ export const FieldTemplates = {
     return html`<paper-dropdown-menu
       .name=${name}
       ...="${spreadProps(props)}"
+      .label="${getLabel(props)}"
       @value-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
         // TODO: Check why this event gets fired twice sometimes, for instance when selecting a cloud
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
     >
       <paper-listbox class="dropdown-content" slot="dropdown-content">
@@ -44,20 +45,18 @@ export const FieldTemplates = {
       </paper-listbox>
     </paper-dropdown-menu>`;
   },
-  radioGroup: (name, props) => html` <label>${props.label}</label>
+  radioGroup: (name, props) => html` <label>${getLabel(props)}</label>
     <paper-radio-group
       .name=${name}
       ...="${spreadProps(props)}"
+      .label="${getLabel(props)}"
       @selected-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        // TODO: Check why this event gets fired twice
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
     >
       ${props.enum.map(
         item =>
-          html`<paper-radio-button .name=${item.split(' ').join('')}
+          html`<paper-radio-button .id=${item.split(' ').join('-')}
             >${item}</paper-radio-button
           >`
       )}
@@ -77,20 +76,21 @@ export const FieldTemplates = {
         .name=${name}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
-        .label="${props.required ? `${props.label} *` : props.label}"
+        .label="${getLabel(props)}"
+        @value-changed=${function (e) {
+          this.dispatchValueChangedEvent(e);
+        }}
       ></paper-textarea>`;
     }
 
     return html`<paper-input
       .name=${name}
-      @invalid-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        this.toggleSubmitButton(fieldName, !value);
+      @value-changed=${function (e) {
+        this.dispatchValueChangedEvent(e);
       }}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
-      .label="${props.required ? `${props.label} *` : props.label}"
+      .label="${getLabel(props)}"
     >
       ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
       ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
@@ -105,9 +105,7 @@ export const FieldTemplates = {
       .name=${name}
       ...="${spreadProps(props)}"
       @checked-changed=${function (e) {
-        const fieldName = e.path[0].name;
-        const { value } = e.detail;
-        this.dispatchValueChangedEvent(fieldName, value);
+        this.dispatchValueChangedEvent(e);
       }}
       value=""
       >${props.label}</paper-toggle-button
