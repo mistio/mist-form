@@ -66,7 +66,7 @@ export const FieldTemplates = {
       return FieldTemplates[format](name, props, mistForm);
     }
     if (Object.prototype.hasOwnProperty.call(props, 'x-mist-enum')) {
-      // Expect the response of a promise and then pass the values and render the dropdown
+      // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
       mistForm.dynamicDataNamespace[props['x-mist-enum']]
         .then(enumData => {
           cb(enumData);
