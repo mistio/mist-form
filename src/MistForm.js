@@ -114,7 +114,7 @@ export class MistForm extends LitElement {
         ? html`${FieldTemplates[properties.type](
             name,
             properties,
-            this.dynamicDataNamespace,
+            this,
             enumData => {
               this.data.properties[name].enum = enumData;
               this.requestUpdate();
