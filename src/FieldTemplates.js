@@ -30,29 +30,24 @@ export const FieldTemplates = {
     'paper-toggle-button',
     'paper-radio-group',
   ],
-  dropdown: (name, props) => {
+  dropdown: (name, props, mistForm) => {
     return html`<paper-dropdown-menu
       .name=${name}
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
-      @value-changed=${function (e) {
-        // TODO: Check why this event gets fired twice sometimes, for instance when selecting a cloud
-        this.dispatchValueChangedEvent(e);
-      }}
+      @value-changed=${mistForm.dispatchValueChangedEvent}
     >
       <paper-listbox class="dropdown-content" slot="dropdown-content">
         ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
       </paper-listbox>
     </paper-dropdown-menu>`;
   },
-  radioGroup: (name, props) => html` <label>${getLabel(props)}</label>
+  radioGroup: (name, props, mistForm) => html` <label>${getLabel(props)}</label>
     <paper-radio-group
       .name=${name}
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
-      @selected-changed=${function (e) {
-        this.dispatchValueChangedEvent(e);
-      }}
+      @selected-changed=${mistForm.dispatchValueChangedEvent}
     >
       ${props.enum.map(
         item =>
@@ -61,42 +56,47 @@ export const FieldTemplates = {
           >`
       )}
     </paper-radio-group>`,
-  string: (name, props) => {
+  string: (name, props, mistForm, cb) => {
     if (props.hidden) {
       return '';
     }
     // Value doesn't get updated when options change
     if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
       const format = props.format || 'dropdown';
-      return FieldTemplates[format](name, props);
+      return FieldTemplates[format](name, props, mistForm);
     }
-
-    if (props.format === 'textarea') {
+    if (Object.prototype.hasOwnProperty.call(props, 'x-mist-enum')) {
+      // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
+      mistForm.dynamicDataNamespace[props['x-mist-enum']]
+        .then(enumData => {
+          cb(enumData);
+        })
+        .catch(error => {
+          console.error('Error loading dynamic data: ', error);
+        });
+    } else if (props.format === 'textarea') {
       return html`<paper-textarea
         .name=${name}
         always-float-label
         ...="${spreadProps(getConvertedProps(props))}"
         .label="${getLabel(props)}"
-        @value-changed=${function (e) {
-          this.dispatchValueChangedEvent(e);
-        }}
+        @value-changed=${mistForm.dispatchValueChangedEvent}
       ></paper-textarea>`;
+    } else {
+      return html`<paper-input
+        .name=${name}
+        @value-changed=${mistForm.dispatchValueChangedEvent}
+        always-float-label
+        ...="${spreadProps(getConvertedProps(props))}"
+        .label="${getLabel(props)}"
+      >
+        ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
+        ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+      </paper-input>`;
     }
-
-    return html`<paper-input
-      .name=${name}
-      @value-changed=${function (e) {
-        this.dispatchValueChangedEvent(e);
-      }}
-      always-float-label
-      ...="${spreadProps(getConvertedProps(props))}"
-      .label="${getLabel(props)}"
-    >
-      ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
-      ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
-    </paper-input>`;
+    return FieldTemplates.spinner;
   },
-  boolean: (name, props) => {
+  boolean: (name, props, mistForm) => {
     if (props.hidden) {
       return '';
     }
@@ -104,9 +104,7 @@ export const FieldTemplates = {
     return html`<paper-toggle-button
       .name=${name}
       ...="${spreadProps(props)}"
-      @checked-changed=${function (e) {
-        this.dispatchValueChangedEvent(e);
-      }}
+      @checked-changed=${mistForm.dispatchValueChangedEvent}
       value=""
       >${props.label}</paper-toggle-button
     >`;

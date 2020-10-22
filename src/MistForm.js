@@ -10,6 +10,7 @@ export class MistForm extends LitElement {
   static get properties() {
     return {
       src: { type: String },
+      dynamicDataNamespace: { type: String },
       data: { type: Object },
       dataError: { type: Object },
       allFieldsValid: { type: Boolean },
@@ -107,12 +108,17 @@ export class MistForm extends LitElement {
   }
 
   // TODO: Style helpText better
-  static _getTemplate(name, properties) {
+  _getTemplate(name, properties) {
     if (!properties.hidden) {
       return FieldTemplates[properties.type]
         ? html`${FieldTemplates[properties.type](
             name,
-            properties
+            properties,
+            this,
+            enumData => {
+              this.data.properties[name].enum = enumData;
+              this.requestUpdate();
+            }
           )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
         : console.error(`Invalid field type: ${properties.type}`);
     }
@@ -170,7 +176,7 @@ export class MistForm extends LitElement {
           if (properties.hidden) {
             delete this.fieldsValid[name];
           }
-          return MistForm._getTemplate(name, properties);
+          return this._getTemplate(name, properties);
         })}
         <div>
           ${MistForm._displayCancelButton(this.data.canClose)}
