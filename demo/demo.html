@@ -35,7 +35,9 @@
       const dynaData = {
         getTestData: new Promise((resolve, reject) => {
           setTimeout(function () {
-            resolve(['one', 'two']);
+            resolve(formValues => {
+              return [formValues.title || 'title', formValues.age || 'age'];
+            });
           }, 2500);
         }),
       };

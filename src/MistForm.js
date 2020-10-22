@@ -14,12 +14,14 @@ export class MistForm extends LitElement {
       data: { type: Object },
       dataError: { type: Object },
       allFieldsValid: { type: Boolean },
+      formValues: { type: Object },
     };
   }
 
   constructor() {
     super();
     this.fieldsValid = {};
+    this.formValues = {};
   }
 
   firstUpdated() {
@@ -54,15 +56,21 @@ export class MistForm extends LitElement {
     }
   }
 
-  dispatchValueChangedEvent(e) {
-    const field = e.path[0].name;
-    const { value } = e.detail;
-    this.fieldsValid[field] = e.path[0].validate && e.path[0].validate(value);
+  updateState(field, value, el) {
+    this.formValues[field] = value;
+    this.fieldsValid[field] = el.validate && el.validate(value);
     // TODO: Show and hide subforms
     this.allFieldsValid = Object.values(this.fieldsValid).every(
       val => val === true
     );
+  }
 
+  dispatchValueChangedEvent(e) {
+    const el = e.path[0];
+    const field = el.name;
+    const { value } = e.detail;
+
+    this.updateState(field, value, el);
     if (!this.data.allOf) {
       return;
     }
@@ -78,8 +86,8 @@ export class MistForm extends LitElement {
       ]);
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
       const [targetField, targetValues] = conditionMap[0];
-
       const targetValuesArray = targetValues.enum || [targetValues.const];
+
       if (targetField === field && targetValuesArray.includes(value)) {
         update = true;
         resultMap.forEach(obj => {
