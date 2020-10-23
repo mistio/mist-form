@@ -22,15 +22,6 @@ const getConvertedProps = props => {
 
 const getLabel = props => (props.required ? `${props.label} *` : props.label);
 
-function loadDynamicData(mistForm, props, cb) {
-  mistForm.dynamicDataNamespace[props['x-mist-enum']]
-    .then(getEnumData => {
-      cb(getEnumData(mistForm.formValues));
-    })
-    .catch(error => {
-      console.error('Error loading dynamic data: ', error);
-    });
-}
 // TODO: Add radio group
 export const FieldTemplates = {
   getInputFields: () => [
@@ -49,7 +40,7 @@ export const FieldTemplates = {
     const hasEnum = Object.prototype.hasOwnProperty.call(props, 'enum');
     if (isDynamic && !hasEnum) {
       // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
-      loadDynamicData(mistForm, props, cb);
+      mistForm.loadDynamicData(props, cb);
     } else if (hasEnum) {
       const format = props.format || 'dropdown';
       return FieldTemplates[format](name, props, mistForm);

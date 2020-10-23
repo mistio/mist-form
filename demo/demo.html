@@ -33,13 +33,17 @@
       import '../mist-form.js';
 
       const dynaData = {
-        getTestData: new Promise((resolve, reject) => {
-          setTimeout(function () {
-            resolve(formValues => {
-              return [formValues.title || 'title', formValues.age || 'age'];
-            });
-          }, 2500);
-        }),
+        getTestData: {
+          func: new Promise((resolve, reject) => {
+            setTimeout(function () {
+              resolve(formValues => {
+                console.log('formValues ', formValues);
+                return [formValues.title || 'title', formValues.age || 'age'];
+              });
+            }, 2500);
+          }),
+          dependencies: ['title', 'age'],
+        },
       };
       const jsonUrl = 'space-camp-application.json';
       const id = 'test-mist-form';

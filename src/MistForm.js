@@ -4,7 +4,7 @@ import { FieldTemplates } from './FieldTemplates.js';
 // TODO: Clean up code when I'm done
 // - Check if I actually need some functions to be static
 // - Follow the same naming convention for functions
-// -...
+// - Convert data.properties to array for easier handling
 
 export class MistForm extends LitElement {
   static get properties() {
@@ -33,6 +33,7 @@ export class MistForm extends LitElement {
       .then(response => response.json())
       .then(data => {
         this.data = data;
+
         Object.keys(data.properties).forEach(fieldName => {
           this.fieldsValid[fieldName] = false;
         });
@@ -65,17 +66,69 @@ export class MistForm extends LitElement {
     );
   }
 
+  updateFormByConditions(obj) {
+    const [fieldName, prop] = obj;
+    for (const [key, val] of Object.entries(prop)) {
+      this.data.properties[fieldName][key] = val;
+
+      const props = this.data.properties[fieldName];
+      if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
+        this._clearDropdown(props);
+      }
+      if (
+        key === 'hidden' &&
+        !val &&
+        !Object.prototype.hasOwnProperty.call(this, fieldName)
+      ) {
+        this.fieldsValid[fieldName] = false;
+      }
+    }
+  }
+
+  loadDynamicData(props, cb) {
+    this.dynamicDataNamespace[props['x-mist-enum']].func
+      .then(getEnumData => {
+        cb(getEnumData(this.formValues));
+      })
+      .catch(error => {
+        console.error('Error loading dynamic data: ', error);
+      });
+  }
+
+  updateDynamicData(field) {
+    const props = this.data.properties;
+    for (const [key, val] of Object.entries(props)) {
+      const isDynamic = Object.prototype.hasOwnProperty.call(
+        val,
+        'x-mist-enum'
+      );
+
+      const isDependantOnField =
+        isDynamic &&
+        this.dynamicDataNamespace[
+          props[key]['x-mist-enum']
+        ].dependencies.includes(field);
+      if (isDependantOnField) {
+        this.loadDynamicData(val, enumData => {
+          this.data.properties[key].enum = enumData;
+          this.requestUpdate();
+        });
+      }
+    }
+  }
+
   dispatchValueChangedEvent(e) {
+    // TODO: Debounce the event, especially when it comes from text input fields
     const el = e.path[0];
     const field = el.name;
     const { value } = e.detail;
+    let update = false;
 
     this.updateState(field, value, el);
+    this.updateDynamicData(field);
     if (!this.data.allOf) {
       return;
     }
-
-    let update = false;
 
     this.data.allOf.forEach(conditional => {
       const condition = conditional.if.properties;
@@ -91,22 +144,7 @@ export class MistForm extends LitElement {
       if (targetField === field && targetValuesArray.includes(value)) {
         update = true;
         resultMap.forEach(obj => {
-          const [fieldName, prop] = obj;
-          for (const [key, val] of Object.entries(prop)) {
-            this.data.properties[fieldName][key] = val;
-
-            const props = this.data.properties[fieldName];
-            if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
-              this._clearDropdown(props);
-            }
-            if (
-              key === 'hidden' &&
-              !val &&
-              !Object.prototype.hasOwnProperty.call(this, fieldName)
-            ) {
-              this.fieldsValid[fieldName] = false;
-            }
-          }
+          this.updateFormByConditions(obj);
         });
       }
     });
