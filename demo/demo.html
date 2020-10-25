@@ -37,7 +37,6 @@
           func: new Promise((resolve, reject) => {
             setTimeout(function () {
               resolve(formValues => {
-                console.log('formValues ', formValues);
                 return [formValues.title || 'title', formValues.age || 'age'];
               });
             }, 2500);

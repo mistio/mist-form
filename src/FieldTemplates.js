@@ -22,7 +22,6 @@ const getConvertedProps = props => {
 
 const getLabel = props => (props.required ? `${props.label} *` : props.label);
 
-// TODO: Add radio group
 export const FieldTemplates = {
   getInputFields: () => [
     'paper-dropdown-menu',
@@ -32,20 +31,23 @@ export const FieldTemplates = {
     'paper-radio-group',
   ],
   string(name, props, mistForm, cb) {
-    // Value doesn't get updated when options change
     const isDynamic = Object.prototype.hasOwnProperty.call(
       props,
       'x-mist-enum'
     );
     const hasEnum = Object.prototype.hasOwnProperty.call(props, 'enum');
+    // If a field has dynamic data, load the data and then re-render as a normal dropdown
     if (isDynamic && !hasEnum) {
       // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
       mistForm.loadDynamicData(props, cb);
+      // Dropdown
     } else if (hasEnum) {
       const format = props.format || 'dropdown';
       return FieldTemplates[format](name, props, mistForm);
+      // Text area
     } else if (props.format === 'textarea') {
       return this.textArea(name, props, mistForm);
+      // Input field
     } else {
       return this.input(name, props, mistForm);
     }
@@ -108,10 +110,10 @@ export const FieldTemplates = {
     ?disabled=${isDisabled}
     >${title}</paper-button
   >`,
-  helpText: (url, text) =>
-    url
+  helpText: ({ helpUrl, helpText }) =>
+    helpUrl
       ? html` <div>
-          ${text}<a href="${url}" target="new">
+          ${helpText}<a href="${helpUrl}" target="new">
             <paper-icon-button
               icon="icons:help"
               alt="open docs"
@@ -121,5 +123,5 @@ export const FieldTemplates = {
             </paper-icon-button>
           </a>
         </div>`
-      : html`<div>${text}</div>`,
+      : html`<div>${helpText}</div>`,
 };

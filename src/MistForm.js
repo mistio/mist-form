@@ -2,9 +2,15 @@ import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
 
 // TODO: Clean up code when I'm done
-// - Check if I actually need some functions to be static
-// - Follow the same naming convention for functions
 // - Convert data.properties to array for easier handling
+
+const displayCancelButton = (canClose = true) =>
+  canClose ? FieldTemplates.button('Cancel') : '';
+
+const getFieldValue = input => ({
+  [input.id]:
+    input.getAttribute('role') === 'checkbox' ? input.checked : input.value,
+});
 
 export class MistForm extends LitElement {
   static get properties() {
@@ -13,22 +19,13 @@ export class MistForm extends LitElement {
       dynamicDataNamespace: { type: String },
       data: { type: Object },
       dataError: { type: Object },
-      allFieldsValid: { type: Boolean },
+      allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button
       formValues: { type: Object },
     };
   }
 
-  constructor() {
-    super();
-    this.fieldsValid = {};
-    this.formValues = {};
-  }
-
-  firstUpdated() {
-    this._getJSON(this.src);
-  }
-
-  _getJSON(url) {
+  // "Private" Methods
+  getJSON(url) {
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -44,7 +41,7 @@ export class MistForm extends LitElement {
       });
   }
 
-  _clearDropdown({ id, format }) {
+  clearDropdown({ id, format }) {
     // TODO: Check if I need to do this for radio buttons
     if (this.shadowRoot.querySelector(`#${id}`)) {
       if (format === 'dropdown') {
@@ -60,31 +57,102 @@ export class MistForm extends LitElement {
   updateState(field, value, el) {
     this.formValues[field] = value;
     this.fieldsValid[field] = el.validate && el.validate(value);
-    // TODO: Show and hide subforms
     this.allFieldsValid = Object.values(this.fieldsValid).every(
       val => val === true
     );
   }
 
-  updateFormByConditions(obj) {
-    const [fieldName, prop] = obj;
+  // Set the new field properties as described in the condition map
+  updateFormByConditions(condition) {
+    const [fieldName, prop] = condition;
     for (const [key, val] of Object.entries(prop)) {
+      const props = this.data.properties[fieldName];
+      const hasEnum = Object.prototype.hasOwnProperty.call(props, 'enum');
+      // Update field with the new value
       this.data.properties[fieldName][key] = val;
 
-      const props = this.data.properties[fieldName];
-      if (Object.prototype.hasOwnProperty.call(props, 'enum')) {
-        this._clearDropdown(props);
+      if (hasEnum) {
+        // Reset dropdowns
+        this.clearDropdown(props);
       }
-      if (
-        key === 'hidden' &&
-        !val &&
-        !Object.prototype.hasOwnProperty.call(this, fieldName)
-      ) {
+
+      // If field gets added to form(hidden becomes false), set it's validity to false
+      if (key === 'hidden' && !val) {
         this.fieldsValid[fieldName] = false;
       }
     }
   }
 
+  // TODO change the name of this function
+  isDependantOnField = (field, props, key, val) => {
+    return (
+      Object.prototype.hasOwnProperty.call(val, 'x-mist-enum') &&
+      this.dynamicDataNamespace[
+        props[key]['x-mist-enum']
+      ].dependencies.includes(field)
+    );
+  };
+
+  updateDynamicData(field) {
+    const props = this.data.properties;
+    for (const [key, val] of Object.entries(props)) {
+      if (this.isDependantOnField(field, props, key, val)) {
+        this.loadDynamicData(val, enumData => {
+          props[key].enum = enumData;
+          this.requestUpdate();
+        });
+      }
+    }
+  }
+
+  // Combine field and helpText and return template
+  getTemplate(name, properties) {
+    if (!properties.hidden) {
+      return FieldTemplates[properties.type]
+        ? html`${FieldTemplates[properties.type](
+            name,
+            properties,
+            this,
+            enumData => {
+              this.data.properties[name].enum = enumData;
+              this.requestUpdate();
+            }
+          )}${FieldTemplates.helpText(properties)}`
+        : console.error(`Invalid field type: ${properties.type}`);
+    }
+    return '';
+  }
+
+  submitForm() {
+    let allFieldsValid = true;
+    const params = [];
+
+    this.shadowRoot
+      .querySelectorAll(FieldTemplates.getInputFields().join(','))
+      .forEach(input => {
+        const isInvalid = !input.validate();
+        if (isInvalid) {
+          allFieldsValid = false;
+        } else {
+          params.push(getFieldValue(input));
+        }
+      });
+
+    if (allFieldsValid) {
+      const slot = this.shadowRoot
+        .querySelector('slot[name="formRequest"]')
+        .assignedNodes()[0];
+
+      const event = new CustomEvent('mist-form-request', {
+        detail: {
+          params,
+        },
+      });
+      slot.dispatchEvent(event);
+    }
+  }
+
+  // Public methods
   loadDynamicData(props, cb) {
     this.dynamicDataNamespace[props['x-mist-enum']].func
       .then(getEnumData => {
@@ -95,29 +163,8 @@ export class MistForm extends LitElement {
       });
   }
 
-  updateDynamicData(field) {
-    const props = this.data.properties;
-    for (const [key, val] of Object.entries(props)) {
-      const isDynamic = Object.prototype.hasOwnProperty.call(
-        val,
-        'x-mist-enum'
-      );
-
-      const isDependantOnField =
-        isDynamic &&
-        this.dynamicDataNamespace[
-          props[key]['x-mist-enum']
-        ].dependencies.includes(field);
-      if (isDependantOnField) {
-        this.loadDynamicData(val, enumData => {
-          this.data.properties[key].enum = enumData;
-          this.requestUpdate();
-        });
-      }
-    }
-  }
-
   dispatchValueChangedEvent(e) {
+    // TODO: Show and hide subforms
     // TODO: Debounce the event, especially when it comes from text input fields
     const el = e.path[0];
     const field = el.name;
@@ -143,8 +190,9 @@ export class MistForm extends LitElement {
 
       if (targetField === field && targetValuesArray.includes(value)) {
         update = true;
-        resultMap.forEach(obj => {
-          this.updateFormByConditions(obj);
+
+        resultMap.forEach(res => {
+          this.updateFormByConditions(res);
         });
       }
     });
@@ -153,59 +201,15 @@ export class MistForm extends LitElement {
     }
   }
 
-  // TODO: Style helpText better
-  _getTemplate(name, properties) {
-    if (!properties.hidden) {
-      return FieldTemplates[properties.type]
-        ? html`${FieldTemplates[properties.type](
-            name,
-            properties,
-            this,
-            enumData => {
-              this.data.properties[name].enum = enumData;
-              this.requestUpdate();
-            }
-          )}${FieldTemplates.helpText(properties.helpUrl, properties.helpText)}`
-        : console.error(`Invalid field type: ${properties.type}`);
-    }
-    return '';
+  // Lifecycle Methods
+  constructor() {
+    super();
+    this.fieldsValid = {};
+    this.formValues = {};
   }
 
-  static _displayCancelButton = (canClose = true) =>
-    canClose ? FieldTemplates.button('Cancel') : '';
-
-  _submitForm() {
-    let allFieldsValid = true;
-    const params = [];
-
-    this.shadowRoot
-      .querySelectorAll(FieldTemplates.getInputFields().join(','))
-      .forEach(input => {
-        const isValid = input.validate();
-        if (!isValid) {
-          allFieldsValid = false;
-        } else {
-          params.push({
-            [input.id]:
-              input.getAttribute('role') === 'checkbox'
-                ? input.checked
-                : input.value,
-          });
-        }
-      });
-
-    if (allFieldsValid) {
-      const slot = this.shadowRoot
-        .querySelector('slot[name="formRequest"]')
-        .assignedNodes()[0];
-
-      const event = new CustomEvent('mist-form-request', {
-        detail: {
-          params,
-        },
-      });
-      slot.dispatchEvent(event);
-    }
+  firstUpdated() {
+    this.getJSON(this.src);
   }
 
   render() {
@@ -222,13 +226,13 @@ export class MistForm extends LitElement {
           if (properties.hidden) {
             delete this.fieldsValid[name];
           }
-          return this._getTemplate(name, properties);
+          return this.getTemplate(name, properties);
         })}
         <div>
-          ${MistForm._displayCancelButton(this.data.canClose)}
+          ${displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button(
             this.data.submitButtonLabel || 'Submit',
-            this._submitForm,
+            this.submitForm,
             !this.allFieldsValid
           )}
         </div>
