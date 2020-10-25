@@ -32,12 +32,29 @@
       import '@polymer/iron-ajax/iron-ajax.js';
       import '../mist-form.js';
 
-      const jsonUrl = 'inputField.json';
+      const dynaData = {
+        getTestData: {
+          func: new Promise((resolve, reject) => {
+            setTimeout(function () {
+              resolve(formValues => {
+                return [formValues.title || 'title', formValues.age || 'age'];
+              });
+            }, 2500);
+          }),
+          dependencies: ['title', 'age'],
+        },
+      };
+      const jsonUrl = 'space-camp-application.json';
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method}>
+        html`<mist-form
+          id=${id}
+          .src=${jsonUrl}
+          .method=${method}
+          .dynamicDataNamespace=${dynaData}
+        >
           <iron-ajax
             slot="formRequest"
             id="formAjax"
