@@ -22,6 +22,14 @@
       "required": true,
       "errorMessage": "letters only!",
       "description": "John"
+    },
+      "lastName": {
+      "label": "First name",
+      "id": "order2",
+      "type": "string",
+      "required": true,
+      "errorMessage": "letters only!",
+      "description": "John"
     }
   }
 }

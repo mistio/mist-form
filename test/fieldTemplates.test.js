@@ -57,7 +57,6 @@ describe('Individual paper Fields', () => {
     };
     const template = FieldTemplates.boolean(name, props, mistForm);
     const el = await fixture(template);
-    console.log('el.tagName ', el.tagName);
     expect(el.tagName).to.equal('PAPER-TOGGLE-BUTTON');
   });
 

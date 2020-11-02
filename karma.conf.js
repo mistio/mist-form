@@ -20,6 +20,10 @@ module.exports = config => {
       esm: {
         nodeResolve: true,
       },
+      browserConsoleLogOptions: {
+        terminal: true,
+        level: '',
+      },
       // you can overwrite/extend the config further
     })
   );

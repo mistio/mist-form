@@ -30,7 +30,6 @@ export class MistForm extends LitElement {
       .then(response => response.json())
       .then(data => {
         this.data = data;
-
         Object.keys(data.properties).forEach(fieldName => {
           this.fieldsValid[fieldName] = false;
         });
@@ -87,6 +86,7 @@ export class MistForm extends LitElement {
   isDependantOnField = (field, props, key, val) => {
     return (
       Object.prototype.hasOwnProperty.call(val, 'x-mist-enum') &&
+      this.dynamicDataNamespace &&
       this.dynamicDataNamespace[
         props[key]['x-mist-enum']
       ].dependencies.includes(field)
@@ -154,13 +154,15 @@ export class MistForm extends LitElement {
 
   // Public methods
   loadDynamicData(props, cb) {
-    this.dynamicDataNamespace[props['x-mist-enum']].func
-      .then(getEnumData => {
-        cb(getEnumData(this.formValues));
-      })
-      .catch(error => {
-        console.error('Error loading dynamic data: ', error);
-      });
+    if (this.dynamicDataNamespace) {
+      this.dynamicDataNamespace[props['x-mist-enum']].func
+        .then(getEnumData => {
+          cb(getEnumData(this.formValues));
+        })
+        .catch(error => {
+          console.error('Error loading dynamic data: ', error);
+        });
+    }
   }
 
   dispatchValueChangedEvent(e) {

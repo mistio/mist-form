@@ -16,7 +16,7 @@ import '@polymer/paper-spinner/paper-spinner.js';
 import '@polymer/iron-ajax/iron-ajax.js';
 import '../mist-form.js';
 
-describe('MistForm', () => {
+describe('MistForm component', () => {
   it("Displays error message when you don't pass a json url", async () => {
     const el = await fixture(html` <mist-form></mist-form> `);
     await waitUntil(() => el.dataError);
@@ -25,24 +25,24 @@ describe('MistForm', () => {
     );
   });
 
-  it('Displays a single input field when you pass inputField.json', async () => {
+  it('Displays two input fields when you pass inputFields.json', async () => {
     const el = await fixture(
       html`<mist-form
         id=${'test-mist-form'}
-        .src=${'/base/test/inputField.json'}
+        .src=${'/base/test/inputFields.json'}
       ></mist-form> `
     );
     await waitUntil(() => el.data);
-    // expect(el).shadowDom.to.equal(
-    //   "We couldn't load the form. Please try again"
-    // );
-    expect(el).lightDom.to.equal(
-      "<mist-form>We couldn't load the form. Please try again</mist-form>"
-    );
+    expect(el.shadowRoot.querySelectorAll('paper-input')).to.have.length(2);
   });
 
   it('passes the a11y audit', async () => {
-    const el = await fixture(html` <mist-form></mist-form> `);
+    const el = await fixture(html`
+      <mist-form
+        id=${'test-mist-form'}
+        .src=${'/base/test/test.json'}
+      ></mist-form>
+    `);
 
     await expect(el).shadowDom.to.be.accessible();
   });
