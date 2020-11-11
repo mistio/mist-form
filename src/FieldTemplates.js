@@ -63,20 +63,20 @@ export const FieldTemplates = {
       ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
     </paper-listbox>
   </paper-dropdown-menu>`,
-  radioGroup: (name, props, mistForm) => html` <label>${getLabel(props)}</label>
-    <paper-radio-group
-      .name=${name}
-      ...="${spreadProps(props)}"
-      .label="${getLabel(props)}"
-      @selected-changed=${mistForm.dispatchValueChangedEvent}
-    >
-      ${props.enum.map(
-        item =>
-          html`<paper-radio-button .id=${item.split(' ').join('-')}
-            >${item}</paper-radio-button
-          >`
-      )}
-    </paper-radio-group>`,
+  radioGroup: (name, props, mistForm) => html` <paper-radio-group
+    .name=${name}
+    ...="${spreadProps(props)}"
+    .label="${getLabel(props)}"
+    @selected-changed=${mistForm.dispatchValueChangedEvent}
+  >
+    <label>${getLabel(props)}</label>
+    ${props.enum.map(
+      item =>
+        html`<paper-radio-button .id=${item.split(' ').join('-')}
+          >${item}</paper-radio-button
+        >`
+    )}
+  </paper-radio-group>`,
   input: (name, props, mistForm) => html`<paper-input
     .name=${name}
     @value-changed=${mistForm.dispatchValueChangedEvent}
