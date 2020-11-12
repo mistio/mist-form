@@ -1,8 +1,8 @@
 {
   "name": "@mistio/mist-form",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Webcomponent mist-form following open-wc recommendations",
-  "author": "mist-form",
+  "author": "Golfo Vasiliou <golfo@mist.io>",
   "license": "Apache-2.0",
   "main": "index.js",
   "module": "index.js",
