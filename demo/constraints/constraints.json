@@ -1,0 +1,231 @@
+{
+  "type": "object",
+  "id": "constraints-form",
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "label": "Constraints",
+  "description": "You can add constraints.",
+  "submitButtonLabel": "Add",
+  "canClose": false,
+  "additionalProperties": false,
+  "properties": {
+    "costToggle": {
+      "label": "Select cost constraint",
+      "id": "cost_toggle",
+      "type": "boolean",
+      "noLabelFloat": true
+    },
+    "costConstraintContainer": {
+      "id": "cost_constraint_container",
+      "type": "subform_container",
+      "value": "costConstraints",
+      "hidden": true
+    },
+    "sizeToggle": {
+      "label": "Select size constraint",
+      "id": "size_toggle",
+      "type": "boolean",
+      "noLabelFloat": true
+    },
+    "sizeConstraintContainer": {
+      "id": "size_constraint_container",
+      "type": "subform_container",
+      "value": "sizeConstraints",
+      "hidden": true
+    },
+    "expirationToggle": {
+      "label": "Select expiration constraint",
+      "id": "expiration_toggle",
+      "type": "boolean",
+      "noLabelFloat": true
+    },
+    "fieldToggle": {
+      "label": "Select field constraint",
+      "id": "field_toggle",
+      "type": "boolean",
+      "noLabelFloat": true
+    },
+    "fieldConstraintContainer": {
+      "id": "field_constraint_container",
+      "type": "subform_container",
+      "value": "fieldConstraints",
+      "hidden": true
+    },
+    "costConstraints": {
+      "id": "cost_constraints",
+      "type": "subform",
+      "properties": {
+        "max_team_run_rate": {
+          "label": "Max run rate for your team",
+          "id": "cost_max_team_run_rate",
+          "type": "string",
+          "format": "number",
+          "required": true,
+          "value": 1,
+          "minimum": 1,
+          "autoValidate": true,
+          "helpText": "A minimum of 1 $ is required.",
+          "suffix": "$"
+        },
+        "max_total_run_rate": {
+          "label": "Max run rate for your entire organization",
+          "id": "cost_max_total_run_rate",
+          "type": "string",
+          "format": "number",
+          "required": true,
+          "value": 1,
+          "minimum": 1,
+          "autoValidate": true,
+          "helpText": "A minimum of 1 $ is required.",
+          "suffix": "$"
+        }
+      }
+    },
+    "fieldConstraints": {
+      "id": "field_constraints",
+      "type": "subform",
+      "properties": {}
+    },
+    "sizeConstraints": {
+      "id": "size_constraints",
+      "type": "subform",
+      "properties": {
+        "allowed": {
+          "label": "Allowed",
+          "id": "allowed",
+          "type": "string",
+          "format": "textarea",
+          "helpText": "Please enter comma separated names, ids or external ids",
+          "error-message": "Please enter comma separated names, ids or external ids"
+        },
+        "not_allowed": {
+          "label": "Not allowed",
+          "id": "not_allowed",
+          "type": "string",
+          "format": "textarea",
+          "helpText": "Please enter comma separated names, ids or external ids",
+          "error-message": "Please enter comma separated names, ids or external ids"
+        },
+        "cpu": {
+          "id": "cpu_constraint",
+          "type": "subform_container",
+          "value": "sizeSubform"
+        },
+        "ram": {
+          "id": "ram_constraint",
+          "type": "subform_container",
+          "value": "sizeSubform"
+        },
+        "primary_disk": {
+          "id": "primary_disk_constraint",
+          "type": "subform_container",
+          "value": "sizeSubform"
+        },
+        "swap_disk": {
+          "id": "swap_disk_constraint",
+          "type": "subform_container",
+          "value": "sizeSubform"
+        }
+      }
+    },
+    "sizeSubform": {
+      "id": "size_subform",
+      "type": "subform",
+      "properties": {
+        "min": {
+          "label": "Min size",
+          "id": "min",
+          "type": "string",
+          "format": "number",
+          "required": true,
+          "value": 1,
+          "max": 1,
+          "autoValidate": true,
+          "helpText": "A max of..."
+        },
+        "max": {
+          "label": "Max size",
+          "id": "max",
+          "type": "string",
+          "format": "number",
+          "required": true,
+          "value": 1,
+          "minimum": 1,
+          "autoValidate": true,
+          "helpText": "A minimum of 1 is required."
+        },
+        "showToggle": {
+          "label": "Select size constraint",
+          "id": "show_toggle",
+          "type": "boolean",
+          "noLabelFloat": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "costToggle": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "costConstraints": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sizeToggle": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sizeConstraints": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "fieldToggle": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "fieldConstraints": {
+            "hidden": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "expirationToggle": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "expirationConstraints": {
+            "hidden": false
+          }
+        }
+      }
+    }
+  ]
+}

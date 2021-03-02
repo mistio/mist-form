@@ -3,7 +3,6 @@ import { html } from 'lit-element';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: This file is starting to get too big. Maybe I should split it up
-
 // Some of the props need to be converted from their JSON Schema equivalents
 const getConvertedProps = props => {
   const newProps = {
