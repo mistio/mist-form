@@ -48,6 +48,7 @@
             .submit=${this}
             @mist-form-request=${function (e) {
               this.params = e.detail.params;
+              console.log("this.params ", this.params)
               this.generateRequest();
             }}
             @response=${() => {

@@ -15,6 +15,7 @@
       "noLabelFloat": true
     },
     "costConstraintContainer": {
+      "name": "Cost constraints",
       "id": "cost_constraint_container",
       "type": "subform_container",
       "value": "costConstraints",
@@ -27,10 +28,11 @@
       "noLabelFloat": true
     },
     "sizeConstraintContainer": {
+      "name": "Size constraints",
       "id": "size_constraint_container",
       "type": "subform_container",
       "value": "sizeConstraints",
-      "hidden": true
+      "hidden": false
     },
     "expirationToggle": {
       "label": "Select expiration constraint",
@@ -45,6 +47,7 @@
       "noLabelFloat": true
     },
     "fieldConstraintContainer": {
+      "name": "Field constraints",
       "id": "field_constraint_container",
       "type": "subform_container",
       "value": "fieldConstraints",
@@ -106,21 +109,25 @@
           "error-message": "Please enter comma separated names, ids or external ids"
         },
         "cpu": {
+          "name": "Cpu constraints",
           "id": "cpu_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
         },
         "ram": {
+          "name": "Ram constraints",
           "id": "ram_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
         },
         "primary_disk": {
+          "name": "Primary disk constraints",
           "id": "primary_disk_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
         },
         "swap_disk": {
+          "name": "Swap disk constraints",
           "id": "swap_disk_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
@@ -154,7 +161,7 @@
           "helpText": "A minimum of 1 is required."
         },
         "showToggle": {
-          "label": "Select size constraint",
+          "label": "Show/Hide field",
           "id": "show_toggle",
           "type": "boolean",
           "noLabelFloat": true
@@ -166,15 +173,13 @@
     {
       "if": {
         "properties": {
-          "costToggle": {
-            "const": true
-          }
+          "costToggle": "reverseToggle"
         }
       },
       "then": {
         "properties": {
-          "costConstraints": {
-            "hidden": false
+          "costConstraintContainer": {
+            "property": "hidden"
           }
         }
       }
@@ -182,15 +187,13 @@
     {
       "if": {
         "properties": {
-          "sizeToggle": {
-            "const": true
-          }
+          "sizeToggle": "reverseToggle"
         }
       },
       "then": {
         "properties": {
-          "sizeConstraints": {
-            "hidden": false
+          "sizeConstraintContainer": {
+            "property": "hidden"
           }
         }
       }
@@ -198,31 +201,13 @@
     {
       "if": {
         "properties": {
-          "fieldToggle": {
-            "const": true
-          }
+          "fieldToggle": "reverseToggle"
         }
       },
       "then": {
         "properties": {
-          "fieldConstraints": {
-            "hidden": false
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "expirationToggle": {
-            "const": true
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "expirationConstraints": {
-            "hidden": false
+          "fieldConstraintContainer": {
+            "property": "hidden"
           }
         }
       }

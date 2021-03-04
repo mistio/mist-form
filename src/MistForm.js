@@ -6,12 +6,16 @@ import { FieldTemplates } from './FieldTemplates.js';
 // TODO: The user should have the option to either attach a subform to a subform container
 // This way, they can either have a subform that they repeat multiple times, or just unique ones
 // For now, they need to define a subform container and a corresponding subform
+// TODO: Check validations
 const displayCancelButton = (canClose = true) =>
   canClose ? FieldTemplates.button('Cancel') : '';
 
 const getFieldValue = input => ({
   [input.id]:
-    input.getAttribute('role') === 'checkbox' ? input.checked : input.value,
+    input.getAttribute('role') === 'checkbox' ||
+    input.getAttribute('role') === 'button'
+      ? input.checked
+      : input.value,
 });
 
 export class MistForm extends LitElement {
@@ -60,6 +64,7 @@ export class MistForm extends LitElement {
   updateState(field, value, el) {
     this.formValues[field] = value;
     this.fieldsValid[field] = el.validate && el.validate(value);
+
     this.allFieldsValid = Object.values(this.fieldsValid).every(
       val => val === true
     );
@@ -83,17 +88,19 @@ export class MistForm extends LitElement {
   // TODO Add button to clear the entire form and/or restore defaults
   // Set the new field properties as described in the condition map
   updateFormByConditions(condition) {
+    console.log('condition ', condition);
     const [fieldName, prop] = condition;
 
     for (const [key, val] of Object.entries(prop)) {
       const props = this.data.properties[fieldName];
-      const fieldType = props.type;
 
+      const fieldType = props.type;
       // Update field with the new value
 
-      if (fieldType === 'subform_container') {
+      if (fieldType === 'Wsubform_container') {
         this.data.properties[fieldName][key] = val;
         const subFields = this.data.properties[fieldName].properties;
+        console.log('subFields ', subFields);
         for (const [key2, data] of Object.entries(subFields)) {
           this.updateFieldByConditions(data, fieldName, key2, val);
         }
@@ -148,17 +155,25 @@ export class MistForm extends LitElement {
     let allFieldsValid = true;
     const params = [];
     // TODO: just add a class to elements to be able to select stuff
+    // TODO: Just search for elements on the top level. If an element is a subform, get it's children
+    // if one of them is a subform get it's children and so on.
     this.shadowRoot
       .querySelectorAll(FieldTemplates.getInputFields().join(','))
       .forEach(input => {
-        const isInvalid = !input.validate();
+        console.log('input ');
+        if (input.classList.contains('subform-container')) {
+          console.log('input.childNodes ', input.childNodes);
+        }
+        const isInvalid =
+          !input.classList.contains('subform-container') && !input.validate();
         if (isInvalid) {
           allFieldsValid = false;
         } else {
+          console.log('input ', input);
           params.push(getFieldValue(input));
         }
       });
-
+    allFieldsValid = true;
     if (allFieldsValid) {
       const slot = this.shadowRoot
         .querySelector('slot[name="formRequest"]')
@@ -193,6 +208,7 @@ export class MistForm extends LitElement {
     const field = el.name;
     const { value } = e.detail;
     let update = false;
+    console.log('field ', field);
 
     this.updateState(field, value, el);
     this.updateDynamicData(field);
@@ -209,15 +225,32 @@ export class MistForm extends LitElement {
         key,
         condition[key],
       ]);
+
       const resultMap = Object.keys(result).map(key => [key, result[key]]);
       const [targetField, targetValues] = conditionMap[0];
-      const targetValuesArray = targetValues.enum || [targetValues.const];
-      if (targetField === field && targetValuesArray.includes(value)) {
+      if (
+        targetField === field &&
+        (targetValues === 'toggle' || targetValues === 'reverseToggle')
+      ) {
         update = true;
+        const toggleValue = targetValues === 'toggle' ? value : !value;
+        const updatedResult = [
+          resultMap[0][0],
+          { [resultMap[0][1].property]: toggleValue },
+        ];
+        // updatedResult[1][resultMap[0][1].property] = toggleValue;
+        console.log('updatedREsult ', updatedResult);
+        this.updateFormByConditions(updatedResult);
+      } else {
+        const targetValuesArray = targetValues.enum || [targetValues.const];
 
-        resultMap.forEach(res => {
-          this.updateFormByConditions(res);
-        });
+        if (targetField === field && targetValuesArray.includes(value)) {
+          update = true;
+
+          resultMap.forEach(res => {
+            this.updateFormByConditions(res);
+          });
+        }
       }
     });
     if (update) {
@@ -236,40 +269,34 @@ export class MistForm extends LitElement {
     this.getJSON(this.src);
   }
 
-  renderInputs(inputs) {
+  renderInputs(inputs, subforms) {
+    console.log('in render inputs');
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       const [name, properties] = input;
-
-      const isSubform = Object.keys(properties).length > 1;
-      console.log('isSubfor ', isSubform);
-      if (properties.type === 'subform') {
-        return;
-      }
+      // Subforms just contain data, they shouldn't be rendered by themselves.
+      // They should be rendered in subform containers
       if (properties.hidden) {
         delete this.fieldsValid[name];
       }
-      console.log('in renderInputs ', properties.type);
+
       // If the field is a subform container, render it's respective template, and hide/show fields
-      if (isSubform) {
-        // const subForm = inputs.find(el => el[0] === properties.value)[1];
-        console.log('subForm ', properties);
-
-        // const subFormInputs = Object.keys(subForm.properties).map(key => [
-        //   key,
-        //   {
-        //     ...subForm.properties[key],
-        //     hidden: properties.hidden || subForm.properties[key].hidden,
-        //   },
-        // ]);
-
-        // return html`<div id="${properties.id}-subform" class="subform">
-        //   ${this.renderInputs(subFormInputs)}
-        // </div>`;
+      if (properties.type === 'subform_container') {
+        const subForm = subforms.find(el => el[0] === properties.value)[1];
+        // todo give unique ids to fields here?
+        const subFormInputs = Object.keys(subForm.properties).map(key => [
+          key,
+          {
+            ...subForm.properties[key],
+            hidden: properties.hidden || subForm.properties[key].hidden,
+          },
+        ]);
+        // console.log("subFormInputs ", subFormInputs)
+        properties.inputs = this.renderInputs(subFormInputs, subforms);
+        //  return this.getTemplate(name, properties);
       }
-      if (properties.type === 'subform') {
-        return '';
-      }
+
+      // console.log("properties ", properties)
       return this.getTemplate(name, properties);
     });
   }
@@ -297,7 +324,6 @@ export class MistForm extends LitElement {
       }
     });
 
-    console.log('subFormFields ', subformFields);
     return subformFields;
   }
 
@@ -306,22 +332,24 @@ export class MistForm extends LitElement {
       // The data here will come validated so no checks required
       const jsonData = this.data.properties;
 
-      const inputs = Object.keys(jsonData).map(key => [key, jsonData[key]]);
-      const subforms = inputs.filter(input => input[1].type === 'subform');
-      const subFormFields = this.getSubformData(inputs, subforms);
-      console.log('inputs in rener', inputs);
-      console.log('subformFields ', subFormFields);
-
+      const fields = Object.keys(jsonData).map(key => [key, jsonData[key]]);
+      const fieldsWithoutSubforms = fields.filter(
+        field => field[1].type !== 'subform'
+      );
+      const subforms = fields.filter(field => field[1].type === 'subform');
+      // const subFormFields = this.getSubformData(fields, subforms);
+      const inputs = [...fieldsWithoutSubforms];
+      console.log('-------------');
       return html`
         <div>${this.data.label}</div>
-        ${this.renderInputs(inputs)}
+        ${this.renderInputs(inputs, subforms)}
 
         <div>
           ${displayCancelButton(this.data.canClose)}
           ${FieldTemplates.button(
             this.data.submitButtonLabel || 'Submit',
             this.submitForm,
-            !this.allFieldsValid
+            this.allFieldsValid
           )}
         </div>
         <slot name="formRequest"></slot>

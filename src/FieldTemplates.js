@@ -28,6 +28,7 @@ export const FieldTemplates = {
     'paper-input',
     'paper-toggle-button',
     'paper-radio-group',
+    'div.subform-container',
   ],
   string(name, props, mistForm, cb) {
     const isDynamic = Object.prototype.hasOwnProperty.call(
@@ -100,6 +101,14 @@ export const FieldTemplates = {
     value=""
     >${props.label}</paper-toggle-button
   >`,
+  subform_container: (name, props) => html`<div
+    id="${props.id}-subform"
+    class="subform-container"
+    style="margin:10px;border:1px solid black;"
+  >
+    <span class="subform-name">${props.name}</span>
+    ${props.inputs}
+  </div>`,
   spinner: html`<paper-spinner active></paper-spinner>`,
   // Submit button should be disabled until all required fields are filled
   button: (title = 'Submit', tapFunc, isDisabled = false) => html` <paper-button
