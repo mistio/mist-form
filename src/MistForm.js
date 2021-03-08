@@ -88,7 +88,6 @@ export class MistForm extends LitElement {
   // TODO Add button to clear the entire form and/or restore defaults
   // Set the new field properties as described in the condition map
   updateFormByConditions(condition) {
-    console.log('condition ', condition);
     const [fieldName, prop] = condition;
 
     for (const [key, val] of Object.entries(prop)) {
@@ -100,7 +99,6 @@ export class MistForm extends LitElement {
       if (fieldType === 'Wsubform_container') {
         this.data.properties[fieldName][key] = val;
         const subFields = this.data.properties[fieldName].properties;
-        console.log('subFields ', subFields);
         for (const [key2, data] of Object.entries(subFields)) {
           this.updateFieldByConditions(data, fieldName, key2, val);
         }
@@ -155,25 +153,23 @@ export class MistForm extends LitElement {
     let allFieldsValid = true;
     const params = [];
     // TODO: just add a class to elements to be able to select stuff
-    // TODO: Just search for elements on the top level. If an element is a subform, get it's children
+    // TODO: Just search for elements on the top level. If an element is a subform, get its children
     // if one of them is a subform get it's children and so on.
+
     this.shadowRoot
       .querySelectorAll(FieldTemplates.getInputFields().join(','))
       .forEach(input => {
-        console.log('input ');
         if (input.classList.contains('subform-container')) {
-          console.log('input.childNodes ', input.childNodes);
+          return;
         }
-        const isInvalid =
-          !input.classList.contains('subform-container') && !input.validate();
+        const isInvalid = !input.validate();
         if (isInvalid) {
           allFieldsValid = false;
         } else {
-          console.log('input ', input);
           params.push(getFieldValue(input));
         }
       });
-    allFieldsValid = true;
+
     if (allFieldsValid) {
       const slot = this.shadowRoot
         .querySelector('slot[name="formRequest"]')
@@ -208,7 +204,6 @@ export class MistForm extends LitElement {
     const field = el.name;
     const { value } = e.detail;
     let update = false;
-    console.log('field ', field);
 
     this.updateState(field, value, el);
     this.updateDynamicData(field);
@@ -238,8 +233,7 @@ export class MistForm extends LitElement {
           resultMap[0][0],
           { [resultMap[0][1].property]: toggleValue },
         ];
-        // updatedResult[1][resultMap[0][1].property] = toggleValue;
-        console.log('updatedREsult ', updatedResult);
+
         this.updateFormByConditions(updatedResult);
       } else {
         const targetValuesArray = targetValues.enum || [targetValues.const];
@@ -270,7 +264,6 @@ export class MistForm extends LitElement {
   }
 
   renderInputs(inputs, subforms) {
-    console.log('in render inputs');
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       const [name, properties] = input;
@@ -280,7 +273,7 @@ export class MistForm extends LitElement {
         delete this.fieldsValid[name];
       }
 
-      // If the field is a subform container, render it's respective template, and hide/show fields
+      // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.type === 'subform_container') {
         const subForm = subforms.find(el => el[0] === properties.value)[1];
         // todo give unique ids to fields here?
@@ -291,12 +284,9 @@ export class MistForm extends LitElement {
             hidden: properties.hidden || subForm.properties[key].hidden,
           },
         ]);
-        // console.log("subFormInputs ", subFormInputs)
         properties.inputs = this.renderInputs(subFormInputs, subforms);
-        //  return this.getTemplate(name, properties);
       }
 
-      // console.log("properties ", properties)
       return this.getTemplate(name, properties);
     });
   }
@@ -333,13 +323,8 @@ export class MistForm extends LitElement {
       const jsonData = this.data.properties;
 
       const fields = Object.keys(jsonData).map(key => [key, jsonData[key]]);
-      const fieldsWithoutSubforms = fields.filter(
-        field => field[1].type !== 'subform'
-      );
+      const inputs = fields.filter(field => field[1].type !== 'subform');
       const subforms = fields.filter(field => field[1].type === 'subform');
-      // const subFormFields = this.getSubformData(fields, subforms);
-      const inputs = [...fieldsWithoutSubforms];
-      console.log('-------------');
       return html`
         <div>${this.data.label}</div>
         ${this.renderInputs(inputs, subforms)}
