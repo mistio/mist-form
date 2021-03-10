@@ -347,6 +347,4 @@ export class MistForm extends LitElement {
     }
     return FieldTemplates.spinner;
   }
-
-  field;
 }
