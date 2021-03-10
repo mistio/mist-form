@@ -12,10 +12,12 @@
       "label": "Select cost constraint",
       "id": "cost_toggle",
       "type": "boolean",
-      "noLabelFloat": true
+      "noLabelFloat": true,
+      "exclude": true
     },
     "costConstraintContainer": {
-      "name": "Cost constraints",
+      "name": "cost",
+      "label": "Cost constraints",
       "id": "cost_constraint_container",
       "type": "subform_container",
       "value": "costConstraints",
@@ -25,10 +27,12 @@
       "label": "Select size constraint",
       "id": "size_toggle",
       "type": "boolean",
-      "noLabelFloat": true
+      "noLabelFloat": true,
+      "exclude": true
     },
     "sizeConstraintContainer": {
-      "name": "Size constraints",
+      "name": "size",
+      "label": "Size constraints",
       "id": "size_constraint_container",
       "type": "subform_container",
       "value": "sizeConstraints",
@@ -38,16 +42,19 @@
       "label": "Select expiration constraint",
       "id": "expiration_toggle",
       "type": "boolean",
-      "noLabelFloat": true
+      "noLabelFloat": true,
+      "exclude": true
     },
     "fieldToggle": {
       "label": "Select field constraint",
       "id": "field_toggle",
       "type": "boolean",
-      "noLabelFloat": true
+      "noLabelFloat": true,
+      "exclude": true
     },
     "fieldConstraintContainer": {
-      "name": "Field constraints",
+      "name": "field",
+      "label": "Field constraints",
       "id": "field_constraint_container",
       "type": "subform_container",
       "value": "fieldConstraints",
@@ -96,6 +103,7 @@
           "label": "Allowed",
           "id": "allowed",
           "type": "string",
+          "required": false,
           "format": "textarea",
           "helpText": "Please enter comma separated names, ids or external ids",
           "error-message": "Please enter comma separated names, ids or external ids"
@@ -104,30 +112,35 @@
           "label": "Not allowed",
           "id": "not_allowed",
           "type": "string",
+          "required": false,
           "format": "textarea",
           "helpText": "Please enter comma separated names, ids or external ids",
           "error-message": "Please enter comma separated names, ids or external ids"
         },
         "cpu": {
-          "name": "Cpu constraints",
+          "name": "cpu",
+          "label": "Cpu constraints",
           "id": "cpu_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
         },
         "ram": {
-          "name": "Ram constraints",
+          "name": "ram",
+          "label": "Ram constraints",
           "id": "ram_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
         },
         "primary_disk": {
-          "name": "Primary disk constraints",
+          "name": "disk",
+          "label": "Primary disk constraints",
           "id": "primary_disk_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
         },
         "swap_disk": {
-          "name": "Swap disk constraints",
+          "name": "swap_disk",
+          "label": "Swap disk constraints",
           "id": "swap_disk_constraint",
           "type": "subform_container",
           "value": "sizeSubform"
@@ -145,9 +158,9 @@
           "format": "number",
           "required": true,
           "value": 1,
-          "max": 1,
+          "min": 1,
           "autoValidate": true,
-          "helpText": "A max of..."
+          "helpText": "A minimum of 1 is required"
         },
         "max": {
           "label": "Max size",
