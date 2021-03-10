@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit-element';
+import { html, css, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
 
 // TODO: Clean up code when I'm done
@@ -23,28 +23,22 @@ const getFirstLevelChildren = root =>
   [...root.children].filter(child =>
     child.matches(FieldTemplates.getInputFields())
   );
-
-function traverseDOM(root) {
-  let formValues = {};
+// Traverse all fields in DOM and validate them
+function formFieldsValid(root, isValid) {
   const nodeList = getFirstLevelChildren(root);
+  let formValid = isValid;
   nodeList.forEach(node => {
     if (node.classList.contains('subform-container')) {
-      formValues[node.getAttribute('name')] = traverseDOM(node);
+      formValid = formFieldsValid(node, formValid);
     } else if (!node.hasAttribute('exclude')) {
-      const inputValue = getFieldValue(node);
       const isInvalid = !node.validate();
-
       if (isInvalid) {
-        this.allFieldsValid = false;
-      } else if (Object.values(inputValue)[0] !== undefined) {
-        // If the input has a value of undefined and wasn't required, don't add it
-        formValues = { ...formValues, ...getFieldValue(node) };
+        formValid = false;
       }
     }
   });
-  return formValues;
+  return formValid;
 }
-
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -52,9 +46,29 @@ export class MistForm extends LitElement {
       dynamicDataNamespace: { type: String },
       data: { type: Object },
       dataError: { type: Object },
+      formError: { type: String },
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button
       formValues: { type: Object },
     };
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        color: var(--mist-form-text-color, black);
+        background: var(--mist-form-background-color, white);
+        font-family: var(--mist-form-font-family, Roboto);
+      }
+      .subform-container {
+        border: var(--mist-form-border, 1px solid black);
+        margin: var(--mist-form-margin, 2px);
+        padding: var(--mist-form-padding, 2px);
+      }
+      :host([hidden]) {
+        display: none;
+      }
+    `;
   }
 
   // "Private" Methods
@@ -83,12 +97,30 @@ export class MistForm extends LitElement {
     }
   }
 
-  updateState(field, value, el) {
+  getValuesfromDOM(root) {
+    let formValues = {};
+    const nodeList = getFirstLevelChildren(root);
+    nodeList.forEach(node => {
+      if (node.classList.contains('subform-container')) {
+        formValues[node.getAttribute('name')] = this.getValuesfromDOM(node);
+      } else if (!node.hasAttribute('exclude')) {
+        const inputValue = getFieldValue(node);
+        const isInvalid = !node.validate();
+        if (isInvalid) {
+          this.allFieldsValid = false;
+        } else if (Object.values(inputValue)[0] !== undefined) {
+          // If the input has a value of undefined and wasn't required, don't add it
+          formValues = { ...formValues, ...getFieldValue(node) };
+        }
+      }
+    });
+
+    return formValues;
+  }
+
+  updateState(field, value) {
     this.formValues[field] = value;
-    this.fieldsValid[field] = el.validate && el.validate(value);
-    this.allFieldsValid = Object.values(this.fieldsValid).every(
-      val => val === true
-    );
+    this.allFieldsValid = formFieldsValid(this.shadowRoot, true);
   }
 
   updateFieldByConditions(props, fieldName, key, val) {
@@ -98,18 +130,6 @@ export class MistForm extends LitElement {
     if (hasEnum) {
       // Reset dropdowns
       this.clearDropdown(props);
-    }
-
-    // If field gets added to form(hidden becomes false), set it's validity to false
-    const { type } = props;
-    if (
-      key === 'hidden' &&
-      !val &&
-      type !== 'subform' &&
-      type !== 'subform_container' &&
-      type !== 'boolean'
-    ) {
-      this.fieldsValid[fieldName] = false;
     }
   }
 
@@ -166,14 +186,14 @@ export class MistForm extends LitElement {
   }
 
   submitForm() {
-    const allFieldsValid = true;
     // TODO: just add a class to elements to be able to select stuff
     // TODO: Just search for elements on the top level. If an element is a subform, get its children
     // if one of them is a subform get it's children and so on.
 
-    const params = traverseDOM(this.shadowRoot);
-
-    if (allFieldsValid) {
+    const params = this.getValuesfromDOM(this.shadowRoot);
+    if (Object.keys(params).length === 0) {
+      this.formError = 'Please insert some data';
+    } else if (this.allFieldsValid) {
       const slot = this.shadowRoot
         .querySelector('slot[name="formRequest"]')
         .assignedNodes()[0];
@@ -184,19 +204,8 @@ export class MistForm extends LitElement {
         },
       });
       slot.dispatchEvent(event);
-    }
-  }
-
-  setFieldValidState(name, properties) {
-    const { type } = properties;
-    if (properties.hidden) {
-      delete this.fieldsValid[name];
-    } else if (
-      type !== 'subform' &&
-      type !== 'subform_container' &&
-      type !== 'boolean'
-    ) {
-      this.fieldsValid[name] = false;
+    } else {
+      this.formError = 'There was a problem with the form';
     }
   }
 
@@ -214,68 +223,75 @@ export class MistForm extends LitElement {
   }
 
   dispatchValueChangedEvent(e) {
+    //  this.updateComplete.then(() => {
     // TODO: Debounce the event, especially when it comes from text input fields
-    const el = e.path[0];
-    const field = el.name;
-    const { value } = e.detail;
-    let update = false;
+    this.updateComplete.then(() => {
+      const el = e.path[0];
+      const field = el.name;
+      const { value } = e.detail;
+      let update = false;
 
-    this.updateState(field, value, el);
-    this.updateDynamicData(field);
+      this.updateState(field, value, el);
+      this.updateDynamicData(field);
 
-    // TODO inspect if this works for booleans
-    if (!this.data.allOf) {
-      return;
-    }
-    // Check
-    this.data.allOf.forEach(conditional => {
-      const condition = conditional.if.properties;
-      const result = conditional.then.properties;
-      const conditionMap = Object.keys(condition).map(key => [
-        key,
-        condition[key],
-      ]);
+      // TODO inspect if this works for booleans
+      if (!this.data.allOf) {
+        return;
+      }
+      // Check
+      this.data.allOf.forEach(conditional => {
+        const condition = conditional.if.properties;
+        const result = conditional.then.properties;
+        const conditionMap = Object.keys(condition).map(key => [
+          key,
+          condition[key],
+        ]);
 
-      const resultMap = Object.keys(result).map(key => [key, result[key]]);
-      const [targetField, targetValues] = conditionMap[0];
-      if (
-        targetField === field &&
-        (targetValues === 'toggle' || targetValues === 'reverseToggle')
-      ) {
-        update = true;
-        const toggleValue = targetValues === 'toggle' ? value : !value;
-        const updatedResult = [
-          resultMap[0][0],
-          { [resultMap[0][1].property]: toggleValue },
-        ];
-
-        this.updateFormByConditions(updatedResult);
-      } else {
-        const targetValuesArray = targetValues.enum || [targetValues.const];
-
-        if (targetField === field && targetValuesArray.includes(value)) {
+        const resultMap = Object.keys(result).map(key => [key, result[key]]);
+        const [targetField, targetValues] = conditionMap[0];
+        if (
+          targetField === field &&
+          (targetValues === 'toggle' || targetValues === 'reverseToggle')
+        ) {
           update = true;
+          const toggleValue = targetValues === 'toggle' ? value : !value;
+          const updatedResult = [
+            resultMap[0][0],
+            { [resultMap[0][1].property]: toggleValue },
+          ];
 
-          resultMap.forEach(res => {
-            this.updateFormByConditions(res);
-          });
+          this.updateFormByConditions(updatedResult);
+        } else {
+          const targetValuesArray = targetValues.enum || [targetValues.const];
+
+          if (targetField === field && targetValuesArray.includes(value)) {
+            update = true;
+
+            resultMap.forEach(res => {
+              this.updateFormByConditions(res);
+            });
+          }
         }
+      });
+      if (update) {
+        this.requestUpdate();
       }
     });
-    if (update) {
-      this.requestUpdate();
-    }
   }
 
   // Lifecycle Methods
   constructor() {
     super();
-    this.fieldsValid = {};
+    this.allFieldsValid = false;
     this.formValues = {};
   }
 
   firstUpdated() {
     this.getJSON(this.src);
+  }
+
+  updated() {
+    this.allFieldsValid = formFieldsValid(this.shadowRoot, true);
   }
 
   renderInputs(inputs, subforms) {
@@ -298,7 +314,6 @@ export class MistForm extends LitElement {
         ]);
         properties.inputs = this.renderInputs(subFormInputs, subforms);
       }
-
       return this.getTemplate(name, properties);
     });
   }
@@ -310,6 +325,7 @@ export class MistForm extends LitElement {
 
       const fields = Object.keys(jsonData).map(key => [key, jsonData[key]]);
       const inputs = fields.filter(field => field[1].type !== 'subform');
+      console.log('inputs ', inputs);
       const subforms = fields.filter(field => field[1].type === 'subform');
       return html`
         <div>${this.data.label}</div>
@@ -323,6 +339,7 @@ export class MistForm extends LitElement {
             !this.allFieldsValid
           )}
         </div>
+        <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
       `;
     }
@@ -331,4 +348,6 @@ export class MistForm extends LitElement {
     }
     return FieldTemplates.spinner;
   }
+
+  field;
 }

@@ -6,6 +6,9 @@
       body {
         background: #fafafa;
       }
+      mist-form {
+        --mist-form-border: 2px solid red;
+      }
     </style>
   </head>
 
@@ -38,6 +41,7 @@
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
+
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method}>
           <iron-ajax

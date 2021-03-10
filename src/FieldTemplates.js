@@ -111,7 +111,6 @@ export const FieldTemplates = {
     ...="${spreadProps(props)}"
     name=${props.name}
     class="subform-container"
-    style="margin:10px;border:1px solid black;"
   >
     <span class="subform-name">${props.label}</span>
     ${props.inputs}
