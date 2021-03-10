@@ -65,6 +65,9 @@ export class MistForm extends LitElement {
         margin: var(--mist-form-margin, 2px);
         padding: var(--mist-form-padding, 2px);
       }
+      .subform-name {
+        font-weight: bold;
+      }
       :host([hidden]) {
         display: none;
       }
