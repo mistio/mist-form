@@ -11,7 +11,7 @@ const displayCancelButton = (canClose = true) =>
   canClose ? FieldTemplates.button('Cancel') : '';
 
 const getFieldValue = input => ({
-  [input.id]:
+  [input.name]:
     input.getAttribute('role') === 'checkbox' ||
     input.getAttribute('role') === 'button'
       ? input.checked
@@ -325,7 +325,6 @@ export class MistForm extends LitElement {
 
       const fields = Object.keys(jsonData).map(key => [key, jsonData[key]]);
       const inputs = fields.filter(field => field[1].type !== 'subform');
-      console.log('inputs ', inputs);
       const subforms = fields.filter(field => field[1].type === 'subform');
       return html`
         <div>${this.data.label}</div>
