@@ -1,234 +1,257 @@
 {
-  "type": "object",
-  "id": "constraints-form",
-  "$schema": "http://json-schema.org/draft-03/schema#",
-  "label": "Constraints",
-  "description": "You can add constraints.",
-  "submitButtonLabel": "Add",
-  "canClose": false,
-  "additionalProperties": false,
-  "properties": {
-    "costToggle": {
-      "label": "Select cost constraint",
-      "id": "cost_toggle",
-      "type": "boolean",
-      "noLabelFloat": true,
-      "exclude": true
-    },
-    "costConstraintContainer": {
-      "name": "cost",
-      "label": "Cost constraints",
-      "id": "cost_constraint_container",
-      "type": "subform_container",
-      "value": "costConstraints",
-      "hidden": true
-    },
-    "sizeToggle": {
-      "label": "Select size constraint",
-      "id": "size_toggle",
-      "type": "boolean",
-      "noLabelFloat": true,
-      "exclude": true
-    },
-    "sizeConstraintContainer": {
-      "name": "size",
-      "label": "Size constraints",
-      "id": "size_constraint_container",
-      "type": "subform_container",
-      "value": "sizeConstraints",
-      "hidden": true
-    },
-    "expirationToggle": {
-      "label": "Select expiration constraint",
-      "id": "expiration_toggle",
-      "type": "boolean",
-      "noLabelFloat": true,
-      "exclude": true
-    },
-    "fieldToggle": {
-      "label": "Select field constraint",
-      "id": "field_toggle",
-      "type": "boolean",
-      "noLabelFloat": true,
-      "exclude": true
-    },
-    "fieldConstraintContainer": {
-      "name": "field",
-      "label": "Field constraints",
-      "id": "field_constraint_container",
-      "type": "subform_container",
-      "value": "fieldConstraints",
-      "hidden": true
-    },
-    "costConstraints": {
-      "id": "cost_constraints",
-      "type": "subform",
-      "properties": {
-        "max_team_run_rate": {
-          "label": "Max run rate for your team",
-          "name": "max_team_run_rate",
-          "id": "cost_max_team_run_rate",
-          "type": "string",
-          "format": "number",
-          "required": true,
-          "value": 1,
-          "minimum": 1,
-          "autoValidate": true,
-          "helpText": "A minimum of 1 $ is required.",
-          "suffix": "$"
-        },
-        "max_total_run_rate": {
-          "label": "Max run rate for your entire organization",
-          "name": "max_total_run_rate",
-          "id": "cost_max_total_run_rate",
-          "type": "string",
-          "format": "number",
-          "required": true,
-          "value": 1,
-          "minimum": 1,
-          "autoValidate": true,
-          "helpText": "A minimum of 1 $ is required.",
-          "suffix": "$"
-        }
-      }
-    },
-    "fieldConstraints": {
-      "id": "field_constraints",
-      "type": "subform",
-      "properties": {}
-    },
-    "sizeConstraints": {
-      "id": "size_constraints",
-      "type": "subform",
-      "properties": {
-        "allowed": {
-          "label": "Allowed",
-          "name": "allowed",
-          "id": "allowed",
-          "type": "string",
-          "required": false,
-          "format": "textarea",
-          "helpText": "Please enter comma separated names, ids or external ids",
-          "error-message": "Please enter comma separated names, ids or external ids"
-        },
-        "not_allowed": {
-          "label": "Not allowed",
-          "name": "not_allowed",
-          "id": "not_allowed",
-          "type": "string",
-          "required": false,
-          "format": "textarea",
-          "helpText": "Please enter comma separated names, ids or external ids",
-          "error-message": "Please enter comma separated names, ids or external ids"
-        },
-        "cpu": {
-          "name": "cpu",
-          "label": "Cpu constraints",
-          "id": "cpu_constraint",
-          "type": "subform_container",
-          "value": "sizeSubform"
-        },
-        "ram": {
-          "name": "ram",
-          "label": "Ram constraints",
-          "id": "ram_constraint",
-          "type": "subform_container",
-          "value": "sizeSubform"
-        },
-        "primary_disk": {
-          "name": "disk",
-          "label": "Primary disk constraints",
-          "id": "primary_disk_constraint",
-          "type": "subform_container",
-          "value": "sizeSubform"
-        },
-        "swap_disk": {
-          "name": "swap_disk",
-          "label": "Swap disk constraints",
-          "id": "swap_disk_constraint",
-          "type": "subform_container",
-          "value": "sizeSubform"
-        }
-      }
-    },
-    "sizeSubform": {
-      "id": "size_subform",
-      "type": "subform",
-      "properties": {
-        "min": {
-          "label": "Min size",
-          "id": "min",
-          "type": "string",
-          "format": "number",
-          "required": true,
-          "value": 1,
-          "minimum": 1,
-          "autoValidate": true,
-          "helpText": "A minimum of 1 is required"
-        },
-        "max": {
-          "label": "Max size",
-          "id": "max",
-          "type": "string",
-          "format": "number",
-          "required": true,
-          "value": 1,
-          "minimum": 1,
-          "autoValidate": true,
-          "helpText": "A minimum of 1 is required."
-        },
-        "showToggle": {
-          "label": "Show/Hide field",
-          "name": "show",
-          "id": "show",
-          "type": "boolean",
-          "noLabelFloat": true
-        }
-      }
-    }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "costToggle": "reverseToggle"
-        }
-      },
-      "then": {
-        "properties": {
-          "costConstraintContainer": {
-            "property": "hidden"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "sizeToggle": "reverseToggle"
-        }
-      },
-      "then": {
-        "properties": {
-          "sizeConstraintContainer": {
-            "property": "hidden"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "fieldToggle": "reverseToggle"
-        }
-      },
-      "then": {
-        "properties": {
-          "fieldConstraintContainer": {
-            "property": "hidden"
-          }
-        }
-      }
-    }
-  ]
+	"type": "object",
+	"id": "constraints-form",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"label": "Constraints",
+	"description": "Constraints form",
+	"submitButtonLabel": "Add",
+	"canClose": false,
+	"additionalProperties": false,
+	"properties": {
+		"costToggle": {
+			"label": "Cost",
+			"id": "cost_toggle",
+			"type": "boolean",
+			"noLabelFloat": true,
+			"excludeFromPayload": true
+		},
+		"costConstraintContainer": {
+			"name": "cost",
+			"label": "Cost constraints",
+			"id": "cost_constraint_container",
+			"type": "object",
+			"properties": {
+				"subform": {
+					"$ref": "#/definitions/costConstraints"
+				}
+			},
+			"hidden": true
+		},
+		"sizeToggle": {
+			"label": "Size",
+			"id": "size_toggle",
+			"type": "boolean",
+			"noLabelFloat": true,
+			"excludeFromPayload": true
+		},
+		"sizeConstraintContainer": {
+			"name": "size",
+			"label": "Size constraints",
+			"id": "size_constraint_container",
+			"type": "object",
+			"properties": {
+				"subform": {
+					"$ref": "#/definitions/sizeConstraints"
+				}
+			},
+			"hidden": true
+		},
+		"expirationToggle": {
+			"label": "Expiration",
+			"id": "expiration_toggle",
+			"type": "boolean",
+			"noLabelFloat": true,
+			"excludeFromPayload": true
+		},
+		"fieldToggle": {
+			"label": "Field",
+			"id": "field_toggle",
+			"type": "boolean",
+			"noLabelFloat": true,
+			"excludeFromPayload": true
+		},
+		"fieldConstraintContainer": {
+			"name": "field",
+			"label": "Field constraints",
+			"id": "field_constraint_container",
+			"type": "object",
+			"properties": {
+				"subform": {
+					"$ref": "#/definitions/fieldConstraints"
+				}
+			},
+			"hidden": true
+		}
+	},
+	"definitions": {
+		"sizeSubform": {
+			"id": "size_subform",
+			"type": "object",
+			"properties": {
+				"min": {
+					"label": "Min size",
+					"id": "min",
+					"type": "string",
+					"format": "number",
+					"value": 1,
+					"minimum": 1,
+					"autoValidate": true,
+					"helpText": "A minimum of 1 is required"
+				},
+				"max": {
+					"label": "Max size",
+					"id": "max",
+					"type": "string",
+					"format": "number",
+					"value": 1,
+					"minimum": 1,
+					"autoValidate": true,
+					"helpText": "A minimum of 1 is required."
+				},
+				"showToggle": {
+					"label": "Show/Hide field",
+					"name": "show",
+					"id": "show",
+					"type": "boolean",
+					"noLabelFloat": true
+				}
+			}
+		},
+		"costConstraints": {
+			"id": "cost_constraints",
+			"type": "object",
+			"properties": {
+				"max_team_run_rate": {
+					"label": "Max run rate for your team",
+					"name": "max_team_run_rate",
+					"id": "cost_max_team_run_rate",
+					"type": "string",
+					"format": "number",
+					"value": 1,
+					"minimum": 1,
+					"autoValidate": true,
+					"helpText": "A minimum of 1 $ is required.",
+					"suffix": "$"
+				},
+				"max_total_run_rate": {
+					"label": "Max run rate for your entire organization",
+					"name": "max_total_run_rate",
+					"id": "cost_max_total_run_rate",
+					"type": "string",
+					"format": "number",
+					"value": 1,
+					"minimum": 1,
+					"autoValidate": true,
+					"helpText": "A minimum of 1 $ is required.",
+					"suffix": "$"
+				}
+			}
+		},
+		"fieldConstraints": {
+			"id": "field_constraints",
+			"type": "object",
+			"properties": {}
+		},
+		"sizeConstraints": {
+			"id": "size_constraints",
+			"type": "object",
+			"properties": {
+				"allowed": {
+					"label": "Allowed",
+					"name": "allowed",
+					"id": "allowed",
+					"type": "string",
+					"format": "textarea",
+					"helpText": "Please enter comma separated names, ids or external ids",
+					"error-message": "Please enter comma separated names, ids or external ids"
+				},
+				"not_allowed": {
+					"label": "Not allowed",
+					"name": "not_allowed",
+					"id": "not_allowed",
+					"type": "string",
+					"format": "textarea",
+					"helpText": "Please enter comma separated names, ids or external ids",
+					"error-message": "Please enter comma separated names, ids or external ids"
+				},
+				"cpu": {
+					"name": "cpu",
+					"label": "Cpu constraints",
+					"id": "cpu_constraint",
+					"type": "object",
+					"properties": {
+						"subform": {
+							"$ref": "#/definitions/sizeSubform"
+						}
+					}
+				},
+				"ram": {
+					"name": "ram",
+					"label": "Ram constraints",
+					"id": "ram_constraint",
+					"type": "object",
+					"properties": {
+						"subform": {
+							"$ref": "#/definitions/sizeSubform"
+						}
+					}
+				},
+				"primary_disk": {
+					"name": "disk",
+					"label": "Primary disk constraints",
+					"id": "primary_disk_constraint",
+					"type": "object",
+					"properties": {
+						"subform": {
+							"$ref": "#/definitions/sizeSubform"
+						}
+					}
+				},
+				"swap_disk": {
+					"name": "swap_disk",
+					"label": "Swap disk constraints",
+					"id": "swap_disk_constraint",
+					"type": "object",
+					"properties": {
+						"subform": {
+							"$ref": "#/definitions/sizeSubform"
+						}
+					}
+				}
+			}
+		}
+	},
+	"allOf": [{
+			"if": {
+				"properties": {
+					"costToggle": "reverseToggle"
+				}
+			},
+			"then": {
+				"properties": {
+					"costConstraintContainer": {
+						"property": "hidden"
+					}
+				}
+			}
+		},
+		{
+			"if": {
+				"properties": {
+					"sizeToggle": "reverseToggle"
+				}
+			},
+			"then": {
+				"properties": {
+					"sizeConstraintContainer": {
+						"property": "hidden"
+					}
+				}
+			}
+		},
+		{
+			"if": {
+				"properties": {
+					"fieldToggle": "reverseToggle"
+				}
+			},
+			"then": {
+				"properties": {
+					"fieldConstraintContainer": {
+						"property": "hidden"
+					}
+				}
+			}
+		}
+	]
 }

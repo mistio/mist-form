@@ -57,7 +57,7 @@ export const FieldTemplates = {
     .name=${name}
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    ?exclude="${props.exclude}"
+    ?excludeFromPayload="${props.excludeFromPayload}"
     @value-changed=${mistForm.dispatchValueChangedEvent}
   >
     <paper-listbox class="dropdown-content" slot="dropdown-content">
@@ -68,7 +68,7 @@ export const FieldTemplates = {
     .name=${name}
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    ?exclude="${props.exclude}"
+    ?excludeFromPayload="${props.excludeFromPayload}"
     @selected-changed=${mistForm.dispatchValueChangedEvent}
   >
     <label>${getLabel(props)}</label>
@@ -85,7 +85,7 @@ export const FieldTemplates = {
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
     .label="${getLabel(props)}"
-    ?exclude="${props.exclude}"
+    ?excludeFromPayload="${props.excludeFromPayload}"
   >
     ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
     ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
@@ -95,18 +95,19 @@ export const FieldTemplates = {
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
     .label="${getLabel(props)}"
-    ?exclude="${props.exclude}"
+    ?excludeFromPayload="${props.excludeFromPayload}"
     @value-changed=${mistForm.dispatchValueChangedEvent}
   ></paper-textarea>`,
   boolean: (name, props, mistForm) => html`<paper-toggle-button
     .name=${name}
     ...="${spreadProps(props)}"
     @checked-changed=${mistForm.dispatchValueChangedEvent}
-    ?exclude="${props.exclude}"
+    ?excludeFromPayload="${props.excludeFromPayload}"
     value=""
     >${props.label}</paper-toggle-button
   >`,
-  subform_container: (name, props) => html`<div
+  // Subform container
+  object: (name, props) => html`<div
     id="${props.id}-subform"
     ...="${spreadProps(props)}"
     name=${props.name}

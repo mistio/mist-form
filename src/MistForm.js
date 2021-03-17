@@ -23,6 +23,11 @@ const getFirstLevelChildren = root =>
   [...root.children].filter(child =>
     child.matches(FieldTemplates.getInputFields())
   );
+const getSubformFromRef = (subforms, ref) => {
+  const subformName = ref.split('/').slice(-1)[0];
+  const subForm = subforms.find(el => el[0] === subformName)[1];
+  return subForm;
+};
 // Traverse all fields in DOM and validate them
 function formFieldsValid(root, isValid) {
   const nodeList = getFirstLevelChildren(root);
@@ -30,7 +35,7 @@ function formFieldsValid(root, isValid) {
   nodeList.forEach(node => {
     if (node.classList.contains('subform-container')) {
       formValid = formFieldsValid(node, formValid);
-    } else if (!node.hasAttribute('exclude')) {
+    } else if (!node.hasAttribute('excludeFromPayload')) {
       const isInvalid = !node.validate();
       if (isInvalid) {
         formValid = false;
@@ -106,7 +111,7 @@ export class MistForm extends LitElement {
     nodeList.forEach(node => {
       if (node.classList.contains('subform-container')) {
         formValues[node.getAttribute('name')] = this.getValuesfromDOM(node);
-      } else if (!node.hasAttribute('exclude')) {
+      } else if (!node.hasAttribute('excludeFromPayload')) {
         const inputValue = getFieldValue(node);
         const isInvalid = !node.validate();
         if (isInvalid) {
@@ -305,9 +310,15 @@ export class MistForm extends LitElement {
       // They should be rendered in subform containers
 
       // If the field is a subform container, render its respective template, and hide/show fields
-      if (properties.type === 'subform_container') {
-        const subForm = subforms.find(el => el[0] === properties.value)[1];
+      if (properties.type === 'object') {
+        const subForm = getSubformFromRef(
+          subforms,
+          properties.properties.subform.$ref
+        );
+
+        // const subForm = subforms.find(el => el[0] === properties.subform.$ref)[1];
         // todo give unique ids to fields here?
+
         const subFormInputs = Object.keys(subForm.properties).map(key => [
           key,
           {
@@ -324,11 +335,17 @@ export class MistForm extends LitElement {
   render() {
     if (this.data) {
       // The data here will come validated so no checks required
-      const jsonData = this.data.properties;
+      const jsonProperties = this.data.properties;
+      const jsonDefinitions = this.data.definitions;
+      const inputs = Object.keys(jsonProperties).map(key => [
+        key,
+        jsonProperties[key],
+      ]);
+      const subforms = Object.keys(jsonDefinitions).map(key => [
+        key,
+        jsonDefinitions[key],
+      ]);
 
-      const fields = Object.keys(jsonData).map(key => [key, jsonData[key]]);
-      const inputs = fields.filter(field => field[1].type !== 'subform');
-      const subforms = fields.filter(field => field[1].type === 'subform');
       return html`
         <div>${this.data.label}</div>
         ${this.renderInputs(inputs, subforms)}
