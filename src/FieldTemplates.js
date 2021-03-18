@@ -107,15 +107,27 @@ export const FieldTemplates = {
     >${props.label}</paper-toggle-button
   >`,
   // Subform container
-  object: (name, props) => html`<div
+  object: (name, props, mistForm) =>{
+  // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
+  return html`<div
     id="${props.id}-subform"
     ...="${spreadProps(props)}"
     name=${props.name}
+    ?excludeFromPayload="${!props.fieldsVisible}"
     class="subform-container"
   >
     <span class="subform-name">${props.label}</span>
-    ${props.inputs}
-  </div>`,
+
+    ${props.hasToggle && html`    <paper-toggle-button
+    .name="${props.name}-toggle"
+    excludeFromPayload
+    .checked="${props.fieldsVisible}"
+    @checked-changed="${(e) => {props.fieldsVisible = e.detail.value; mistForm.requestUpdate();}}"
+    >${props.label}</paper-toggle-button
+  >`}
+${props.fieldsVisible  || !props.hasToggle ? html`${props.inputs}` : ''}
+
+  </div>`},
   spinner: html`<paper-spinner active></paper-spinner>`,
   // Submit button should be disabled until all required fields are filled
   button: (title = 'Submit', tapFunc, isDisabled = false) => html` <paper-button

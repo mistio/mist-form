@@ -33,9 +33,10 @@ function formFieldsValid(root, isValid) {
   const nodeList = getFirstLevelChildren(root);
   let formValid = isValid;
   nodeList.forEach(node => {
-    if (node.classList.contains('subform-container')) {
+    const notExcluded = !node.hasAttribute('excludeFromPayload');
+    if (node.classList.contains('subform-container') && notExcluded) {
       formValid = formFieldsValid(node, formValid);
-    } else if (!node.hasAttribute('excludeFromPayload')) {
+    } else if (notExcluded) {
       const isInvalid = !node.validate();
       if (isInvalid) {
         formValid = false;
@@ -73,7 +74,7 @@ export class MistForm extends LitElement {
       .subform-name {
         font-weight: bold;
       }
-      :host([hidden]) {
+      :host *([hidden]) {
         display: none;
       }
     `;
@@ -108,10 +109,12 @@ export class MistForm extends LitElement {
   getValuesfromDOM(root) {
     let formValues = {};
     const nodeList = getFirstLevelChildren(root);
+
     nodeList.forEach(node => {
-      if (node.classList.contains('subform-container')) {
+      const notExcluded = !node.hasAttribute('excludeFromPayload');
+      if (node.classList.contains('subform-container') && notExcluded) {
         formValues[node.getAttribute('name')] = this.getValuesfromDOM(node);
-      } else if (!node.hasAttribute('excludeFromPayload')) {
+      } else if (notExcluded) {
         const inputValue = getFieldValue(node);
         const isInvalid = !node.validate();
         if (isInvalid) {
@@ -199,6 +202,7 @@ export class MistForm extends LitElement {
     // if one of them is a subform get it's children and so on.
 
     const params = this.getValuesfromDOM(this.shadowRoot);
+
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
     } else if (this.allFieldsValid) {
@@ -231,8 +235,8 @@ export class MistForm extends LitElement {
   }
 
   dispatchValueChangedEvent(e) {
-    //  this.updateComplete.then(() => {
     // TODO: Debounce the event, especially when it comes from text input fields
+    // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
       const el = e.path[0];
       const field = el.name;

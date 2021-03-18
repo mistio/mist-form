@@ -8,69 +8,54 @@
 	"canClose": false,
 	"additionalProperties": false,
 	"properties": {
-		"costToggle": {
-			"label": "Cost",
-			"id": "cost_toggle",
-			"type": "boolean",
-			"noLabelFloat": true,
-			"excludeFromPayload": true
-		},
 		"costConstraintContainer": {
 			"name": "cost",
 			"label": "Cost constraints",
 			"id": "cost_constraint_container",
 			"type": "object",
+      		"hasToggle": true,
+			"fieldsVisible": true,
 			"properties": {
 				"subform": {
 					"$ref": "#/definitions/costConstraints"
 				}
-			},
-			"hidden": true
-		},
-		"sizeToggle": {
-			"label": "Size",
-			"id": "size_toggle",
-			"type": "boolean",
-			"noLabelFloat": true,
-			"excludeFromPayload": true
+			}
 		},
 		"sizeConstraintContainer": {
 			"name": "size",
 			"label": "Size constraints",
 			"id": "size_constraint_container",
 			"type": "object",
+			"hasToggle": true,
 			"properties": {
 				"subform": {
 					"$ref": "#/definitions/sizeConstraints"
 				}
-			},
-			"hidden": true
+			}
 		},
-		"expirationToggle": {
-			"label": "Expiration",
-			"id": "expiration_toggle",
-			"type": "boolean",
-			"noLabelFloat": true,
-			"excludeFromPayload": true
-		},
-		"fieldToggle": {
-			"label": "Field",
-			"id": "field_toggle",
-			"type": "boolean",
-			"noLabelFloat": true,
-			"excludeFromPayload": true
+		"expirationConstraintContainer": {
+			"name": "expiration",
+			"label": "Expiration constraints",
+			"id": "expiration_constraint_container",
+			"type": "object",
+			"hasToggle": true,
+			"properties": {
+				"subform": {
+					"$ref": "#/definitions/expirationConstraints"
+				}
+			}
 		},
 		"fieldConstraintContainer": {
 			"name": "field",
 			"label": "Field constraints",
 			"id": "field_constraint_container",
 			"type": "object",
+			"hasToggle": true,
 			"properties": {
 				"subform": {
 					"$ref": "#/definitions/fieldConstraints"
 				}
-			},
-			"hidden": true
+			}
 		}
 	},
 	"definitions": {
@@ -142,6 +127,11 @@
 			"type": "object",
 			"properties": {}
 		},
+		"expirationConstraints": {
+			"id": "expiration_constraints",
+			"type": "object",
+			"properties": {}
+		},
 		"sizeConstraints": {
 			"id": "size_constraints",
 			"type": "object",
@@ -210,48 +200,5 @@
 				}
 			}
 		}
-	},
-	"allOf": [{
-			"if": {
-				"properties": {
-					"costToggle": "reverseToggle"
-				}
-			},
-			"then": {
-				"properties": {
-					"costConstraintContainer": {
-						"property": "hidden"
-					}
-				}
-			}
-		},
-		{
-			"if": {
-				"properties": {
-					"sizeToggle": "reverseToggle"
-				}
-			},
-			"then": {
-				"properties": {
-					"sizeConstraintContainer": {
-						"property": "hidden"
-					}
-				}
-			}
-		},
-		{
-			"if": {
-				"properties": {
-					"fieldToggle": "reverseToggle"
-				}
-			},
-			"then": {
-				"properties": {
-					"fieldConstraintContainer": {
-						"property": "hidden"
-					}
-				}
-			}
-		}
-	]
+	}
 }
