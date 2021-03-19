@@ -1,5 +1,7 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
+import './customFields/duration-field.js';
+import './customFields/field-element.js';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: This file is starting to get too big. Maybe I should split it up
@@ -27,7 +29,10 @@ export const FieldTemplates = {
     'paper-textarea',
     'paper-input',
     'paper-toggle-button',
+    'paper-checkbox',
     'paper-radio-group',
+    'duration-field',
+    'field-element',
     'div.subform-container',
   ],
   string(name, props, mistForm, cb) {
@@ -98,36 +103,53 @@ export const FieldTemplates = {
     ?excludeFromPayload="${props.excludeFromPayload}"
     @value-changed=${mistForm.dispatchValueChangedEvent}
   ></paper-textarea>`,
-  boolean: (name, props, mistForm) => html`<paper-toggle-button
+  boolean: (name, props, mistForm) => html`<paper-checkbox
     .name=${name}
     ...="${spreadProps(props)}"
     @checked-changed=${mistForm.dispatchValueChangedEvent}
     ?excludeFromPayload="${props.excludeFromPayload}"
     value=""
-    >${props.label}</paper-toggle-button
+    >${props.label}</paper-checkbox
   >`,
+  durationField: (name, props, mistForm) =>
+    html`<duration-field
+      .name=${name}
+      ...="${spreadProps(props)}"
+    ></duration-field>`,
+  fieldElement: (name, props, mistForm) =>
+    html`<field-element
+      .name=${name}
+      ...="${spreadProps(props)}"
+    ></field-element>`,
   // Subform container
-  object: (name, props, mistForm) =>{
-  // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
-  return html`<div
-    id="${props.id}-subform"
-    ...="${spreadProps(props)}"
-    name=${props.name}
-    ?excludeFromPayload="${!props.fieldsVisible}"
-    class="subform-container"
-  >
-    <span class="subform-name">${props.label}</span>
+  object: (name, props, mistForm) => {
+    // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
+    // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
+    // TODO: Add/Remove class to subform when showing/hiding subform contents for styling
+    const showFields = props.fieldsVisible || !props.hasToggle;
+    return html`<div
+      id="${props.id}-subform"
+      ...="${spreadProps(props)}"
+      name=${props.name}
+      ?excludeFromPayload="${!showFields}"
+      class="subform-container"
+    >
+      <span class="subform-name">${props.label}</span>
 
-    ${props.hasToggle && html`    <paper-toggle-button
-    .name="${props.name}-toggle"
-    excludeFromPayload
-    .checked="${props.fieldsVisible}"
-    @checked-changed="${(e) => {props.fieldsVisible = e.detail.value; mistForm.requestUpdate();}}"
-    >${props.label}</paper-toggle-button
-  >`}
-${props.fieldsVisible  || !props.hasToggle ? html`${props.inputs}` : ''}
-
-  </div>`},
+      ${props.hasToggle &&
+      html` <paper-toggle-button
+        .name="${props.name}-toggle"
+        excludeFromPayload
+        .checked="${props.fieldsVisible}"
+        @checked-changed="${e => {
+          props.fieldsVisible = e.detail.value;
+          mistForm.requestUpdate();
+        }}"
+        >${props.label}</paper-toggle-button
+      >`}
+      ${showFields ? html`${props.inputs}` : ''}
+    </div>`;
+  },
   spinner: html`<paper-spinner active></paper-spinner>`,
   // Submit button should be disabled until all required fields are filled
   button: (title = 'Submit', tapFunc, isDisabled = false) => html` <paper-button
