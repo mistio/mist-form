@@ -1,18 +1,18 @@
-import {LitElement, html, css} from 'lit-element';
+import { LitElement, html, css } from 'lit-element';
 import './field-row.js';
 
 class FieldElement extends LitElement {
   static get properties() {
     return {
-      greeting: {type: String},
-      data: {attribute: false},
-      fields: {type: Array},
+      greeting: { type: String },
+      data: { attribute: false },
+      value: { type: Array },
     };
   }
 
   constructor() {
     super();
-    this.fields = [];
+    this.value = [];
   }
 
   static get styles() {
@@ -27,7 +27,7 @@ class FieldElement extends LitElement {
       paper-input {
         width: 50%;
         display: inline-block;
-        margin-right:20px;
+        margin-right: 20px;
       }
       paper-dropdown-menu {
         width: 20%;
@@ -37,61 +37,90 @@ class FieldElement extends LitElement {
   }
 
   addField() {
-      console.log("add field")
-      this.fields.push({})
-      console.log("fields ", this.fields)
-      this.requestUpdate();
+    console.log('add field');
+    this.value.push({});
+    console.log('fields ', this.value);
+    this.requestUpdate();
+  }
+  updateNameValue(name, index) {
+    this.value[index].name = name;
+  }
+  updateShowValue(show, index) {
+    this.value[index].show = show;
   }
 
-  updateValue(e) {
-      console.log("e ", e)
-    const {index, value} = e.detail;
-this.fields[index].name = value.name;
-this.fields[index].show = value.show;
-console.log("this.fields ", this.fields)
-  }
-  removeRow(e) {
-    console.log(e)
-    console.log("e.detail.index ", e.detail.index)
-    console.log("this.fields ", this.fields);
-    const indexToRemove = e.detail.index;
-    this.fields = [...this.fields.slice(0, indexToRemove), ...this.fields.slice(indexToRemove + 1)];
+  removeRow(indexToRemove) {
+    this.value = [
+      ...this.value.slice(0, indexToRemove),
+      ...this.value.slice(indexToRemove + 1),
+    ];
     this.requestUpdate();
   }
 
   validate() {
-      // Check that all fields have a name
-      const noFieldsEmpty = this.fields.every(field => field.name)
-      console.log("noFieldsEmpty ", noFieldsEmpty)
+    // Check that all fields have a name
+    const noFieldsEmpty = this.value.every(field => field.name);
+    console.log('noFieldsEmpty ', noFieldsEmpty);
     return true;
   }
 
   render() {
-      console.log("this.fields in render", this.fields)
-    return html`
-    <table style="width:100%">
-    <tr>
-      <th>Field name</th>
-      <th>Show</th>
-      <th></th>
-    </tr>
-    ${this.fields.map((field, index) => {
-        console.log("field ", field)
-        return html`<tr><field-row id="row-${index}" .value=${field} .index=${index} @remove-row=${this.removeRow} @value-changed=${this.updateValue} excludeFromPayload></field-row></tr>`;
-    })}
-    <tr>
-    <td><button>            <paper-icon-button
-    icon="icons:add"
-    alt="Add field"
-    title="Add field"
-    class="add"
-    @tap=${this.addField}
-  >
-  </paper-icon-button></button></td>
-    <td>Add a new field</td>
-    <td></td>
-    </tr>
-  </table>`
+    return html` <table style="width:100%">
+      <tr>
+        <th>Field name</th>
+        <th>Show</th>
+        <th></th>
+      </tr>
+      ${this.value.map((field, index) => {
+        return html`
+          <tr>
+            <td>
+              <paper-input
+                .value=${field.name}
+                @value-changed=${e => {
+                  this.updateNameValue(e.detail.value, index);
+                }}
+              ></paper-input>
+            </td>
+            <td>
+              <paper-checkbox
+                .checked=${field.show}
+                @checked-changed=${e => {
+                  this.updateShowValue(e.detail.value, index);
+                }}
+              ></paper-checkbox>
+            </td>
+            <td>
+              <paper-icon-button
+                icon="icons:close"
+                alt="open docs"
+                title="open docs"
+                class="docs"
+                @tap=${() => {
+                  this.removeRow(index);
+                }}
+              >
+              </paper-icon-button>
+            </td>
+          </tr>
+        `;
+        //return html`<tr><field-row id="row-${index}" .value=${field} .index=${index} @remove-row=${this.removeRow} @value-changed=${this.updateValue} excludeFromPayload></field-row></tr>`;
+      })}
+      <tr>
+        <td>
+          <paper-icon-button
+            icon="icons:add"
+            alt="Add field"
+            title="Add field"
+            class="add"
+            @tap=${this.addField}
+          >
+          </paper-icon-button>
+        </td>
+        <td>Add a new field</td>
+        <td></td>
+      </tr>
+    </table>`;
   }
 }
 

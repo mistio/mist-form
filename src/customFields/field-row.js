@@ -1,16 +1,16 @@
-import {LitElement, html, css} from 'lit-element';
+import { LitElement, html, css } from 'lit-element';
 
 class FieldRow extends LitElement {
   static get properties() {
     return {
-      value: {type: Object},
-      index: {type: Number}
+      value: { type: Object },
+      index: { type: Number },
     };
   }
 
   constructor() {
     super();
-    this.value = {name:"", show: false};
+    this.value = { name: '', show: false };
     this.valueChanged();
   }
 
@@ -26,7 +26,7 @@ class FieldRow extends LitElement {
       paper-input {
         width: 50%;
         display: inline-block;
-        margin-right:20px;
+        margin-right: 20px;
       }
       paper-dropdown-menu {
         width: 20%;
@@ -40,29 +40,29 @@ class FieldRow extends LitElement {
     this.valueChanged();
   }
   updateShowValue(e) {
-      console.log("update show ", e)
+    console.log('update show ', e);
     this.value.show = e.detail.value || false;
     this.valueChanged();
   }
 
-  removeRow(){
+  removeRow() {
     const event = new CustomEvent('remove-row', {
-        detail: {
-          index: this.index
-        }
-      });
-      this.dispatchEvent(event);
+      detail: {
+        index: this.index,
+      },
+    });
+    this.dispatchEvent(event);
   }
 
-  valueChanged(){
-      console.log("this.value ", this.value)
+  valueChanged() {
+    console.log('this.value ', this.value);
     const event = new CustomEvent('value-changed', {
-        detail: {
-          index: this.index,
-          value: this.value
-        }
-      });
-      this.dispatchEvent(event);
+      detail: {
+        index: this.index,
+        value: this.value,
+      },
+    });
+    this.dispatchEvent(event);
   }
 
   render() {
@@ -77,7 +77,7 @@ class FieldRow extends LitElement {
     @tap=${this.removeRow}
   >
   </paper-icon-button></td>
-    `
+    `;
   }
 }
 

@@ -14,7 +14,6 @@
 		"id":"cost_constraint_container",
 		"type":"object",
 		"hasToggle":true,
-		"fieldsVisible":true,
 		"properties":{
 		  "subform":{
 			"$ref":"#/definitions/costConstraints"
@@ -116,11 +115,18 @@
 		"type":"object",
 		"properties":{
 		  "available":{
-			"type":"durationField"
+			"label": "Available actions",
+			"id": "available",
+			"type": "string",
+			"format": "checkboxGroup",
+			"enum": ["destroy", "stop", "undefine"]
 		  },
 		  "default":{
-			"type":"string",
-			"format":"dropdown"
+			"label": "Default",
+			"id": "default_action",
+			"type": "string",
+			"format": "dropdown",
+			"x-mist-enum": "getDefaultActions"
 		  }
 		}
 	  },

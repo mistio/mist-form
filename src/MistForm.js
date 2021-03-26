@@ -10,13 +10,22 @@ import { FieldTemplates } from './FieldTemplates.js';
 const displayCancelButton = (canClose = true) =>
   canClose ? FieldTemplates.button('Cancel') : '';
 
-const getFieldValue = input => ({
-  [input.name]:
+const getFieldValue = input => {
+  let value;
+  if (
     input.getAttribute('role') === 'checkbox' ||
     input.getAttribute('role') === 'button'
-      ? input.checked
-      : input.value,
-});
+  ) {
+    value = input.checked;
+  } else if (input.tagName === 'IRON-SELECTOR') {
+    value = input.selectedValues;
+  } else {
+    value = input.value;
+  }
+  return {
+    [input.name]: value,
+  };
+};
 
 // Get first level input children
 const getFirstLevelChildren = root =>
@@ -37,7 +46,7 @@ function formFieldsValid(root, isValid) {
     if (node.classList.contains('subform-container') && notExcluded) {
       formValid = formFieldsValid(node, formValid);
     } else if (notExcluded) {
-      const isInvalid = !node.validate();
+      const isInvalid = node.validate ? !node.validate() : false;
       if (isInvalid) {
         formValid = false;
       }
@@ -49,12 +58,12 @@ export class MistForm extends LitElement {
   static get properties() {
     return {
       src: { type: String },
-      dynamicDataNamespace: { type: String },
+      dynamicDataNamespace: { type: Object },
+      dynamicFieldData: { type: Object },
       data: { type: Object },
       dataError: { type: Object },
       formError: { type: String },
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button
-      formValues: { type: Object },
     };
   }
 
@@ -63,13 +72,19 @@ export class MistForm extends LitElement {
       :host {
         display: block;
         color: var(--mist-form-text-color, black);
-        background: var(--mist-form-background-color, white);
+        background-color: var(--mist-form-background-color, white);
         font-family: var(--mist-form-font-family, Roboto);
       }
       .subform-container {
-        border: var(--mist-form-border, 1px solid black);
-        margin: var(--mist-form-margin, 2px);
-        padding: var(--mist-form-padding, 2px);
+        border: var(--mist-subform-border, 1px solid white);
+        margin: var(--mist-subform-margin, 10px);
+        padding: var(--mist-subform-padding, 10px);
+        color: var(--mist-subform-text-color, black);
+        background-color: var(--mist-subform-background-color, white);
+      }
+      .subform-container.open {
+        color: var(--mist-subform-text-color, black);
+        background-color: var(--mist-subform-background-color, #ebebeb);
       }
       .subform-name {
         font-weight: bold;
@@ -116,7 +131,7 @@ export class MistForm extends LitElement {
         formValues[node.getAttribute('name')] = this.getValuesfromDOM(node);
       } else if (notExcluded) {
         const inputValue = getFieldValue(node);
-        const isInvalid = !node.validate();
+        const isInvalid = node.validate ? !node.validate() : false;
         if (isInvalid) {
           this.allFieldsValid = false;
         } else if (Object.values(inputValue)[0] !== undefined) {
@@ -129,8 +144,7 @@ export class MistForm extends LitElement {
     return formValues;
   }
 
-  updateState(field, value) {
-    this.formValues[field] = value;
+  updateState() {
     this.allFieldsValid = formFieldsValid(this.shadowRoot, true);
   }
 
@@ -166,12 +180,12 @@ export class MistForm extends LitElement {
     );
   }
 
-  updateDynamicData(field) {
-    const props = this.data.properties;
-    for (const [key, val] of Object.entries(props)) {
-      if (this.isDependantOnField(field, props, key, val)) {
-        this.loadDynamicData(val, enumData => {
-          props[key].enum = enumData;
+  updateDynamicData(fieldPath) {
+    for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
+      if (val.dependencies.includes(fieldPath)) {
+        this.loadDynamicData(key, enumData => {
+          const { target } = val;
+          this.dynamicFieldData[target] = enumData;
           this.requestUpdate();
         });
       }
@@ -187,7 +201,9 @@ export class MistForm extends LitElement {
             properties,
             this,
             enumData => {
-              this.data.properties[name].enum = enumData;
+              this.dynamicDataNamespace[properties['x-mist-enum']].target =
+                properties.fieldPath;
+              this.dynamicFieldData[properties.fieldPath] = enumData;
               this.requestUpdate();
             }
           )}${FieldTemplates.helpText(properties)}`
@@ -222,11 +238,14 @@ export class MistForm extends LitElement {
   }
 
   // Public methods
-  loadDynamicData(props, cb) {
+  loadDynamicData(dynamicDataName, cb) {
     if (this.dynamicDataNamespace) {
-      this.dynamicDataNamespace[props['x-mist-enum']].func
+      this.dynamicDataNamespace[dynamicDataName].func
+        // func is a promise
+        // getEnumData is the function returned by the promise. We pass the values of the form there
         .then(getEnumData => {
-          cb(getEnumData(this.formValues));
+          const formValues = this.getValuesfromDOM(this.shadowRoot);
+          cb(getEnumData(formValues));
         })
         .catch(error => {
           console.error('Error loading dynamic data: ', error);
@@ -239,18 +258,17 @@ export class MistForm extends LitElement {
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
       const el = e.path[0];
-      const field = el.name;
-      const { value } = e.detail;
+      const [field, value] = Object.entries(getFieldValue(el))[0];
       let update = false;
-
       this.updateState(field, value, el);
-      this.updateDynamicData(field);
+
+      this.updateDynamicData(el.fieldPath, value);
 
       // TODO inspect if this works for booleans
       if (!this.data.allOf) {
         return;
       }
-      // Check
+      // Check if this works for subforms
       this.data.allOf.forEach(conditional => {
         const condition = conditional.if.properties;
         const result = conditional.then.properties;
@@ -295,10 +313,12 @@ export class MistForm extends LitElement {
   constructor() {
     super();
     this.allFieldsValid = false;
-    this.formValues = {};
+    this.dynamicFieldData = {};
   }
 
   firstUpdated() {
+    console.log('this.dynamicDataSpace ', this.dynamicDataNamespace);
+
     this.getJSON(this.src);
   }
 
@@ -306,7 +326,7 @@ export class MistForm extends LitElement {
     this.allFieldsValid = formFieldsValid(this.shadowRoot, true);
   }
 
-  renderInputs(inputs, subforms) {
+  renderInputs(inputs, subforms, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       const [name, properties] = input;
@@ -322,7 +342,9 @@ export class MistForm extends LitElement {
 
         // const subForm = subforms.find(el => el[0] === properties.subform.$ref)[1];
         // todo give unique ids to fields here?
-
+        const parentPath = path
+          ? [path, properties.name].join('.')
+          : properties.name;
         const subFormInputs = Object.keys(subForm.properties).map(key => [
           key,
           {
@@ -330,8 +352,14 @@ export class MistForm extends LitElement {
             hidden: properties.hidden || subForm.properties[key].hidden,
           },
         ]);
-        properties.inputs = this.renderInputs(subFormInputs, subforms);
+
+        properties.inputs = this.renderInputs(
+          subFormInputs,
+          subforms,
+          parentPath
+        );
       }
+      properties.fieldPath = path ? [path, name].join('.') : name;
       return this.getTemplate(name, properties);
     });
   }
@@ -345,10 +373,9 @@ export class MistForm extends LitElement {
         key,
         jsonProperties[key],
       ]);
-      const subforms = Object.keys(jsonDefinitions).map(key => [
-        key,
-        jsonDefinitions[key],
-      ]);
+      const subforms =
+        jsonDefinitions &&
+        Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
 
       return html`
         <div>${this.data.label}</div>

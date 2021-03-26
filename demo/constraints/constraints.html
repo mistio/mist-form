@@ -7,7 +7,7 @@
         background: #fafafa;
       }
       mist-form {
-        --mist-form-border: 2px solid red;
+        --mist-form-border: 2px solid white;
       }
     </style>
   </head>
@@ -36,15 +36,26 @@
       import '@polymer/iron-ajax/iron-ajax.js';
       import '@polymer/paper-icon-button/paper-icon-button.js';
       import '@polymer/iron-icons/iron-icons.js';
+      import '@polymer/iron-selector/iron-selector.js';
       import '../../mist-form.js';
 
       const jsonUrl = 'constraints.json';
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
-
+      const constraintsData = {
+        getDefaultActions: {
+          func: new Promise((resolve, reject) => {
+              resolve(formValues => {
+                const values = formValues && formValues.expiration && formValues.expiration.actions && formValues.expiration.actions.available;
+                return values || [];
+              });
+          }),
+          dependencies: ['expiration.actions.available'],
+        },
+      };
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method}>
+        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
           <iron-ajax
             slot="formRequest"
             id="formAjax"

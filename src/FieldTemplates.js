@@ -31,30 +31,36 @@ export const FieldTemplates = {
     'paper-toggle-button',
     'paper-checkbox',
     'paper-radio-group',
+    'iron-selector.checkbox-group',
     'duration-field',
     'field-element',
     'div.subform-container',
   ],
   string(name, props, mistForm, cb) {
+    const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
-      props,
+      _props,
       'x-mist-enum'
     );
-    const hasEnum = Object.prototype.hasOwnProperty.call(props, 'enum');
+    const dynamicData = mistForm.dynamicFieldData[_props.fieldPath];
+    if (isDynamic && dynamicData) {
+      _props.enum = dynamicData;
+    }
+    const hasEnum = Object.prototype.hasOwnProperty.call(_props, 'enum');
     // If a field has dynamic data, load the data and then re-render as a normal dropdown
-    if (isDynamic && !hasEnum) {
+    if (isDynamic && dynamicData === undefined) {
       // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
-      mistForm.loadDynamicData(props, cb);
+      mistForm.loadDynamicData(_props['x-mist-enum'], cb);
       // Dropdown
     } else if (hasEnum) {
-      const format = props.format || 'dropdown';
-      return FieldTemplates[format](name, props, mistForm);
+      const format = _props.format || 'dropdown';
+      return FieldTemplates[format](name, _props, mistForm);
       // Text area
-    } else if (props.format === 'textarea') {
-      return this.textArea(name, props, mistForm);
+    } else if (_props.format === 'textarea') {
+      return this.textArea(name, _props, mistForm);
       // Input field
     } else {
-      return this.input(name, props, mistForm);
+      return this.input(name, _props, mistForm);
     }
     return FieldTemplates.spinner;
   },
@@ -84,6 +90,26 @@ export const FieldTemplates = {
         >`
     )}
   </paper-radio-group>`,
+  checkboxGroup: (name, props, mistForm) => html`
+    <iron-selector
+      .name=${name}
+      ...="${spreadProps(props)}"
+      .label="${getLabel(props)}"
+      ?excludeFromPayload="${props.excludeFromPayload}"
+      @selected-values-changed=${mistForm.dispatchValueChangedEvent}
+      class="checkbox-group"
+      attr-for-selected="key"
+      selected-attribute="checked"
+      multi
+    >
+      ${props.enum.map(
+        item =>
+          html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
+            >${item}</paper-checkbox
+          >`
+      )}
+    </iron-selector>
+  `,
   input: (name, props, mistForm) => html`<paper-input
     .name=${name}
     @value-changed=${mistForm.dispatchValueChangedEvent}
@@ -111,12 +137,14 @@ export const FieldTemplates = {
     value=""
     >${props.label}</paper-checkbox
   >`,
-  durationField: (name, props, mistForm) =>
+  // TODO: Add send changed event to mistform
+  durationField: (name, props) =>
     html`<duration-field
       .name=${name}
       ...="${spreadProps(props)}"
     ></duration-field>`,
-  fieldElement: (name, props, mistForm) =>
+  // TODO: Add send changed event to mistform
+  fieldElement: (name, props) =>
     html`<field-element
       .name=${name}
       ...="${spreadProps(props)}"
@@ -132,9 +160,9 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
       name=${props.name}
       ?excludeFromPayload="${!showFields}"
-      class="subform-container"
+      class="subform-container ${props.fieldsVisible ? 'open' : ''}"
     >
-      <span class="subform-name">${props.label}</span>
+      <span class="subform-name">${!props.hasToggle ? props.label : ''}</span>
 
       ${props.hasToggle &&
       html` <paper-toggle-button
