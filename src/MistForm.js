@@ -8,7 +8,8 @@ import { FieldTemplates } from './FieldTemplates.js';
 // For now, they need to define a subform container and a corresponding subform
 // TODO: Check validations
 const displayCancelButton = (canClose = true) =>
-  canClose ? FieldTemplates.button('Cancel') : '';
+// TODO: Add functionality to cancel button
+  canClose ? FieldTemplates.button('Cancel', null, null, 'cancel-btn') : '';
 
 const getFieldValue = input => {
   let value;
@@ -39,6 +40,7 @@ const getSubformFromRef = (subforms, ref) => {
 };
 // Traverse all fields in DOM and validate them
 function formFieldsValid(root, isValid) {
+  console.log("isValid ", isValid)
   const nodeList = getFirstLevelChildren(root);
   let formValid = isValid;
   nodeList.forEach(node => {
@@ -132,11 +134,12 @@ export class MistForm extends LitElement {
       } else if (notExcluded) {
         const inputValue = getFieldValue(node);
         const isInvalid = node.validate ? !node.validate() : false;
+        const notEmpty = Object.values(inputValue)[0] !== undefined && Object.values(inputValue)[0] !== "";
         if (isInvalid) {
           this.allFieldsValid = false;
-        } else if (Object.values(inputValue)[0] !== undefined) {
+        } else if (notEmpty) {
           // If the input has a value of undefined and wasn't required, don't add it
-          formValues = { ...formValues, ...getFieldValue(node) };
+          formValues = { ...formValues, ...inputValue };
         }
       }
     });
@@ -145,7 +148,7 @@ export class MistForm extends LitElement {
   }
 
   updateState() {
-    this.allFieldsValid = formFieldsValid(this.shadowRoot, true);
+    this.allFieldsValid = formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
   }
 
   updateFieldByConditions(props, fieldName, key, val) {
@@ -321,9 +324,12 @@ export class MistForm extends LitElement {
 
     this.getJSON(this.src);
   }
-
+  isEmpty() {
+    const values = this.getValuesfromDOM(this.shadowRoot);
+    return Object.keys(values).length === 0;
+  }
   updated() {
-    this.allFieldsValid = formFieldsValid(this.shadowRoot, true);
+    this.allFieldsValid = formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
   }
 
   renderInputs(inputs, subforms, path) {
@@ -378,7 +384,7 @@ export class MistForm extends LitElement {
         Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
 
       return html`
-        <div>${this.data.label}</div>
+        <div class="mist-header">${this.data.label}</div>
         ${this.renderInputs(inputs, subforms)}
 
         <div>
@@ -386,7 +392,8 @@ export class MistForm extends LitElement {
           ${FieldTemplates.button(
             this.data.submitButtonLabel || 'Submit',
             this.submitForm,
-            !this.allFieldsValid
+            !this.allFieldsValid,
+            'submit-btn'
           )}
         </div>
         <div class="formError">${this.formError}</div>

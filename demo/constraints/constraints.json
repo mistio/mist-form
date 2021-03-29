@@ -5,7 +5,7 @@
 	"label":"Constraints",
 	"description":"Constraints form",
 	"submitButtonLabel":"Add",
-	"canClose":false,
+	"canClose":true,
 	"additionalProperties":false,
 	"properties":{
 	  "costConstraintContainer":{

@@ -15,6 +15,7 @@
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format": "npm run format:eslint && npm run format:prettier",
     "test": "karma start --coverage",
+    "test:cypress": "./node_modules/.bin/cypress open",
     "test:watch": "karma start --auto-watch=true --single-run=false",
     "storybook": "start-storybook",
     "storybook:build": "build-storybook"
@@ -39,17 +40,18 @@
     "lit-html": "^1.1.2"
   },
   "devDependencies": {
+    "@open-wc/demoing-storybook": "^2.0.0",
+    "@open-wc/eslint-config": "^2.0.0",
+    "@open-wc/testing": "^2.0.0",
+    "@open-wc/testing-karma": "^3.0.0",
+    "cypress": "^6.8.0",
+    "deepmerge": "^3.2.0",
     "es-dev-server": "^1.23.0",
     "eslint": "^6.1.0",
-    "@open-wc/eslint-config": "^2.0.0",
-    "prettier": "^2.0.4",
     "eslint-config-prettier": "^6.11.0",
     "husky": "^1.0.0",
     "lint-staged": "^10.0.0",
-    "@open-wc/testing-karma": "^3.0.0",
-    "deepmerge": "^3.2.0",
-    "@open-wc/testing": "^2.0.0",
-    "@open-wc/demoing-storybook": "^2.0.0"
+    "prettier": "^2.0.4"
   },
   "eslintConfig": {
     "rules": {
