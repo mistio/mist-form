@@ -8,7 +8,7 @@ import { FieldTemplates } from './FieldTemplates.js';
 // For now, they need to define a subform container and a corresponding subform
 // TODO: Check validations
 const displayCancelButton = (canClose = true) =>
-// TODO: Add functionality to cancel button
+  // TODO: Add functionality to cancel button
   canClose ? FieldTemplates.button('Cancel', null, null, 'cancel-btn') : '';
 
 const getFieldValue = input => {
@@ -28,6 +28,18 @@ const getFieldValue = input => {
   };
 };
 
+const valueNotEmpty = value => {
+  if (
+    Array.isArray(value) ||
+    typeof value === 'string' ||
+    typeof value === 'object'
+  ) {
+    return Object.keys(value).length > 0;
+  } else {
+    return value !== undefined;
+  }
+};
+
 // Get first level input children
 const getFirstLevelChildren = root =>
   [...root.children].filter(child =>
@@ -40,7 +52,6 @@ const getSubformFromRef = (subforms, ref) => {
 };
 // Traverse all fields in DOM and validate them
 function formFieldsValid(root, isValid) {
-  console.log("isValid ", isValid)
   const nodeList = getFirstLevelChildren(root);
   let formValid = isValid;
   nodeList.forEach(node => {
@@ -65,7 +76,8 @@ export class MistForm extends LitElement {
       data: { type: Object },
       dataError: { type: Object },
       formError: { type: String },
-      allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button
+      allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
+      value: { type: Object },
     };
   }
 
@@ -130,16 +142,25 @@ export class MistForm extends LitElement {
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.classList.contains('subform-container') && notExcluded) {
-        formValues[node.getAttribute('name')] = this.getValuesfromDOM(node);
+        const domValues = this.getValuesfromDOM(node);
+        if (!valueNotEmpty(domValues)) {
+          return;
+        }
+        if (node.omitTitle) {
+          formValues = { ...formValues, ...domValues };
+        } else {
+          formValues[node.getAttribute('name')] = domValues;
+        }
       } else if (notExcluded) {
-        const inputValue = getFieldValue(node);
+        const input = getFieldValue(node);
+        const inputValue = Object.values(input)[0];
         const isInvalid = node.validate ? !node.validate() : false;
-        const notEmpty = Object.values(inputValue)[0] !== undefined && Object.values(inputValue)[0] !== "";
+        const notEmpty = valueNotEmpty(inputValue);
         if (isInvalid) {
           this.allFieldsValid = false;
         } else if (notEmpty) {
           // If the input has a value of undefined and wasn't required, don't add it
-          formValues = { ...formValues, ...inputValue };
+          formValues = { ...formValues, ...input };
         }
       }
     });
@@ -148,7 +169,8 @@ export class MistForm extends LitElement {
   }
 
   updateState() {
-    this.allFieldsValid = formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+    this.allFieldsValid =
+      formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
   }
 
   updateFieldByConditions(props, fieldName, key, val) {
@@ -234,6 +256,7 @@ export class MistForm extends LitElement {
           params,
         },
       });
+      this.value = params;
       slot.dispatchEvent(event);
     } else {
       this.formError = 'There was a problem with the form';
@@ -317,11 +340,10 @@ export class MistForm extends LitElement {
     super();
     this.allFieldsValid = false;
     this.dynamicFieldData = {};
+    this.value = {};
   }
 
   firstUpdated() {
-    console.log('this.dynamicDataSpace ', this.dynamicDataNamespace);
-
     this.getJSON(this.src);
   }
   isEmpty() {
@@ -329,7 +351,8 @@ export class MistForm extends LitElement {
     return Object.keys(values).length === 0;
   }
   updated() {
-    this.allFieldsValid = formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+    this.allFieldsValid =
+      formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
   }
 
   renderInputs(inputs, subforms, path) {

@@ -23,3 +23,17 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('paperTextAreaType', (locator, text) => {
+  const input = cy
+    .get(locator, {
+      includeShadowDom: true,
+    })
+    .find('textarea');
+  input.type(text, { force: true, delay: 150 });
+  input.then(el => {
+    cy.window().then(win => {
+      el[0].dispatchEvent(new win.Event('input', { composed: true }));
+    });
+  });
+});

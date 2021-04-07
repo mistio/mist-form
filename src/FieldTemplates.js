@@ -37,7 +37,7 @@ export const FieldTemplates = {
     'div.subform-container',
   ],
   string(name, props, mistForm, cb) {
-    const _props = {...props};
+    const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
       _props,
       'x-mist-enum'
@@ -91,20 +91,24 @@ export const FieldTemplates = {
     )}
   </paper-radio-group>`,
   checkboxGroup: (name, props, mistForm) => html`
-  <iron-selector
-  .name=${name}
-  ...="${spreadProps(props)}"
-  .label="${getLabel(props)}"
-  ?excludeFromPayload="${props.excludeFromPayload}"
-  @selected-values-changed=${mistForm.dispatchValueChangedEvent}
-  class="checkbox-group" attr-for-selected="key" selected-attribute="checked" multi>
-  ${props.enum.map(
-    item =>
-      html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
-        >${item}</paper-checkbox
-      >`
-  )}
-</iron-selector>
+    <iron-selector
+      .name=${name}
+      ...="${spreadProps(props)}"
+      .label="${getLabel(props)}"
+      ?excludeFromPayload="${props.excludeFromPayload}"
+      @selected-values-changed=${mistForm.dispatchValueChangedEvent}
+      class="checkbox-group"
+      attr-for-selected="key"
+      selected-attribute="checked"
+      multi
+    >
+      ${props.enum.map(
+        item =>
+          html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
+            >${item}</paper-checkbox
+          >`
+      )}
+    </iron-selector>
   `,
   input: (name, props, mistForm) => html`<paper-input
     .name=${name}
@@ -134,29 +138,32 @@ export const FieldTemplates = {
     >${props.label}</paper-checkbox
   >`,
   // TODO: Add send changed event to mistform
-  durationField: (name, props) =>
+  durationField: (name, props, mistForm) =>
     html`<duration-field
       .name=${name}
       ...="${spreadProps(props)}"
+      @value-changed=${mistForm.dispatchValueChangedEvent}
     ></duration-field>`,
   // TODO: Add send changed event to mistform
-  fieldElement: (name, props) =>
+  fieldElement: (name, props, mistForm) =>
     html`<field-element
       .name=${name}
       ...="${spreadProps(props)}"
+      @value-changed=${mistForm.dispatchValueChangedEvent}
     ></field-element>`,
   // Subform container
   object: (name, props, mistForm) => {
     // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
     // TODO: Add/Remove class to subform when showing/hiding subform contents for styling
+    // TODO: Create component for subform which returns a value so I don't need to find the values in MistForm
     const showFields = props.fieldsVisible || !props.hasToggle;
     return html`<div
       id="${props.id}-subform"
       ...="${spreadProps(props)}"
       name=${props.name}
       ?excludeFromPayload="${!showFields}"
-      class="subform-container ${props.fieldsVisible ? 'open': ''}"
+      class="subform-container ${props.fieldsVisible ? 'open' : ''}"
     >
       <span class="subform-name">${!props.hasToggle ? props.label : ''}</span>
 
@@ -176,7 +183,12 @@ export const FieldTemplates = {
   },
   spinner: html`<paper-spinner active></paper-spinner>`,
   // Submit button should be disabled until all required fields are filled
-  button: (title = 'Submit', tapFunc, isDisabled = false, className = '') => html` <paper-button
+  button: (
+    title = 'Submit',
+    tapFunc,
+    isDisabled = false,
+    className = ''
+  ) => html` <paper-button
     class="${className} btn-block"
     raised
     @tap="${tapFunc}"

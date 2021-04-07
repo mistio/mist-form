@@ -69,13 +69,25 @@ class DurationField extends LitElement {
       this.textValue && this.unitValue
         ? `${this.textValue}${this.unitValue}`
         : undefined;
+    let event = new CustomEvent('value-changed', {
+      detail: {
+        value: this.value,
+      },
+    });
+
+    this.dispatchEvent(event);
   }
 
   validate() {
-    return (
-      !!(this.textValue && this.unitValue) ||
-      !!(!this.textValue && !this.unitValue)
-    );
+    if (!this.textValue) {
+      return true;
+    } else {
+      return (
+        (parseInt(this.textValue, 10) &&
+          !!(this.textValue && this.unitValue)) ||
+        !!(!this.textValue && !this.unitValue)
+      );
+    }
   }
 
   render() {
@@ -88,9 +100,8 @@ class DurationField extends LitElement {
         type="number"
         autovalidate="true"
         excludeFromPayload
-      >
-        @value-changed=${this.updateTextValue} ></paper-input
-      >
+        @value-changed=${this.updateTextValue}
+      ></paper-input>
       <paper-dropdown-menu excludeFromPayload>
         <paper-listbox
           @selected-changed=${this.updateUnitValue}

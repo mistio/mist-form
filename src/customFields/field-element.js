@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import './field-row.js';
 
 class FieldElement extends LitElement {
   static get properties() {
@@ -33,20 +32,25 @@ class FieldElement extends LitElement {
         width: 20%;
         display: inline-block;
       }
+
+      th {
+        text-align: left;
+      }
     `;
   }
 
   addField() {
-    console.log('add field');
     this.value.push({});
-    console.log('fields ', this.value);
     this.requestUpdate();
+    this.valueChanged();
   }
   updateNameValue(name, index) {
     this.value[index].name = name;
+    this.valueChanged();
   }
   updateShowValue(show, index) {
     this.value[index].show = show;
+    this.valueChanged();
   }
 
   removeRow(indexToRemove) {
@@ -55,15 +59,24 @@ class FieldElement extends LitElement {
       ...this.value.slice(indexToRemove + 1),
     ];
     this.requestUpdate();
+    this.valueChanged();
   }
 
   validate() {
     // Check that all fields have a name
     const noFieldsEmpty = this.value.every(field => field.name);
-    console.log('noFieldsEmpty ', noFieldsEmpty);
-    return true;
+    return noFieldsEmpty;
   }
 
+  valueChanged() {
+    let event = new CustomEvent('value-changed', {
+      detail: {
+        value: this.value,
+      },
+    });
+
+    this.dispatchEvent(event);
+  }
   render() {
     return html` <table style="width:100%">
       <tr>
@@ -93,9 +106,9 @@ class FieldElement extends LitElement {
             <td>
               <paper-icon-button
                 icon="icons:close"
-                alt="open docs"
-                title="open docs"
-                class="docs"
+                alt="Remove field"
+                title="Remove field"
+                class="remove"
                 @tap=${() => {
                   this.removeRow(index);
                 }}
@@ -104,7 +117,6 @@ class FieldElement extends LitElement {
             </td>
           </tr>
         `;
-        //return html`<tr><field-row id="row-${index}" .value=${field} .index=${index} @remove-row=${this.removeRow} @value-changed=${this.updateValue} excludeFromPayload></field-row></tr>`;
       })}
       <tr>
         <td>
@@ -116,8 +128,9 @@ class FieldElement extends LitElement {
             @tap=${this.addField}
           >
           </paper-icon-button>
+          Add a new field
         </td>
-        <td>Add a new field</td>
+        <td></td>
         <td></td>
       </tr>
     </table>`;

@@ -63,8 +63,9 @@
             .contentType="application/json"
             .submit=${this}
             @mist-form-request=${function (e) {
-              this.params = e.detail.params;
-              console.log("this.params ", this.params)
+              this.params = JSON.stringify(e.detail.params);
+              console.log("JSON.parse ", JSON.parse(this.params));
+              console.log("this params ", this.params)
               this.generateRequest();
             }}
             @response=${() => {
