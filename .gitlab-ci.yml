@@ -1,0 +1,19 @@
+stages:
+  - test
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .npm/
+
+test:
+  image: node:latest
+  stage: test
+  script:
+    # install dependencies
+    - npm install
+    # start the server in the background
+    - npm run start &
+    # run Cypress tests
+    - npm run test:cypress
