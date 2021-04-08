@@ -1,0 +1,13 @@
+stages:
+  - test
+
+test:
+  image: node:latest
+  stage: test
+  script:
+    # install dependencies
+    - npm install
+    # start the server in the background
+    - npm run start &
+    # run Cypress tests
+    - npm run test:cypress
