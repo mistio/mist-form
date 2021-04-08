@@ -1,12 +1,6 @@
 import { html, css, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
 
-// TODO: Clean up code when I'm done
-// - Convert data.properties to array for easier handling
-// TODO: The user should have the option to either attach a subform to a subform container
-// This way, they can either have a subform that they repeat multiple times, or just unique ones
-// For now, they need to define a subform container and a corresponding subform
-// TODO: Check validations
 const displayCancelButton = (canClose = true) =>
   // TODO: Add functionality to cancel button
   canClose ? FieldTemplates.button('Cancel', null, null, 'cancel-btn') : '';
@@ -238,10 +232,6 @@ export class MistForm extends LitElement {
   }
 
   submitForm() {
-    // TODO: just add a class to elements to be able to select stuff
-    // TODO: Just search for elements on the top level. If an element is a subform, get its children
-    // if one of them is a subform get it's children and so on.
-
     const params = this.getValuesfromDOM(this.shadowRoot);
 
     if (Object.keys(params).length === 0) {
@@ -290,7 +280,7 @@ export class MistForm extends LitElement {
 
       this.updateDynamicData(el.fieldPath, value);
 
-      // TODO inspect if this works for booleans
+      // TODO: inspect if this works for booleans
       if (!this.data.allOf) {
         return;
       }
@@ -369,8 +359,6 @@ export class MistForm extends LitElement {
           properties.properties.subform.$ref
         );
 
-        // const subForm = subforms.find(el => el[0] === properties.subform.$ref)[1];
-        // todo give unique ids to fields here?
         const parentPath = path
           ? [path, properties.name].join('.')
           : properties.name;

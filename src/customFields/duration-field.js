@@ -52,7 +52,6 @@ class DurationField extends LitElement {
   }
   updateTextValue(e) {
     if (!e.detail.value) {
-      //TODO: Check if this is working
       this.shadowRoot.querySelector('paper-listbox').selectIndex(0);
     }
 

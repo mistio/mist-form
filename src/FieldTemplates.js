@@ -137,14 +137,12 @@ export const FieldTemplates = {
     value=""
     >${props.label}</paper-checkbox
   >`,
-  // TODO: Add send changed event to mistform
   durationField: (name, props, mistForm) =>
     html`<duration-field
       .name=${name}
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></duration-field>`,
-  // TODO: Add send changed event to mistform
   fieldElement: (name, props, mistForm) =>
     html`<field-element
       .name=${name}
@@ -155,8 +153,8 @@ export const FieldTemplates = {
   object: (name, props, mistForm) => {
     // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
-    // TODO: Add/Remove class to subform when showing/hiding subform contents for styling
     // TODO: Create component for subform which returns a value so I don't need to find the values in MistForm
+    // Subform should be attached to subform container in json
     const showFields = props.fieldsVisible || !props.hasToggle;
     return html`<div
       id="${props.id}-subform"
