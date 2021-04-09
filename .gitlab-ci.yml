@@ -38,7 +38,7 @@ install:
 # two jobs that run after "install" job finishes
 # NPM dependencies and Cypress binary should be already installed
 cypress-e2e:
-  image: cypress/base:10
+  image: cypress/browsers:latest
   stage: test
   script:
     - $(npm bin)/cypress run
@@ -53,7 +53,7 @@ cypress-e2e:
         - results/TEST-*.xml
 
 cypress-e2e-chrome:
-  image: cypress/browsers:chrome67
+  image: cypress/browsers:latest
   stage: test
   script:
     - $(npm bin)/cypress run --browser chrome
