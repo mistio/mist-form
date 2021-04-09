@@ -24,7 +24,7 @@ cache:
 
 # this job installs NPM dependencies and Cypress
 install:
-  image: cypress/base:10
+  image: cypress/browsers:latest
   stage: build
 
   script:
