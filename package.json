@@ -15,8 +15,7 @@
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format": "npm run format:eslint && npm run format:prettier",
     "test": "karma start --coverage",
-    "test:cypress": "./node_modules/.bin/cypress run --browser chrome",
-    "test:cypress-gui": "./node_modules/.bin/cypress open",
+    "test:cypress": "./node_modules/.bin/cypress open",
     "test:watch": "karma start --auto-watch=true --single-run=false",
     "storybook": "start-storybook",
     "storybook:build": "build-storybook"
