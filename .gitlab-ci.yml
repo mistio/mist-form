@@ -8,7 +8,7 @@ cache:
     - .npm/
 
 test:
-  image: node:latest
+  image: cypress/node:latest
   stage: test
   script:
     # install dependencies
