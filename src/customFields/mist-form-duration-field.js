@@ -1,7 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+
 // TODO: Set required property that gives error if element has empty value
 class DurationField extends LitElement {
   static get properties() {
@@ -33,20 +31,31 @@ class DurationField extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: block;
-        color: var(--mist-form-duration-text-color, black);
+        display: flex;
+        color: var(--mist-form-duration-text-color, rgba(0, 0, 0, 0.54));
         background: var(--mist-form-duration-background-color, white);
         font-family: var(--mist-form-duration-font-family, Roboto);
+        margin: 0 10px;
+        padding-left: 22px;
+        padding-bottom: 10px;
       }
-
+      .subform-container > :host {
+        padding-left: 0;
+      }
       paper-input {
-        width: 50%;
+        width: 55%;
         display: inline-block;
         margin-right: 20px;
+        margin-left: auto;
       }
       paper-dropdown-menu {
         width: 20%;
         display: inline-block;
+        margin-right: 20px;
+      }
+      .label {
+        margin-top: auto;
+        margin-bottom: 5px;
       }
     `;
   }
@@ -91,7 +100,7 @@ class DurationField extends LitElement {
 
   render() {
     // TODO: Style this like the other element labels
-    return html` <span>${this.label}</span>
+    return html` <span class="label">${this.label}</span>
       <paper-input
         step="1"
         min=${this.min}
@@ -113,4 +122,4 @@ class DurationField extends LitElement {
   }
 }
 
-customElements.define('duration-field', DurationField);
+customElements.define('mist-form-duration-field', DurationField);

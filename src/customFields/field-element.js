@@ -18,15 +18,17 @@ class FieldElement extends LitElement {
     return css`
       :host {
         display: block;
+        padding:10px;
         color: var(--mist-form-field-element-text-color, black);
         background: var(--mist-form-field-element-background-color, white);
         font-family: var(--mist-form-field-element-font-family, Roboto);
       }
 
       paper-input {
-        width: 50%;
+        width: 80%;
         display: inline-block;
         margin-right: 20px;
+        margin-top: -20px;
       }
       paper-dropdown-menu {
         width: 20%;
@@ -35,6 +37,13 @@ class FieldElement extends LitElement {
 
       th {
         text-align: left;
+      }
+      .show-header, .checkbox-cell {
+        text-align: center;
+      }
+      .label {
+        margin-top: auto;
+        margin-bottom: 15px;
       }
     `;
   }
@@ -81,7 +90,7 @@ class FieldElement extends LitElement {
     return html` <table style="width:100%">
       <tr>
         <th>Field name</th>
-        <th>Show</th>
+        <th class="show-header">Show</th>
         <th></th>
       </tr>
       ${this.value.map((field, index) => {
@@ -95,7 +104,7 @@ class FieldElement extends LitElement {
                 }}
               ></paper-input>
             </td>
-            <td>
+            <td class="checkbox-cell">
               <paper-checkbox
                 .checked=${field.show}
                 @checked-changed=${e => {

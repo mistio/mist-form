@@ -1,9 +1,9 @@
 import { html, css, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
 
-const displayCancelButton = (canClose = true) =>
+const displayCancelButton = (canClose = true, mistForm) =>
   // TODO: Add functionality to cancel button
-  canClose ? FieldTemplates.button('Cancel', null, null, 'cancel-btn') : '';
+  canClose ? FieldTemplates.button('Cancel', () => {mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'))}, null, 'cancel-btn') : '';
 
 const getFieldValue = input => {
   let value;
@@ -79,6 +79,7 @@ export class MistForm extends LitElement {
     return css`
       :host {
         display: block;
+        margin: 20px 10px;
         color: var(--mist-form-text-color, black);
         background-color: var(--mist-form-background-color, white);
         font-family: var(--mist-form-font-family, Roboto);
@@ -90,6 +91,9 @@ export class MistForm extends LitElement {
         color: var(--mist-subform-text-color, black);
         background-color: var(--mist-subform-background-color, white);
       }
+      .subform-container > .subform-container > mist-form-duration-field {
+        padding-left: 0;
+      }
       .subform-container.open {
         color: var(--mist-subform-text-color, black);
         background-color: var(--mist-subform-background-color, #ebebeb);
@@ -97,9 +101,46 @@ export class MistForm extends LitElement {
       .subform-name {
         font-weight: bold;
       }
+      .paper-toggle-button {
+        font-weight: bold;
+      }
+      .buttons {
+        text-align: right;
+      }
+      paper-checkbox {
+        padding-top: 13px;
+        margin-right: 10px;
+        --paper-checkbox-checked-color: #2196f3;
+        --paper-checkbox-checked-ink-color: #2196f3;
+      }
+      .helpText {
+        font-size: 14px;
+        align-self: center;
+        color: rgba(0, 0, 0, 0.54);
+        margin-left: 10px;
+      }
+      .submit-btn:not([disabled]) {
+        color: white;
+        background-color: #2196f3;
+      }
+
       :host *([hidden]) {
         display: none;
       }
+      .mist-form-field-element {
+        margin-top: 10px;
+        margin-left: 10px;
+      }
+      btn-block {
+        margin-top: 10px;
+      }
+      paper-input {
+        --paper-input-container-label: {
+          color: #4b4b4bl
+          font-size: 22px;
+        };
+      }
+
     `;
   }
 
@@ -247,6 +288,7 @@ export class MistForm extends LitElement {
         },
       });
       this.value = params;
+      this.dispatchEvent(event);
       slot.dispatchEvent(event);
     } else {
       this.formError = 'There was a problem with the form';
@@ -398,8 +440,8 @@ export class MistForm extends LitElement {
         <div class="mist-header">${this.data.label}</div>
         ${this.renderInputs(inputs, subforms)}
 
-        <div>
-          ${displayCancelButton(this.data.canClose)}
+        <div class="buttons">
+          ${displayCancelButton(this.data.canClose, this)}
           ${FieldTemplates.button(
             this.data.submitButtonLabel || 'Submit',
             this.submitForm,

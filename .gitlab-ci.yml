@@ -42,6 +42,8 @@ cypress-e2e-chrome:
   image: cypress/browsers:latest
   stage: test
   script:
+    - npm install
+    - npm run start &
     - $(npm bin)/cypress run --browser chrome
   artifacts:
     expire_in: 1 week

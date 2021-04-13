@@ -1,6 +1,6 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
-import './customFields/duration-field.js';
+import './customFields/mist-form-duration-field.js';
 import './customFields/field-element.js';
 
 // TODO: For now I only spread props, I should spread attributes too
@@ -32,7 +32,7 @@ export const FieldTemplates = {
     'paper-checkbox',
     'paper-radio-group',
     'iron-selector.checkbox-group',
-    'duration-field',
+    'mist-form-duration-field',
     'field-element',
     'div.subform-container',
   ],
@@ -68,7 +68,10 @@ export const FieldTemplates = {
     .name=${name}
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
+    class="mist-form-field-element"
     ?excludeFromPayload="${props.excludeFromPayload}"
+    no-animations=""
+    .noAnimations=""
     @value-changed=${mistForm.dispatchValueChangedEvent}
   >
     <paper-listbox class="dropdown-content" slot="dropdown-content">
@@ -79,6 +82,7 @@ export const FieldTemplates = {
     .name=${name}
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
+    class="mist-form-field-element"
     ?excludeFromPayload="${props.excludeFromPayload}"
     @selected-changed=${mistForm.dispatchValueChangedEvent}
   >
@@ -97,7 +101,7 @@ export const FieldTemplates = {
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
       @selected-values-changed=${mistForm.dispatchValueChangedEvent}
-      class="checkbox-group"
+      class="checkbox-group mist-form-field-element"
       attr-for-selected="key"
       selected-attribute="checked"
       multi
@@ -112,6 +116,7 @@ export const FieldTemplates = {
   `,
   input: (name, props, mistForm) => html`<paper-input
     .name=${name}
+    class="mist-form-field-element"
     @value-changed=${mistForm.dispatchValueChangedEvent}
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
@@ -123,6 +128,7 @@ export const FieldTemplates = {
   </paper-input>`,
   textArea: (name, props, mistForm) => html`<paper-textarea
     .name=${name}
+    class="mist-form-field-element"
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
     .label="${getLabel(props)}"
@@ -131,6 +137,7 @@ export const FieldTemplates = {
   ></paper-textarea>`,
   boolean: (name, props, mistForm) => html`<paper-checkbox
     .name=${name}
+    class="mist-form-field-element"
     ...="${spreadProps(props)}"
     @checked-changed=${mistForm.dispatchValueChangedEvent}
     ?excludeFromPayload="${props.excludeFromPayload}"
@@ -138,14 +145,16 @@ export const FieldTemplates = {
     >${props.label}</paper-checkbox
   >`,
   durationField: (name, props, mistForm) =>
-    html`<duration-field
+    html`<mist-form-duration-field
       .name=${name}
+      class="mist-form-field-element"
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
-    ></duration-field>`,
+    ></mist-form-duration-field>`,
   fieldElement: (name, props, mistForm) =>
     html`<field-element
       .name=${name}
+      class="mist-form-field-element"
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></field-element>`,
@@ -195,7 +204,7 @@ export const FieldTemplates = {
   >`,
   helpText: ({ helpUrl, helpText }) =>
     helpUrl
-      ? html` <div>
+      ? html` <div class="helpText">
           ${helpText}<a href="${helpUrl}" target="new">
             <paper-icon-button
               icon="icons:help"
@@ -206,5 +215,5 @@ export const FieldTemplates = {
             </paper-icon-button>
           </a>
         </div>`
-      : html`<div>${helpText}</div>`,
+      : html`<div class="helpText">${helpText}</div>`,
 };
