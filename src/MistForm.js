@@ -3,7 +3,16 @@ import { FieldTemplates } from './FieldTemplates.js';
 
 const displayCancelButton = (canClose = true, mistForm) =>
   // TODO: Add functionality to cancel button
-  canClose ? FieldTemplates.button('Cancel', () => {mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'))}, null, 'cancel-btn') : '';
+  canClose
+    ? FieldTemplates.button(
+        'Cancel',
+        () => {
+          mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'));
+        },
+        null,
+        'cancel-btn'
+      )
+    : '';
 
 const getFieldValue = input => {
   let value;
@@ -22,6 +31,8 @@ const getFieldValue = input => {
   };
 };
 
+const getNestedValueFromPath = (path, obj) =>
+  path.split('.').reduce((p, c) => p && p[c], obj);
 const valueNotEmpty = value => {
   if (
     Array.isArray(value) ||
@@ -29,9 +40,8 @@ const valueNotEmpty = value => {
     typeof value === 'object'
   ) {
     return Object.keys(value).length > 0;
-  } else {
-    return value !== undefined;
   }
+  return value !== undefined;
 };
 
 // Get first level input children
@@ -72,6 +82,9 @@ export class MistForm extends LitElement {
       formError: { type: String },
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
       value: { type: Object },
+      initialValues: { type: Object },
+      firstRender: { type: Boolean },
+      subformOpenStates: { type: Object },
     };
   }
 
@@ -311,6 +324,14 @@ export class MistForm extends LitElement {
     }
   }
 
+  setSubformState(fieldPath, state) {
+    this.subformOpenStates[fieldPath] = state;
+  }
+
+  getSubformState(fieldPath) {
+    return this.subformOpenStates[fieldPath];
+  }
+
   dispatchValueChangedEvent(e) {
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
@@ -320,7 +341,7 @@ export class MistForm extends LitElement {
       let update = false;
       this.updateState(field, value, el);
 
-      this.updateDynamicData(el.fieldPath, value);
+      this.updateDynamicData(el.fieldPath);
 
       // TODO: inspect if this works for booleans
       if (!this.data.allOf) {
@@ -373,18 +394,25 @@ export class MistForm extends LitElement {
     this.allFieldsValid = false;
     this.dynamicFieldData = {};
     this.value = {};
+    this.subformOpenStates = {};
+    this.firstRender = true;
   }
 
   firstUpdated() {
     this.getJSON(this.src);
   }
+
   isEmpty() {
     const values = this.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
   }
+
   updated() {
     this.allFieldsValid =
       formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+    if (this.firstUpdated) {
+      this.firstUpdated = false;
+    }
   }
 
   renderInputs(inputs, subforms, path) {
@@ -400,10 +428,15 @@ export class MistForm extends LitElement {
           subforms,
           properties.properties.subform.$ref
         );
+        let parentPath;
+        if (properties.omitTitle) {
+          parentPath = path || '';
+        } else {
+          parentPath = path
+            ? [path, properties.name].join('.')
+            : properties.name;
+        }
 
-        const parentPath = path
-          ? [path, properties.name].join('.')
-          : properties.name;
         const subFormInputs = Object.keys(subForm.properties).map(key => [
           key,
           {
@@ -411,14 +444,30 @@ export class MistForm extends LitElement {
             hidden: properties.hidden || subForm.properties[key].hidden,
           },
         ]);
-
         properties.inputs = this.renderInputs(
           subFormInputs,
           subforms,
           parentPath
         );
       }
-      properties.fieldPath = path ? [path, name].join('.') : name;
+      const fieldName = properties.type === 'object' ? properties.name : name;
+      properties.fieldPath = path ? [path, name].join('.') : fieldName;
+      if (this.initialValues) {
+        const initialValue = getNestedValueFromPath(
+          properties.fieldPath,
+          this.initialValues
+        );
+        if (initialValue !== undefined) {
+          if (properties.type === 'object') {
+            if (this.firstRender) {
+              properties.fieldsVisible = true;
+            }
+          } else {
+            const valueProperty = FieldTemplates.getValueProperty(properties);
+            properties[valueProperty] = initialValue;
+          }
+        }
+      }
       return this.getTemplate(name, properties);
     });
   }

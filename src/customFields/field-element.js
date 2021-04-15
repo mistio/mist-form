@@ -18,7 +18,7 @@ class FieldElement extends LitElement {
     return css`
       :host {
         display: block;
-        padding:10px;
+        padding: 10px;
         color: var(--mist-form-field-element-text-color, black);
         background: var(--mist-form-field-element-background-color, white);
         font-family: var(--mist-form-field-element-font-family, Roboto);
@@ -38,7 +38,8 @@ class FieldElement extends LitElement {
       th {
         text-align: left;
       }
-      .show-header, .checkbox-cell {
+      .show-header,
+      .checkbox-cell {
         text-align: center;
       }
       .label {
@@ -53,10 +54,12 @@ class FieldElement extends LitElement {
     this.requestUpdate();
     this.valueChanged();
   }
+
   updateNameValue(name, index) {
     this.value[index].name = name;
     this.valueChanged();
   }
+
   updateShowValue(show, index) {
     this.value[index].show = show;
     this.valueChanged();
@@ -78,7 +81,7 @@ class FieldElement extends LitElement {
   }
 
   valueChanged() {
-    let event = new CustomEvent('value-changed', {
+    const event = new CustomEvent('value-changed', {
       detail: {
         value: this.value,
       },
@@ -86,6 +89,11 @@ class FieldElement extends LitElement {
 
     this.dispatchEvent(event);
   }
+
+  connectedCallback() {
+    super.connectedCallback();
+  }
+
   render() {
     return html` <table style="width:100%">
       <tr>

@@ -83,7 +83,7 @@
 			"autoValidate":true,
 			"helpText":"A minimum of 1 is required."
 		  },
-		  "showToggle":{
+		  "show":{
 			"label":"Show field",
 			"name":"show",
 			"id":"show",
@@ -175,6 +175,7 @@
 		"properties":{
 		  "field":{
 			"label":"Fields",
+			"name": "field",
 			"type":"fieldElement"
 		  }
 		}

@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-
 // TODO: Set required property that gives error if element has empty value
 class DurationField extends LitElement {
   static get properties() {
@@ -59,6 +58,7 @@ class DurationField extends LitElement {
       }
     `;
   }
+
   updateTextValue(e) {
     if (!e.detail.value) {
       this.shadowRoot.querySelector('paper-listbox').selectIndex(0);
@@ -67,17 +67,19 @@ class DurationField extends LitElement {
     this.textValue = e.detail.value;
     this.updateValue();
   }
+
   updateUnitValue(e) {
-    this.unitValue = this.units[e.detail.value].value;
+    this.unitValue = e.detail.value;
     this.updateValue();
   }
+
   updateValue() {
     // if values valid, set value to new value, or else set to undefined
     this.value =
       this.textValue && this.unitValue
         ? `${this.textValue}${this.unitValue}`
         : undefined;
-    let event = new CustomEvent('value-changed', {
+    const event = new CustomEvent('value-changed', {
       detail: {
         value: this.value,
       },
@@ -89,12 +91,18 @@ class DurationField extends LitElement {
   validate() {
     if (!this.textValue) {
       return true;
-    } else {
-      return (
-        (parseInt(this.textValue, 10) &&
-          !!(this.textValue && this.unitValue)) ||
-        !!(!this.textValue && !this.unitValue)
-      );
+    }
+    return (
+      (parseInt(this.textValue, 10) && !!(this.textValue && this.unitValue)) ||
+      !!(!this.textValue && !this.unitValue)
+    );
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.value) {
+      this.textValue = this.value.replace(/[^0-9]/g, '');
+      this.unitValue = this.value.match(/\D/g).join('');
     }
   }
 
@@ -102,21 +110,27 @@ class DurationField extends LitElement {
     // TODO: Style this like the other element labels
     return html` <span class="label">${this.label}</span>
       <paper-input
-        step="1"
-        min=${this.min}
-        max=${this.max}
+        .step="1"
+        .min=${this.min}
+        .max=${this.max}
         type="number"
         autovalidate="true"
         excludeFromPayload
+        .value="${this.textValue}"
         @value-changed=${this.updateTextValue}
       ></paper-input>
-      <paper-dropdown-menu excludeFromPayload>
+      <paper-dropdown-menu no-animations="" excludeFromPayload>
         <paper-listbox
           @selected-changed=${this.updateUnitValue}
           class="dropdown-content"
           slot="dropdown-content"
+          attr-for-selected="value"
+          selected="${this.unitValue}"
         >
-          ${this.units.map(unit => html`<paper-item>${unit.name}</paper-item>`)}
+          ${this.units.map(
+            unit =>
+              html`<paper-item value="${unit.value}">${unit.name}</paper-item>`
+          )}
         </paper-listbox>
       </paper-dropdown-menu>`;
   }

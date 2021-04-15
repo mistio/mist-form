@@ -36,6 +36,15 @@ export const FieldTemplates = {
     'field-element',
     'div.subform-container',
   ],
+  getValueProperty: props => {
+    if (props.format === 'checkboxGroup') {
+      return 'selectedValues';
+    }
+    if (props.type === 'boolean') {
+      return 'checked';
+    }
+    return 'value';
+  },
   string(name, props, mistForm, cb) {
     const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
@@ -71,11 +80,18 @@ export const FieldTemplates = {
     class="mist-form-field-element"
     ?excludeFromPayload="${props.excludeFromPayload}"
     no-animations=""
-    .noAnimations=""
+    attr-for-selected="value"
     @value-changed=${mistForm.dispatchValueChangedEvent}
   >
-    <paper-listbox class="dropdown-content" slot="dropdown-content">
-      ${props.enum.map(item => html`<paper-item>${item}</paper-item>`)}
+    <paper-listbox
+      attr-for-selected="value"
+      selected="${props.value}"
+      class="dropdown-content"
+      slot="dropdown-content"
+    >
+      ${props.enum.map(
+        item => html`<paper-item value="${item}">${item}</paper-item>`
+      )}
     </paper-listbox>
   </paper-dropdown-menu>`,
   radioGroup: (name, props, mistForm) => html` <paper-radio-group
@@ -135,15 +151,16 @@ export const FieldTemplates = {
     ?excludeFromPayload="${props.excludeFromPayload}"
     @value-changed=${mistForm.dispatchValueChangedEvent}
   ></paper-textarea>`,
-  boolean: (name, props, mistForm) => html`<paper-checkbox
-    .name=${name}
-    class="mist-form-field-element"
-    ...="${spreadProps(props)}"
-    @checked-changed=${mistForm.dispatchValueChangedEvent}
-    ?excludeFromPayload="${props.excludeFromPayload}"
-    value=""
-    >${props.label}</paper-checkbox
-  >`,
+  boolean: (name, props, mistForm) =>
+    html`<paper-checkbox
+      .name=${name}
+      class="mist-form-field-element"
+      ...="${spreadProps(props)}"
+      @checked-changed=${mistForm.dispatchValueChangedEvent}
+      ?excludeFromPayload="${props.excludeFromPayload}"
+      value=""
+      >${props.label}</paper-checkbox
+    >`,
   durationField: (name, props, mistForm) =>
     html`<mist-form-duration-field
       .name=${name}
@@ -164,13 +181,19 @@ export const FieldTemplates = {
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
     // TODO: Create component for subform which returns a value so I don't need to find the values in MistForm
     // Subform should be attached to subform container in json
-    const showFields = props.fieldsVisible || !props.hasToggle;
+    if (mistForm.getSubformState(props.fieldPath) === undefined) {
+      mistForm.setSubformState(
+        props.fieldPath,
+        props.fieldsVisible || !props.hasToggle
+      );
+    }
+    const showFields = mistForm.getSubformState(props.fieldPath);
     return html`<div
       id="${props.id}-subform"
       ...="${spreadProps(props)}"
       name=${props.name}
       ?excludeFromPayload="${!showFields}"
-      class="subform-container ${props.fieldsVisible ? 'open' : ''}"
+      class="subform-container ${showFields ? 'open' : ''}"
     >
       <span class="subform-name">${!props.hasToggle ? props.label : ''}</span>
 
@@ -178,9 +201,9 @@ export const FieldTemplates = {
       html` <paper-toggle-button
         .name="${props.name}-toggle"
         excludeFromPayload
-        .checked="${props.fieldsVisible}"
+        .checked="${showFields}"
         @checked-changed="${e => {
-          props.fieldsVisible = e.detail.value;
+          mistForm.setSubformState(props.fieldPath, e.detail.value);
           mistForm.requestUpdate();
         }}"
         >${props.label}</paper-toggle-button

@@ -25,15 +25,30 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('paperTextAreaType', (locator, text) => {
-  const input = cy
-    .get(locator, {
-      includeShadowDom: true,
-    })
-    .find('textarea');
-  input.type(text, { force: true, delay: 150 });
-  input.then(el => {
-    cy.window().then(win => {
-      el[0].dispatchEvent(new win.Event('input', { composed: true }));
+  cy.get(locator, {
+    includeShadowDom: true,
+  })
+    .find('textarea')
+    .type(text, { force: true, delay: 150 });
+  cy.get(locator, {
+    includeShadowDom: true,
+  })
+    .find('textarea')
+    .then(el => {
+      cy.window().then(win => {
+        el[0].dispatchEvent(new win.Event('input', { composed: true }));
+      });
     });
-  });
+});
+
+Cypress.Commands.add('testPaperDropdownSelected', (locator, text) => {
+  cy.get(locator, {
+    includeShadowDom: true,
+  })
+    .find('paper-dropdown-menu')
+    .find('paper-item.iron-selected')
+    .should('have.attr', 'value')
+    .then(value => {
+      expect(value).to.equal(text);
+    });
 });
