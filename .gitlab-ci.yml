@@ -6,6 +6,7 @@
 stages:
   - build
   - test
+  - exit
 
 # to cache both npm modules and Cypress binary we use environment variables
 # to point at the folders we can list as paths in "cache" job settings
@@ -45,6 +46,7 @@ cypress-e2e-chrome:
     - npm install
     - npm run start &
     - $(npm bin)/cypress run --browser chrome
+    - exit 0
   artifacts:
     expire_in: 1 week
     when: always
