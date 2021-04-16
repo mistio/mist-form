@@ -20,6 +20,8 @@ const getConvertedProps = props => {
 
   return newProps;
 };
+const isEvenOrOdd = fieldPath =>
+  fieldPath.split('.').length % 2 ? 'odd' : 'even';
 
 const getLabel = props => (props.required ? `${props.label} *` : props.label);
 
@@ -77,7 +79,7 @@ export const FieldTemplates = {
     .name=${name}
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    class="mist-form-field-element"
+    class="mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
     no-animations=""
     attr-for-selected="value"
@@ -98,7 +100,7 @@ export const FieldTemplates = {
     .name=${name}
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    class="mist-form-field-element"
+    class="mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
     @selected-changed=${mistForm.dispatchValueChangedEvent}
   >
@@ -117,7 +119,7 @@ export const FieldTemplates = {
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
       @selected-values-changed=${mistForm.dispatchValueChangedEvent}
-      class="checkbox-group mist-form-field-element"
+      class="checkbox-group mist-form-input"
       attr-for-selected="key"
       selected-attribute="checked"
       multi
@@ -132,7 +134,7 @@ export const FieldTemplates = {
   `,
   input: (name, props, mistForm) => html`<paper-input
     .name=${name}
-    class="mist-form-field-element"
+    class="mist-form-input"
     @value-changed=${mistForm.dispatchValueChangedEvent}
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
@@ -144,7 +146,7 @@ export const FieldTemplates = {
   </paper-input>`,
   textArea: (name, props, mistForm) => html`<paper-textarea
     .name=${name}
-    class="mist-form-field-element"
+    class="mist-form-input"
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
     .label="${getLabel(props)}"
@@ -154,7 +156,7 @@ export const FieldTemplates = {
   boolean: (name, props, mistForm) =>
     html`<paper-checkbox
       .name=${name}
-      class="mist-form-field-element"
+      class="mist-form-input"
       ...="${spreadProps(props)}"
       @checked-changed=${mistForm.dispatchValueChangedEvent}
       ?excludeFromPayload="${props.excludeFromPayload}"
@@ -164,14 +166,14 @@ export const FieldTemplates = {
   durationField: (name, props, mistForm) =>
     html`<mist-form-duration-field
       .name=${name}
-      class="mist-form-field-element"
+      class="mist-form-input"
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></mist-form-duration-field>`,
   fieldElement: (name, props, mistForm) =>
     html`<field-element
       .name=${name}
-      class="mist-form-field-element"
+      class="mist-form-input"
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></field-element>`,
@@ -193,7 +195,9 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
       name=${props.name}
       ?excludeFromPayload="${!showFields}"
-      class="subform-container ${showFields ? 'open' : ''}"
+      class="subform-container ${showFields ? 'open' : ''} ${isEvenOrOdd(
+        props.fieldPath
+      )}"
     >
       <span class="subform-name">${!props.hasToggle ? props.label : ''}</span>
 

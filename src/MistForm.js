@@ -13,7 +13,15 @@ const displayCancelButton = (canClose = true, mistForm) =>
         'cancel-btn'
       )
     : '';
-
+const displaySubmitButton = mistForm =>
+  FieldTemplates.button(
+    mistForm.data.submitButtonLabel || 'Submit',
+    () => {
+      mistForm.submitForm(mistForm);
+    },
+    !mistForm.allFieldsValid,
+    'submit-btn'
+  );
 const getFieldValue = input => {
   let value;
   if (
@@ -92,7 +100,8 @@ export class MistForm extends LitElement {
     return css`
       :host {
         display: block;
-        margin: 20px 10px;
+        margin: 0px 10px 20px;
+        padding-bottom: 20px;
         color: var(--mist-form-text-color, black);
         background-color: var(--mist-form-background-color, white);
         font-family: var(--mist-form-font-family, Roboto);
@@ -107,9 +116,11 @@ export class MistForm extends LitElement {
       .subform-container > .subform-container > mist-form-duration-field {
         padding-left: 0;
       }
-      .subform-container.open {
-        color: var(--mist-subform-text-color, black);
+      .subform-container.open.odd {
         background-color: var(--mist-subform-background-color, #ebebeb);
+      }
+      .subform-container.open.even {
+        background-color: white;
       }
       .subform-name {
         font-weight: bold;
@@ -140,7 +151,7 @@ export class MistForm extends LitElement {
       :host *([hidden]) {
         display: none;
       }
-      .mist-form-field-element {
+      .mist-form-input {
         margin-top: 10px;
         margin-left: 10px;
       }
@@ -302,7 +313,9 @@ export class MistForm extends LitElement {
       });
       this.value = params;
       this.dispatchEvent(event);
-      slot.dispatchEvent(event);
+      if (slot) {
+        slot.dispatchEvent(event);
+      }
     } else {
       this.formError = 'There was a problem with the form';
     }
@@ -491,12 +504,7 @@ export class MistForm extends LitElement {
 
         <div class="buttons">
           ${displayCancelButton(this.data.canClose, this)}
-          ${FieldTemplates.button(
-            this.data.submitButtonLabel || 'Submit',
-            this.submitForm,
-            !this.allFieldsValid,
-            'submit-btn'
-          )}
+          ${displaySubmitButton(this)}
         </div>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
