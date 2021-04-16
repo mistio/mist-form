@@ -18,8 +18,7 @@
     "test:cypress": "./node_modules/.bin/cypress open",
     "test:watch": "karma start --auto-watch=true --single-run=false",
     "storybook": "start-storybook",
-    "storybook:build": "build-storybook",
-    "ci": "start-server-and-test 'npm start' http://localhost:8000 '$(npm bin)/cypress run --browser chrome'"
+    "storybook:build": "build-storybook"
   },
   "dependencies": {
     "@open-wc/lit-helpers": "^0.3.11",
@@ -53,8 +52,7 @@
     "eslint-plugin-cypress": "^2.11.2",
     "husky": "^1.0.0",
     "lint-staged": "^10.0.0",
-    "prettier": "^2.0.4",
-    "start-server-and-test": "^1.12.1"
+    "prettier": "^2.0.4"
   },
   "eslintConfig": {
     "rules": {
