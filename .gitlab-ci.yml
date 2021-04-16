@@ -41,12 +41,13 @@ install:
 cypress-e2e-chrome:
   image: cypress/browsers:latest
   stage: test
-  script:
+  before_script:
     - npm install
-    - npm run start &
-    - echo $! > pid &
+    - ./start.sh
+  script:
     - $(npm bin)/cypress run --browser chrome
-    - kill $pid
+  after_script:
+    - pkill -9 node
   artifacts:
     expire_in: 1 week
     when: always
