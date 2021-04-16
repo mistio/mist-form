@@ -46,7 +46,7 @@ cypress-e2e-chrome:
     - npm run start &
     - echo $! > pid &
     - $(npm bin)/cypress run --browser chrome
-    - kill pid
+    - kill $pid
   artifacts:
     expire_in: 1 week
     when: always
