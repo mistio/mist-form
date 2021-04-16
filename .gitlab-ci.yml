@@ -44,7 +44,7 @@ cypress-e2e-chrome:
   stage: test
   script:
     - npm install
-    - ci
+    - npm run ci
   artifacts:
     expire_in: 1 week
     when: always
