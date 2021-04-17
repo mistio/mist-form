@@ -19,3 +19,7 @@
 /_site/
 /dist/
 /out-tsc/
+
+# test files
+/cypress/screenshots/
+/cypress/videos/
