@@ -230,6 +230,7 @@
 			"id":"allowed",
 			"type":"string",
 			"format":"textarea",
+			"saveAsArray": true,
 			"helpText":"Please enter comma separated names, ids or external ids",
 			"error-message":"Please enter comma separated names, ids or external ids"
 		  },
@@ -239,6 +240,7 @@
 			"id":"not_allowed",
 			"type":"string",
 			"format":"textarea",
+			"saveAsArray": true,
 			"helpText":"Please enter comma separated names, ids or external ids",
 			"error-message":"Please enter comma separated names, ids or external ids"
 		  },

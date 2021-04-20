@@ -218,8 +218,8 @@ describe('Size constraints', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           size: {
-            allowed: 'test1, test2, test3',
-            not_allowed: 'test4',
+            allowed: ['test1', 'test2', 'test3'],
+            not_allowed: ['test4'],
             cpu: {
               min: '100',
               max: '200',
