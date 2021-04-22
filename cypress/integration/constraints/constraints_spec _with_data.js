@@ -227,8 +227,8 @@ describe('Constraints form with data', () => {
             max_total_run_rate: '200',
           },
           size: {
-            allowed: 'test1, test2, test3',
-            not_allowed: 'test4',
+            allowed: ['test1', 'test2', 'test3'],
+            not_allowed: ['test4'],
             cpu: {
               min: '100',
               max: '200',

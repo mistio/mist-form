@@ -213,6 +213,11 @@ export class MistForm extends LitElement {
       } else if (notExcluded) {
         const input = getFieldValue(node);
         const inputValue = Object.values(input)[0];
+        if (node.saveAsArray && inputValue) {
+          input[Object.keys(input)[0]] = inputValue
+            .split(',')
+            .map(val => val.trim());
+        }
         const isInvalid = node.validate ? !node.validate() : false;
         const notEmpty = valueNotEmpty(inputValue);
         if (isInvalid) {
