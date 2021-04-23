@@ -223,30 +223,30 @@ describe('Constraints form with data', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           cost: {
-            max_team_run_rate: '100',
-            max_total_run_rate: '200',
+            max_team_run_rate: 100,
+            max_total_run_rate: 200,
           },
           size: {
-            allowed: ['test1', 'test2', 'test3'],
+            allowed: ['test1', 'test2', 'test3', { cpu: 1, ram: 768 }],
             not_allowed: ['test4'],
             cpu: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: false,
             },
             ram: {
-              min: '200',
-              max: '300',
+              min: 200,
+              max: 300,
               show: false,
             },
             disk: {
-              min: '400',
-              max: '500',
+              min: 400,
+              max: 500,
               show: true,
             },
             swap_disk: {
-              min: '600',
-              max: '700',
+              min: 600,
+              max: 700,
               show: true,
             },
           },

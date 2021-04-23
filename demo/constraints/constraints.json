@@ -93,6 +93,42 @@
 		  }
 		}
 	  },
+	  "cpuRamDiskSubform":{
+		"id":"cpu_ram_disk_subform",
+		"type":"object",
+		"properties":{
+		  "cpu":{
+			"label":"Cpu",
+			"id":"cpu",
+			"type":"string",
+			"format":"number",
+			"value":"",
+			"minimum":1,
+			"autoValidate":true,
+			"helpText":"A minimum of 1 is required"
+		  },
+		  "ram":{
+			"label":"Ram",
+			"id":"ram",
+			"type":"string",
+			"format":"number",
+			"value":"",
+			"minimum":1,
+			"autoValidate":true,
+			"helpText":"A minimum of 1 is required."
+		  },
+		  "disk":{
+			"label":"Disk",
+			"id":"disk",
+			"type":"string",
+			"format":"number",
+			"value":"",
+			"minimum":1,
+			"autoValidate":true,
+			"helpText":"A minimum of 1 is required."
+		  }
+		}
+	  },
 	  "notifySubform":{
 		"id":"notify_subform",
 		"type":"object",
@@ -220,29 +256,88 @@
 		  }
 		}
 	  },
+	  "allowedSubform": {
+		  "label": "Allowed",
+		  "type": "object",
+		  "flatten": true,
+		  "properties": {
+			"allowed":{
+				"label":"Allowed",
+				"name":"allowed",
+				"id":"allowed",
+				"type":"string",
+				"format":"textarea",
+				"saveAsArray": true,
+				"helpText":"Please enter comma separated names, ids or external ids",
+				"error-message":"Please enter comma separated names, ids or external ids"
+			  },
+			  "allowed_size":{
+				"name":"allowed_size",
+				"label":"Allowed size",
+				"id":"allowed_size",
+				"type":"object",
+				"properties":{
+				  "subform":{
+					"$ref":"#/definitions/cpuRamDiskSubform"
+				  }
+				}
+			  }
+		  }
+	  },
+	  "notAllowedSubform": {
+		"label": "Not Allowed",
+		"type": "object",
+		"properties": {
+		  "not_allowed":{
+			  "label":"Not allowed",
+			  "name":"not allowed",
+			  "id":"not_allowed",
+			  "type":"string",
+			  "format":"textarea",
+			  "saveAsArray": true,
+			  "helpText":"Please enter comma separated names, ids or external ids",
+			  "error-message":"Please enter comma separated names, ids or external ids"
+			},
+			"not_allowed_size":{
+				"name":"not_allowed_size",
+				"label":"Not allowed size",
+				"id":"not_allowed_size",
+				"type":"object",
+				"properties":{
+				  "subform":{
+					"$ref":"#/definitions/cpuRamDiskSubform"
+				  }
+				}
+			  }
+		}
+	},
 	  "sizeConstraints":{
 		"id":"size_constraints",
 		"type":"object",
 		"properties":{
 		  "allowed":{
-			"label":"Allowed",
 			"name":"allowed",
-			"id":"allowed",
-			"type":"string",
-			"format":"textarea",
-			"saveAsArray": true,
-			"helpText":"Please enter comma separated names, ids or external ids",
-			"error-message":"Please enter comma separated names, ids or external ids"
+			"label":"Allowed",
+			"id":"allowed_constraint",
+			"type":"object",
+			"flatten": true,
+			"properties":{
+			  "subform":{
+				"$ref":"#/definitions/allowedSubform"
+			  }
+			}
 		  },
 		  "not_allowed":{
-			"label":"Not allowed",
 			"name":"not_allowed",
-			"id":"not_allowed",
-			"type":"string",
-			"format":"textarea",
-			"saveAsArray": true,
-			"helpText":"Please enter comma separated names, ids or external ids",
-			"error-message":"Please enter comma separated names, ids or external ids"
+			"label":"Not allowed",
+			"id":"not_allowed_constraint",
+			"type":"object",
+			"flatten": true,
+			"properties":{
+			  "subform":{
+				"$ref":"#/definitions/notAllowedSubform"
+			  }
+			}
 		  },
 		  "cpu":{
 			"name":"cpu",

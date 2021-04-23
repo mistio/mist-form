@@ -26,10 +26,42 @@ describe('Size constraints', () => {
       .find('#size_constraint_container')
       .should('have.class', 'open');
     cy.get('mist-form')
-      .find('#size_constraint_container > #allowed')
+      .find('#size_constraint_container > #allowed_constraint > #allowed')
       .should('be.visible');
     cy.get('mist-form')
-      .find('#size_constraint_container > #not_allowed')
+      .find(
+        '#size_constraint_container > #allowed_constraint > #allowed_size > #cpu'
+      )
+      .should('be.visible');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #allowed_constraint > #allowed_size > #ram'
+      )
+      .should('be.visible');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #allowed_constraint > #allowed_size > #disk'
+      )
+      .should('be.visible');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #not_allowed_constraint > #not_allowed'
+      )
+      .should('be.visible');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #not_allowed_constraint > #not_allowed_size > #cpu'
+      )
+      .should('be.visible');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #not_allowed_constraint > #not_allowed_size > #ram'
+      )
+      .should('be.visible');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #not_allowed_constraint > #not_allowed_size > #disk'
+      )
       .should('be.visible');
     cy.get('mist-form')
       .find('#size_constraint_container > #cpu_constraint')
@@ -157,10 +189,27 @@ describe('Size constraints', () => {
 
   it('Clicking submit button should give object', () => {
     cy.paperTextAreaType(
-      '#size_constraint_container > #allowed',
+      '#size_constraint_container > #allowed_constraint > #allowed',
       'test1, test2, test3'
     );
-    cy.paperTextAreaType('#size_constraint_container > #not_allowed', 'test4');
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #allowed_constraint > #allowed_size > #cpu'
+      )
+      .find('input')
+      .clear({ force: true })
+      .type('1', { force: true });
+    cy.get('mist-form')
+      .find(
+        '#size_constraint_container > #allowed_constraint > #allowed_size > #ram'
+      )
+      .find('input')
+      .clear({ force: true })
+      .type('768', { force: true });
+    cy.paperTextAreaType(
+      '#size_constraint_container > #not_allowed_constraint > #not_allowed',
+      'test4'
+    );
     cy.get('mist-form')
       .find('#size_constraint_container > #cpu_constraint > #min')
       .find('input')
@@ -218,26 +267,26 @@ describe('Size constraints', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           size: {
-            allowed: ['test1', 'test2', 'test3'],
+            allowed: ['test1', 'test2', 'test3', { cpu: 1, ram: 768 }],
             not_allowed: ['test4'],
             cpu: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: false,
             },
             ram: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: true,
             },
             disk: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: false,
             },
             swap_disk: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: true,
             },
           },

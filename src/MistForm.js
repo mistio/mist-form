@@ -1,84 +1,7 @@
 import { html, css, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
+import * as util from './utilities.js';
 
-const displayCancelButton = (canClose = true, mistForm) =>
-  // TODO: Add functionality to cancel button
-  canClose
-    ? FieldTemplates.button(
-        'Cancel',
-        () => {
-          mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'));
-        },
-        null,
-        'cancel-btn'
-      )
-    : '';
-const displaySubmitButton = mistForm =>
-  FieldTemplates.button(
-    mistForm.data.submitButtonLabel || 'Submit',
-    () => {
-      mistForm.submitForm(mistForm);
-    },
-    !mistForm.allFieldsValid,
-    'submit-btn'
-  );
-const getFieldValue = input => {
-  let value;
-  if (
-    input.getAttribute('role') === 'checkbox' ||
-    input.getAttribute('role') === 'button'
-  ) {
-    value = input.checked;
-  } else if (input.tagName === 'IRON-SELECTOR') {
-    value = input.selectedValues;
-  } else {
-    value = input.value;
-  }
-  return {
-    [input.name]: value,
-  };
-};
-
-const getNestedValueFromPath = (path, obj) =>
-  path.split('.').reduce((p, c) => p && p[c], obj);
-const valueNotEmpty = value => {
-  if (
-    Array.isArray(value) ||
-    typeof value === 'string' ||
-    typeof value === 'object'
-  ) {
-    return Object.keys(value).length > 0;
-  }
-  return value !== undefined;
-};
-
-// Get first level input children
-const getFirstLevelChildren = root =>
-  [...root.children].filter(child =>
-    child.matches(FieldTemplates.getInputFields())
-  );
-const getSubformFromRef = (subforms, ref) => {
-  const subformName = ref.split('/').slice(-1)[0];
-  const subForm = subforms.find(el => el[0] === subformName)[1];
-  return subForm;
-};
-// Traverse all fields in DOM and validate them
-function formFieldsValid(root, isValid) {
-  const nodeList = getFirstLevelChildren(root);
-  let formValid = isValid;
-  nodeList.forEach(node => {
-    const notExcluded = !node.hasAttribute('excludeFromPayload');
-    if (node.classList.contains('subform-container') && notExcluded) {
-      formValid = formFieldsValid(node, formValid);
-    } else if (notExcluded) {
-      const isInvalid = node.validate ? !node.validate() : false;
-      if (isInvalid) {
-        formValid = false;
-      }
-    }
-  });
-  return formValid;
-}
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -196,13 +119,13 @@ export class MistForm extends LitElement {
 
   getValuesfromDOM(root) {
     let formValues = {};
-    const nodeList = getFirstLevelChildren(root);
+    const nodeList = util.getFirstLevelChildren(root);
 
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.classList.contains('subform-container') && notExcluded) {
         const domValues = this.getValuesfromDOM(node);
-        if (!valueNotEmpty(domValues)) {
+        if (!util.valueNotEmpty(domValues)) {
           return;
         }
         if (node.omitTitle) {
@@ -211,15 +134,18 @@ export class MistForm extends LitElement {
           formValues[node.getAttribute('name')] = domValues;
         }
       } else if (notExcluded) {
-        const input = getFieldValue(node);
+        const input = util.getFieldValue(node);
         const inputValue = Object.values(input)[0];
+        if (node.type === 'number') {
+          input[Object.keys(input)[0]] = parseInt(inputValue, 10);
+        }
         if (node.saveAsArray && inputValue) {
           input[Object.keys(input)[0]] = inputValue
             .split(',')
             .map(val => val.trim());
         }
         const isInvalid = node.validate ? !node.validate() : false;
-        const notEmpty = valueNotEmpty(inputValue);
+        const notEmpty = util.valueNotEmpty(inputValue);
         if (isInvalid) {
           this.allFieldsValid = false;
         } else if (notEmpty) {
@@ -228,13 +154,15 @@ export class MistForm extends LitElement {
         }
       }
     });
-
+    if (root.flatten) {
+      formValues = Object.values(formValues).flat(1);
+    }
     return formValues;
   }
 
   updateState() {
     this.allFieldsValid =
-      formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+      util.formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
   }
 
   updateFieldByConditions(props, fieldName, key, val) {
@@ -303,7 +231,6 @@ export class MistForm extends LitElement {
 
   submitForm() {
     const params = this.getValuesfromDOM(this.shadowRoot);
-
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
     } else if (this.allFieldsValid) {
@@ -355,7 +282,7 @@ export class MistForm extends LitElement {
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
       const el = e.path[0];
-      const [field, value] = Object.entries(getFieldValue(el))[0];
+      const [field, value] = Object.entries(util.getFieldValue(el))[0];
       let update = false;
       this.updateState(field, value, el);
 
@@ -418,6 +345,9 @@ export class MistForm extends LitElement {
 
   firstUpdated() {
     this.getJSON(this.src);
+    if (this.transformInitialValues) {
+      this.initialValues = this.transformInitialValues(this.initialValues);
+    }
   }
 
   isEmpty() {
@@ -427,7 +357,7 @@ export class MistForm extends LitElement {
 
   updated() {
     this.allFieldsValid =
-      formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+      util.formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
     if (this.firstUpdated) {
       this.firstUpdated = false;
     }
@@ -442,7 +372,7 @@ export class MistForm extends LitElement {
 
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.type === 'object') {
-        const subForm = getSubformFromRef(
+        const subForm = util.getSubformFromRef(
           subforms,
           properties.properties.subform.$ref
         );
@@ -471,7 +401,7 @@ export class MistForm extends LitElement {
       const fieldName = properties.type === 'object' ? properties.name : name;
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
       if (this.initialValues) {
-        const initialValue = getNestedValueFromPath(
+        const initialValue = util.getNestedValueFromPath(
           properties.fieldPath,
           this.initialValues
         );
@@ -486,6 +416,7 @@ export class MistForm extends LitElement {
           }
         }
       }
+
       return this.getTemplate(name, properties);
     });
   }
@@ -508,8 +439,8 @@ export class MistForm extends LitElement {
         ${this.renderInputs(inputs, subforms)}
 
         <div class="buttons">
-          ${displayCancelButton(this.data.canClose, this)}
-          ${displaySubmitButton(this)}
+          ${util.displayCancelButton(this.data.canClose, this)}
+          ${util.displaySubmitButton(this)}
         </div>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>

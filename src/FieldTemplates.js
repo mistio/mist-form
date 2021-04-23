@@ -58,6 +58,10 @@ export const FieldTemplates = {
       _props.enum = dynamicData;
     }
     const hasEnum = Object.prototype.hasOwnProperty.call(_props, 'enum');
+    // If value is array convert to string
+    if (Array.isArray(_props.value)) {
+      _props.value = _props.value.join(', ');
+    }
     // If a field has dynamic data, load the data and then re-render as a normal dropdown
     if (isDynamic && dynamicData === undefined) {
       // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
