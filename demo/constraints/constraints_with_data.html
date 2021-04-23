@@ -44,95 +44,97 @@
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       const constraintsData = {
-        getDefaultActions: {
-          func: new Promise((resolve, reject) => {
-              resolve(formValues => {
-                const values = formValues && formValues.expiration && formValues.expiration.actions && formValues.expiration.actions.available;
-                return values || [];
-              });
-          }),
-          dependencies: ['expiration.actions.available'],
-        }
+          getDefaultActions: {
+              func: new Promise((resolve, reject) => {
+                  resolve(formValues => {
+                      const values = formValues && formValues.expiration && formValues.expiration.actions && formValues.expiration.actions.available;
+                      return values || [];
+                  });
+              }),
+              dependencies: ['expiration.actions.available'],
+          }
       };
       const transformInitialValues = data => {
           if (data.size && data.size.allowed) {
-            const allowed = [...data.size.allowed];
-            data.size.allowed = {};
-            if (allowed[allowed.length - 1] === Object(allowed[allowed.length - 1])) {
-              data.size.allowed.allowed_size = allowed.pop();
-              data.size.allowed.allowed = allowed;
+              const allowed = [...data.size.allowed];
+              data.size.allowed = {};
+              if (allowed[allowed.length - 1] === Object(allowed[allowed.length - 1])) {
+                  data.size.allowed.allowed_size = allowed.pop();
+                  data.size.allowed.allowed = allowed;
 
-            } else {
-              data.size.allowed.allowed = allowed;
-            }
+              } else {
+                  data.size.allowed.allowed = allowed;
+              }
 
           }
           if (data.size && data.size.not_allowed) {
-    const not_allowed = [...data.size.not_allowed];
-    data.size.not_allowed = {};
-    if (not_allowed[not_allowed.length - 1] === Object(not_allowed[not_allowed.length - 1])) {
-      data.size.not_allowed.not_allowed_size = not_allowed.pop();
-      data.size.not_allowed.not_allowed = not_allowed;
+              const not_allowed = [...data.size.not_allowed];
+              data.size.not_allowed = {};
+              if (not_allowed[not_allowed.length - 1] === Object(not_allowed[not_allowed.length - 1])) {
+                  data.size.not_allowed.not_allowed_size = not_allowed.pop();
+                  data.size.not_allowed.not_allowed = not_allowed;
 
-    } else {
-      data.size.not_allowed.not_allowed = not_allowed;
-    }
+              } else {
+                  data.size.not_allowed.not_allowed = not_allowed;
+              }
 
-  }
+          }
           return data;
-        }
+      }
       const initialValues = {
-        cost: {
-            max_team_run_rate: 100,
-            max_total_run_rate: 200,
+          cost: {
+              max_team_run_rate: 100,
+              max_total_run_rate: 200,
           },
-        size: {
-          allowed: ['test1', 'test2', 'test3', {'cpu': 1, 'ram': 768}],
-            not_allowed: ['test4'],
-            cpu: {
-              min: 100,
-              max: 200,
-              show: false,
-            },
-            ram: {
-              min: 200,
-              max: 300,
-              show: false,
-            },
-            disk: {
-              min: 400,
-              max: 500,
-              show: true,
-            },
-            swap_disk: {
-              min: 600,
-              max: 700,
-              show: true,
-            },
+          size: {
+              allowed: ['test1', 'test2', 'test3', {
+                  'cpu': 1,
+                  'ram': 768
+              }],
+              not_allowed: ['test4'],
+              cpu: {
+                  min: 100,
+                  max: 200,
+                  show: false,
+              },
+              ram: {
+                  min: 200,
+                  max: 300,
+                  show: false,
+              },
+              disk: {
+                  min: 400,
+                  max: 500,
+                  show: true,
+              },
+              swap_disk: {
+                  min: 600,
+                  max: 700,
+                  show: true,
+              },
           },
           expiration: {
-            max: '100mo',
-            default: '20w',
-            actions: {
-              available: ['destroy', 'undefine'],
-              default: 'undefine',
-            },
-            notify: {
-              default: '100w',
-              require: true,
-              msg: 'Test',
-            },
+              max: '100mo',
+              default: '20w',
+              actions: {
+                  available: ['destroy', 'undefine'],
+                  default: 'undefine',
+              },
+              notify: {
+                  default: '100w',
+                  require: true,
+                  msg: 'Test',
+              },
           },
-          field: [
-            {
-              name: 'Field2',
-            },
-            {
-              show: true,
-              name: 'Field3',
-            },
+          field: [{
+                  name: 'Field2',
+              },
+              {
+                  show: true,
+                  name: 'Field3',
+              },
           ]
-        };
+      };
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues} .transformInitialValues=${transformInitialValues}>
           <iron-ajax
