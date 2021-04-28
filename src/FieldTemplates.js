@@ -188,7 +188,8 @@ export const FieldTemplates = {
       .name=${name}
       class="mist-form-input"
       ...="${spreadProps(props)}"
-      .clouds="${mistForm.dynamicDataNamespace.clouds()}"
+      .clouds="${mistForm.dynamicDataNamespace.clouds &&
+      mistForm.dynamicDataNamespace.clouds()}"
       @value-changed="${mistForm.dispatchValueChangedEvent}"
     ></size-element>`,
   // Subform container

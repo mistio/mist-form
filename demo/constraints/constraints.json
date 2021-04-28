@@ -220,77 +220,29 @@
 		  }
 		}
 	  },
-	  "allowedSubform": {
-		  "label": "Allowed",
-		  "type": "object",
-		  "addNewField": true,
-		  "flatten": true,
-		  "properties": {
-			"allowed":{
-				"label":"Allowed",
-				"name":"allowed",
-				"id":"allowed",
-				"type":"string",
-				"format":"textarea",
-				"helpText":"Please enter comma separated names, ids or external ids",
-				"error-message":"Please enter comma separated names, ids or external ids"
-			  },
-			  "allowed_size":{
-				"name":"allowed_size",
-				"label":"Allowed size",
-				"id":"allowed_size",
-				"type":"sizeElement"
-			  }
-		  }
-	  },
-	  "notAllowedSubform": {
-		"label": "Not Allowed",
-		"type": "object",
-		"properties": {
-		  "not_allowed":{
-			  "label":"Not allowed",
-			  "name":"not allowed",
-			  "id":"not_allowed",
-			  "type":"string",
-			  "format":"textarea",
-			  "helpText":"Please enter comma separated names, ids or external ids",
-			  "error-message":"Please enter comma separated names, ids or external ids"
-			},
-			"not_allowed_size":{
-				"name":"not_allowed_size",
-				"label":"Not allowed size",
-				"id":"not_allowed_size",
-				"type":"sizeElement"
-			  }
-		}
-	},
 	  "sizeConstraints":{
 		"id":"size_constraints",
 		"type":"object",
 		"properties":{
 		  "allowed":{
-			"name":"allowed",
 			"label":"Allowed",
-			"id":"allowed_constraint",
-			"type":"object",
-			"flatten": true,
-			"properties":{
-			  "subform":{
-				"$ref":"#/definitions/allowedSubform"
-			  }
-			}
+			"name":"allowed",
+			"id":"allowed",
+			"type":"string",
+			"format":"textarea",
+			"saveAsArray": true,
+			"helpText":"Please enter comma separated names, ids or external ids",
+			"error-message":"Please enter comma separated names, ids or external ids"
 		  },
 		  "not_allowed":{
-			"name":"not_allowed",
 			"label":"Not allowed",
-			"id":"not_allowed_constraint",
-			"type":"object",
-			"flatten": true,
-			"properties":{
-			  "subform":{
-				"$ref":"#/definitions/notAllowedSubform"
-			  }
-			}
+			"name":"not_allowed",
+			"id":"not_allowed",
+			"type":"string",
+			"format":"textarea",
+			"saveAsArray": true,
+			"helpText":"Please enter comma separated names, ids or external ids",
+			"error-message":"Please enter comma separated names, ids or external ids"
 		  },
 		  "cpu":{
 			"name":"cpu",

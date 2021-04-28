@@ -54,43 +54,14 @@
               dependencies: ['expiration.actions.available'],
           }
       };
-      const transformInitialValues = data => {
-          if (data.size && data.size.allowed) {
-              const allowed = [...data.size.allowed];
-              data.size.allowed = {};
-              if (allowed[allowed.length - 1] === Object(allowed[allowed.length - 1])) {
-                  data.size.allowed.allowed_size = allowed.pop();
-                  data.size.allowed.allowed = allowed;
 
-              } else {
-                  data.size.allowed.allowed = allowed;
-              }
-
-          }
-          if (data.size && data.size.not_allowed) {
-              const not_allowed = [...data.size.not_allowed];
-              data.size.not_allowed = {};
-              if (not_allowed[not_allowed.length - 1] === Object(not_allowed[not_allowed.length - 1])) {
-                  data.size.not_allowed.not_allowed_size = not_allowed.pop();
-                  data.size.not_allowed.not_allowed = not_allowed;
-
-              } else {
-                  data.size.not_allowed.not_allowed = not_allowed;
-              }
-
-          }
-          return data;
-      }
       const initialValues = {
           cost: {
               max_team_run_rate: 100,
               max_total_run_rate: 200,
           },
           size: {
-              allowed: ['test1', 'test2', 'test3', {
-                  'cpu': 1,
-                  'ram': 768
-              }],
+              allowed: ['test1', 'test2', 'test3'],
               not_allowed: ['test4'],
               cpu: {
                   min: 100,
@@ -136,7 +107,7 @@
           ]
       };
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues} .transformInitialValues=${transformInitialValues}>
+        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues}>
           <iron-ajax
             slot="formRequest"
             id="formAjax"

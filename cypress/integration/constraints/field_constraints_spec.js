@@ -1,4 +1,4 @@
-describe('field constraints', () => {
+describe('Field constraints', () => {
   it('Opens constraints form', () => {
     cy.visit('http://localhost:8000/demo/constraints/constraints.html');
   });
@@ -34,7 +34,7 @@ describe('field constraints', () => {
   it('Submit is disabled when adding new field and not giving a name', () => {
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
-      .find('paper-icon-button')
+      .find('paper-button')
       .click({ force: true });
     cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
   });
@@ -49,7 +49,7 @@ describe('field constraints', () => {
       .click();
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
-      .find('paper-icon-button.add')
+      .find('paper-button.add')
       .click({ force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
@@ -59,7 +59,7 @@ describe('field constraints', () => {
       .type('Field1', { force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
-      .find('paper-icon-button.add')
+      .find('paper-button.add')
       .click({ force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
@@ -84,7 +84,7 @@ describe('field constraints', () => {
   it('Add another field and click submit button to get object', () => {
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
-      .find('paper-icon-button.add')
+      .find('paper-button.add')
       .click({ force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
