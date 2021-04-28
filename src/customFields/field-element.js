@@ -3,8 +3,6 @@ import { LitElement, html, css } from 'lit-element';
 class FieldElement extends LitElement {
   static get properties() {
     return {
-      greeting: { type: String },
-      data: { attribute: false },
       value: { type: Array },
     };
   }
@@ -25,14 +23,10 @@ class FieldElement extends LitElement {
       }
 
       paper-input {
-        width: 80%;
+        width: 90%;
         display: inline-block;
         margin-right: 20px;
         margin-top: -20px;
-      }
-      paper-dropdown-menu {
-        width: 20%;
-        display: inline-block;
       }
 
       th {
@@ -45,6 +39,17 @@ class FieldElement extends LitElement {
       .label {
         margin-top: auto;
         margin-bottom: 15px;
+      }
+      paper-icon-button {
+        color: #adadad;
+      }
+      .add {
+        color: #424242;
+      }
+      paper-checkbox {
+        --paper-checkbox-checked-color: #2196f3;
+        --paper-checkbox-checked-ink-color: #2196f3;
+        --paper-checkbox-unchecked-color: #424242;
       }
     `;
   }
@@ -122,7 +127,7 @@ class FieldElement extends LitElement {
             </td>
             <td>
               <paper-icon-button
-                icon="icons:close"
+                icon="icons:delete"
                 alt="Remove field"
                 title="Remove field"
                 class="remove"
@@ -137,15 +142,12 @@ class FieldElement extends LitElement {
       })}
       <tr>
         <td>
-          <paper-icon-button
-            icon="icons:add"
-            alt="Add field"
-            title="Add field"
-            class="add"
-            @tap=${this.addField}
-          >
-          </paper-icon-button>
-          Add a new field
+        <span class="addrule">
+        <paper-button @tap=${this.addField} class="add">
+          <iron-icon icon="icons:add"></iron-icon> Add a new field
+        </paper-button>
+      </span>
+
         </td>
         <td></td>
         <td></td>

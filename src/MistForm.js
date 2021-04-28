@@ -25,7 +25,7 @@ export class MistForm extends LitElement {
         display: block;
         margin: 0px 10px 20px;
         padding-bottom: 20px;
-        color: var(--mist-form-text-color, black);
+        color: var(--mist-form-text-color, #424242);
         background-color: var(--mist-form-background-color, white);
         font-family: var(--mist-form-font-family, Roboto);
       }
@@ -33,7 +33,7 @@ export class MistForm extends LitElement {
         border: var(--mist-subform-border, 1px solid white);
         margin: var(--mist-subform-margin, 10px);
         padding: var(--mist-subform-padding, 10px);
-        color: var(--mist-subform-text-color, black);
+        color: var(--mist-subform-text-color, #424242);
         background-color: var(--mist-subform-background-color, white);
       }
       .subform-container > .subform-container > mist-form-duration-field {
@@ -59,6 +59,7 @@ export class MistForm extends LitElement {
         margin-right: 10px;
         --paper-checkbox-checked-color: #2196f3;
         --paper-checkbox-checked-ink-color: #2196f3;
+        --paper-checkbox-unchecked-color: #424242;
       }
       .helpText {
         font-size: 14px;
@@ -199,7 +200,7 @@ export class MistForm extends LitElement {
 
   updateDynamicData(fieldPath) {
     for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
-      if (val.dependencies.includes(fieldPath)) {
+      if (val.dependencies && val.dependencies.includes(fieldPath)) {
         this.loadDynamicData(key, enumData => {
           const { target } = val;
           this.dynamicFieldData[target] = enumData;

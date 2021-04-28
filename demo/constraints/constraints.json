@@ -93,42 +93,6 @@
 		  }
 		}
 	  },
-	  "cpuRamDiskSubform":{
-		"id":"cpu_ram_disk_subform",
-		"type":"object",
-		"properties":{
-		  "cpu":{
-			"label":"Cpu",
-			"id":"cpu",
-			"type":"string",
-			"format":"number",
-			"value":"",
-			"minimum":1,
-			"autoValidate":true,
-			"helpText":"A minimum of 1 is required"
-		  },
-		  "ram":{
-			"label":"Ram",
-			"id":"ram",
-			"type":"string",
-			"format":"number",
-			"value":"",
-			"minimum":1,
-			"autoValidate":true,
-			"helpText":"A minimum of 1 is required."
-		  },
-		  "disk":{
-			"label":"Disk",
-			"id":"disk",
-			"type":"string",
-			"format":"number",
-			"value":"",
-			"minimum":1,
-			"autoValidate":true,
-			"helpText":"A minimum of 1 is required."
-		  }
-		}
-	  },
 	  "notifySubform":{
 		"id":"notify_subform",
 		"type":"object",
@@ -259,6 +223,7 @@
 	  "allowedSubform": {
 		  "label": "Allowed",
 		  "type": "object",
+		  "addNewField": true,
 		  "flatten": true,
 		  "properties": {
 			"allowed":{
@@ -267,7 +232,6 @@
 				"id":"allowed",
 				"type":"string",
 				"format":"textarea",
-				"saveAsArray": true,
 				"helpText":"Please enter comma separated names, ids or external ids",
 				"error-message":"Please enter comma separated names, ids or external ids"
 			  },
@@ -275,12 +239,7 @@
 				"name":"allowed_size",
 				"label":"Allowed size",
 				"id":"allowed_size",
-				"type":"object",
-				"properties":{
-				  "subform":{
-					"$ref":"#/definitions/cpuRamDiskSubform"
-				  }
-				}
+				"type":"sizeElement"
 			  }
 		  }
 	  },
@@ -294,7 +253,6 @@
 			  "id":"not_allowed",
 			  "type":"string",
 			  "format":"textarea",
-			  "saveAsArray": true,
 			  "helpText":"Please enter comma separated names, ids or external ids",
 			  "error-message":"Please enter comma separated names, ids or external ids"
 			},
@@ -302,12 +260,7 @@
 				"name":"not_allowed_size",
 				"label":"Not allowed size",
 				"id":"not_allowed_size",
-				"type":"object",
-				"properties":{
-				  "subform":{
-					"$ref":"#/definitions/cpuRamDiskSubform"
-				  }
-				}
+				"type":"sizeElement"
 			  }
 		}
 	},

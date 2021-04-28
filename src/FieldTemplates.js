@@ -2,6 +2,7 @@ import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 import './customFields/mist-form-duration-field.js';
 import './customFields/field-element.js';
+import './customFields/size-element.js';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: This file is starting to get too big. Maybe I should split it up
@@ -36,6 +37,7 @@ export const FieldTemplates = {
     'iron-selector.checkbox-group',
     'mist-form-duration-field',
     'field-element',
+    'size-element',
     'div.subform-container',
   ],
   getValueProperty: props => {
@@ -181,6 +183,14 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></field-element>`,
+  sizeElement: (name, props, mistForm) =>
+    html`<size-element
+      .name=${name}
+      class="mist-form-input"
+      ...="${spreadProps(props)}"
+      .clouds="${mistForm.dynamicDataNamespace.clouds()}"
+      @value-changed="${mistForm.dispatchValueChangedEvent}"
+    ></size-element>`,
   // Subform container
   object: (name, props, mistForm) => {
     // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
