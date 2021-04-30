@@ -88,7 +88,9 @@ export class MistForm extends LitElement {
           font-size: 22px;
         };
       }
-
+      paper-input > [slot='prefix'] {
+        margin-right: 5px;
+      }
     `;
   }
 
@@ -145,7 +147,7 @@ export class MistForm extends LitElement {
             .split(',')
             .map(val => val.trim());
         }
-        const isInvalid = node.validate ? !node.validate() : false;
+        const isInvalid = node && node.validate ? !node.validate() : false;
         const notEmpty = util.valueNotEmpty(inputValue);
         if (isInvalid) {
           this.allFieldsValid = false;
@@ -245,6 +247,7 @@ export class MistForm extends LitElement {
         },
       });
       this.value = params;
+
       this.dispatchEvent(event);
       if (slot) {
         slot.dispatchEvent(event);
@@ -332,6 +335,13 @@ export class MistForm extends LitElement {
         this.requestUpdate();
       }
     });
+    this.value = this.getValuesfromDOM(this.shadowRoot);
+    const event = new CustomEvent('mist-form-value-changed', {
+      detail: {
+        value: this.value
+      },
+    });
+    this.dispatchEvent(event);
   }
 
   // Lifecycle Methods

@@ -147,8 +147,8 @@ export const FieldTemplates = {
     .label="${getLabel(props)}"
     ?excludeFromPayload="${props.excludeFromPayload}"
   >
-    ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
-    ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+    ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
+    ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
   </paper-input>`,
   textArea: (name, props, mistForm) => html`<paper-textarea
     .name=${name}

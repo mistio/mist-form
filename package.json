@@ -1,30 +1,40 @@
 {
-  "name": "@mistio/mist-form",
-  "version": "0.2.0",
-  "description": "Webcomponent mist-form following open-wc recommendations",
-  "author": "Golfo Vasiliou <golfo@mist.io>",
-  "license": "Apache-2.0",
-  "main": "index.js",
-  "module": "index.js",
-  "scripts": {
-    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
-    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
-    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
-    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
-    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
-    "lint": "npm run lint:eslint && npm run lint:prettier",
-    "format": "npm run format:eslint && npm run format:prettier",
-    "test": "karma start --coverage",
-    "test:cypress": "./node_modules/.bin/cypress open",
-    "test:watch": "karma start --auto-watch=true --single-run=false",
-    "storybook": "start-storybook",
-    "storybook:build": "build-storybook"
+  "_from": "@mistio/mist-form@0.3.0",
+  "_id": "@mistio/mist-form@0.3.0",
+  "_inBundle": false,
+  "_integrity": "sha512-pkKe3tiSoJ5v4KXDXsOc9pxM7S+IoEdu8NieT4LCQAuGFWL6+TbBSRYxaFKBC94y6B4f+CzuUB5Gpc6lQbp/YA==",
+  "_location": "/@mistio/mist-form",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "@mistio/mist-form@0.3.0",
+    "name": "@mistio/mist-form",
+    "escapedName": "@mistio%2fmist-form",
+    "scope": "@mistio",
+    "rawSpec": "0.3.0",
+    "saveSpec": null,
+    "fetchSpec": "0.3.0"
   },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@mistio/mist-form/-/mist-form-0.3.0.tgz",
+  "_shasum": "6cd6ee5c8de4f09fb17dfec63ee8f097301d3654",
+  "_spec": "@mistio/mist-form@0.3.0",
+  "_where": "/home/fay/dev/mist-hs/ui",
+  "author": {
+    "name": "Golfo Vasiliou",
+    "email": "golfo@mist.io"
+  },
+  "bundleDependencies": false,
   "dependencies": {
     "@open-wc/lit-helpers": "^0.3.11",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2"
   },
+  "deprecated": false,
+  "description": "Webcomponent mist-form following open-wc recommendations",
   "devDependencies": {
     "@open-wc/demoing-storybook": "^2.0.0",
     "@open-wc/eslint-config": "^2.0.0",
@@ -54,6 +64,9 @@
     "lint-staged": "^10.0.0",
     "prettier": "^2.0.4"
   },
+  "directories": {
+    "test": "test"
+  },
   "eslintConfig": {
     "rules": {
       "no-console": [
@@ -75,15 +88,17 @@
       "plugin:cypress/recommended"
     ]
   },
-  "prettier": {
-    "singleQuote": true,
-    "arrowParens": "avoid"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
+  "keywords": [
+    "jsonschema",
+    "form",
+    "mist"
+  ],
+  "license": "Apache-2.0",
   "lint-staged": {
     "*.js": [
       "eslint --fix",
@@ -91,16 +106,30 @@
       "git add"
     ]
   },
-  "directories": {
-    "test": "test"
+  "main": "index.js",
+  "module": "index.js",
+  "name": "@mistio/mist-form",
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid"
   },
   "repository": {
     "type": "git",
     "url": "git@gitlab.ops.mist.io:mistio/mist-form.git"
   },
-  "keywords": [
-    "jsonschema",
-    "form",
-    "mist"
-  ]
+  "scripts": {
+    "format": "npm run format:eslint && npm run format:prettier",
+    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
+    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
+    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
+    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
+    "storybook": "start-storybook",
+    "storybook:build": "build-storybook",
+    "test": "karma start --coverage",
+    "test:cypress": "cypress open",
+    "test:watch": "karma start --auto-watch=true --single-run=false"
+  },
+  "version": "0.3.0"
 }

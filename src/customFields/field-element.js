@@ -65,6 +65,11 @@ class FieldElement extends LitElement {
     this.valueChanged();
   }
 
+  updateValueValue(value, index) {
+    this.value[index].value = value;
+    this.valueChanged();
+  }
+
   updateShowValue(show, index) {
     this.value[index].show = show;
     this.valueChanged();
@@ -103,6 +108,7 @@ class FieldElement extends LitElement {
     return html` <table style="width:100%">
       <tr>
         <th>Field name</th>
+        <th>Field value</th>
         <th class="show-header">Show</th>
         <th></th>
       </tr>
@@ -117,6 +123,14 @@ class FieldElement extends LitElement {
                 }}
               ></paper-input>
             </td>
+            <td>
+            <paper-input
+              .value=${field.value}
+              @value-changed=${e => {
+                this.updateValueValue(e.detail.value, index);
+              }}
+            ></paper-input>
+          </td>
             <td class="checkbox-cell">
               <paper-checkbox
                 .checked=${field.show}
@@ -141,7 +155,7 @@ class FieldElement extends LitElement {
         `;
       })}
       <tr>
-        <td>
+        <td colspan="2">
         <span class="addrule">
         <paper-button @tap=${this.addField} class="add">
           <iron-icon icon="icons:add"></iron-icon> Add a new field
@@ -149,8 +163,7 @@ class FieldElement extends LitElement {
       </span>
 
         </td>
-        <td></td>
-        <td></td>
+
       </tr>
     </table>`;
   }

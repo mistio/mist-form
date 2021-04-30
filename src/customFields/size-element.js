@@ -4,13 +4,15 @@ class SizeElement extends LitElement {
   static get properties() {
     return {
       value: { type: Array },
-      clouds: { type: Array}
+      clouds: { type: Array},
+      sizes: {type: Array}
     };
   }
 
   constructor() {
     super();
     this.value = [];
+    this.sizes = [];
   }
 
   static get styles() {
@@ -77,6 +79,8 @@ class SizeElement extends LitElement {
   updateCloudValue(cloudId, index) {
     this.value[index].cloud = cloudId;
     this.value[index].size = "";
+    const size = this.clouds.find(prov => prov.id === cloudId);
+    this.sizes[index] = size ?  JSON.parse(JSON.stringify(size)) : null;
     this.requestUpdate();
     this.valueChanged();
   }
@@ -85,13 +89,12 @@ class SizeElement extends LitElement {
     this.value[index].size = size;
     this.valueChanged();
   }
-
+  // origings
   getSizeFields(index) {
     const { cloud, size } = this.value[index];
-    const cloudSize = this.clouds.find(prov => prov.id === cloud);
-
+    const cloudSize = this.sizes[index];
     if (size) {
-      if (typeof size === 'object' ) {
+      if (cloudSize.size.value === 'custom' ) {
         cloudSize.size.customValue = size;
         cloudSize.size.customSizeFields.forEach(field => {
           if (size[field.name]) {
@@ -109,10 +112,46 @@ class SizeElement extends LitElement {
     return cloudSize.size;
   }
 
+  // getSizeFields(index) {
+  //   console.log("in getSizeField ")
+  //   const { cloud, size } = this.value[index];
+  //   const cloudSize = JSON.parse(JSON.stringify(this.clouds.find(prov => prov.id === cloud).size));
+  //   let customValue, customSizeFields, value;
+  //   if (size) {
+  //     if (typeof size === 'object' ) {
+  //       customValue = size;
+  //       // cloudSize.customSizeFields.forEach(field => {
+  //       //   if (size[field.name]) {
+  //       //     field.value = size[field.name];
+  //       //   }
+  //       // });
+  //       customSizeFields = cloudSize.customSizeFields.map(field => {
+  //         return ({
+  //           ...field,
+  //           value: size[field.name] || field.value
+  //         });
+  //       })
+  //     } else {
+  //       value = size;
+  //     }
+  //   }
+
+  //   if (!cloudSize) {
+  //     return false;
+  //   }
+  //   console.log("cloudSize ", cloudSize)
+  //  // return 7;
+  //   return ({...cloudSize, customValue, value, customSizeFields});
+  // }
+
   removeRow(indexToRemove) {
     this.value = [
       ...this.value.slice(0, indexToRemove),
       ...this.value.slice(indexToRemove + 1),
+    ];
+    this.sizes = [
+      ...this.sizes.slice(0, indexToRemove),
+      ...this.sizes.slice(indexToRemove + 1),
     ];
     this.requestUpdate();
     this.valueChanged();
@@ -137,6 +176,7 @@ class SizeElement extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.sizes = this.value.map(value => JSON.parse(JSON.stringify(this.clouds.find(prov => prov.id === value.cloud))));
   }
 
   render() {
@@ -182,6 +222,7 @@ class SizeElement extends LitElement {
            <div class="sizeField">
               ${this.getSizeFields(index) ? html`
               <mist-size-field
+              id="${index}"
                  .field="${this.getSizeFields(index)}"
                  @value-changed=${e =>
                   {
