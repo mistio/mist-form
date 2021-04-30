@@ -112,38 +112,6 @@ class SizeElement extends LitElement {
     return cloudSize.size;
   }
 
-  // getSizeFields(index) {
-  //   console.log("in getSizeField ")
-  //   const { cloud, size } = this.value[index];
-  //   const cloudSize = JSON.parse(JSON.stringify(this.clouds.find(prov => prov.id === cloud).size));
-  //   let customValue, customSizeFields, value;
-  //   if (size) {
-  //     if (typeof size === 'object' ) {
-  //       customValue = size;
-  //       // cloudSize.customSizeFields.forEach(field => {
-  //       //   if (size[field.name]) {
-  //       //     field.value = size[field.name];
-  //       //   }
-  //       // });
-  //       customSizeFields = cloudSize.customSizeFields.map(field => {
-  //         return ({
-  //           ...field,
-  //           value: size[field.name] || field.value
-  //         });
-  //       })
-  //     } else {
-  //       value = size;
-  //     }
-  //   }
-
-  //   if (!cloudSize) {
-  //     return false;
-  //   }
-  //   console.log("cloudSize ", cloudSize)
-  //  // return 7;
-  //   return ({...cloudSize, customValue, value, customSizeFields});
-  // }
-
   removeRow(indexToRemove) {
     this.value = [
       ...this.value.slice(0, indexToRemove),
