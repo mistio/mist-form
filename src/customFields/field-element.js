@@ -124,13 +124,13 @@ class FieldElement extends LitElement {
               ></paper-input>
             </td>
             <td>
-            <paper-input
-              .value=${field.value}
-              @value-changed=${e => {
-                this.updateValueValue(e.detail.value, index);
-              }}
-            ></paper-input>
-          </td>
+              <paper-input
+                .value=${field.value}
+                @value-changed=${e => {
+                  this.updateValueValue(e.detail.value, index);
+                }}
+              ></paper-input>
+            </td>
             <td class="checkbox-cell">
               <paper-checkbox
                 .checked=${field.show}
@@ -156,14 +156,12 @@ class FieldElement extends LitElement {
       })}
       <tr>
         <td colspan="2">
-        <span class="addrule">
-        <paper-button @tap=${this.addField} class="add">
-          <iron-icon icon="icons:add"></iron-icon> Add a new field
-        </paper-button>
-      </span>
-
+          <span class="addrule">
+            <paper-button @tap=${this.addField} class="add">
+              <iron-icon icon="icons:add"></iron-icon> Add a new field
+            </paper-button>
+          </span>
         </td>
-
       </tr>
     </table>`;
   }

@@ -338,7 +338,7 @@ export class MistForm extends LitElement {
     this.value = this.getValuesfromDOM(this.shadowRoot);
     const event = new CustomEvent('mist-form-value-changed', {
       detail: {
-        value: this.value
+        value: this.value,
       },
     });
     this.dispatchEvent(event);
