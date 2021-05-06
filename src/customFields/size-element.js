@@ -73,6 +73,7 @@ class SizeElement extends LitElement {
 
   addSize() {
     this.value.push({});
+    this.sizes.push({});
     this.requestUpdate();
     this.valueChanged();
   }
@@ -80,7 +81,7 @@ class SizeElement extends LitElement {
   updateCloudValue(cloudId, index) {
     this.value[index].cloud = cloudId;
     this.value[index].size = '';
-    const size = this.clouds.find(prov => prov.id === cloudId);
+    const size = this.clouds.find(cloud => cloud.id === cloudId);
     this.sizes[index] = size ? JSON.parse(JSON.stringify(size)) : null;
     this.requestUpdate();
     this.valueChanged();
@@ -151,7 +152,7 @@ class SizeElement extends LitElement {
     super.connectedCallback();
     this.sizes = this.value.map(value =>
       JSON.parse(
-        JSON.stringify(this.clouds.find(prov => prov.id === value.cloud))
+        JSON.stringify(this.clouds.find(cloud => cloud.id === value.cloud))
       )
     );
   }

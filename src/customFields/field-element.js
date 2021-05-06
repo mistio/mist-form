@@ -91,6 +91,9 @@ class FieldElement extends LitElement {
   }
 
   valueChanged() {
+    if(!this.value.hasOwnProperty('show') || this.value.show === undefined) {
+      this.value.show = false;
+    }
     const event = new CustomEvent('value-changed', {
       detail: {
         value: this.value,
@@ -135,7 +138,8 @@ class FieldElement extends LitElement {
               <paper-checkbox
                 .checked=${field.show}
                 @checked-changed=${e => {
-                  this.updateShowValue(e.detail.value, index);
+                  const value = e.detail.value === undefined ? false : e.detail.value;
+                  this.updateShowValue(value, index);
                 }}
               ></paper-checkbox>
             </td>

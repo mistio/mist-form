@@ -147,7 +147,7 @@ export class MistForm extends LitElement {
             .split(',')
             .map(val => val.trim());
         }
-        const isInvalid = node && node.validate ? !node.validate() : false;
+        const isInvalid = node ? !node.validate() : false;
         const notEmpty = util.valueNotEmpty(inputValue);
         if (isInvalid) {
           this.allFieldsValid = false;
@@ -281,7 +281,7 @@ export class MistForm extends LitElement {
     return this.subformOpenStates[fieldPath];
   }
 
-  dispatchValueChangedEvent(e) {
+  async dispatchValueChangedEvent(e) {
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
@@ -335,6 +335,8 @@ export class MistForm extends LitElement {
         this.requestUpdate();
       }
     });
+    const children = this.shadowRoot.querySelectorAll('*');
+    await Promise.all(Array.from(children).map((c) => c.updateComplete));
     this.value = this.getValuesfromDOM(this.shadowRoot);
     const event = new CustomEvent('mist-form-value-changed', {
       detail: {
