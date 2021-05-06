@@ -71,7 +71,8 @@ export function formFieldsValid(root, isValid) {
     if (node.classList.contains('subform-container') && notExcluded) {
       formValid = formFieldsValid(node, formValid);
     } else if (notExcluded) {
-      const isInvalid = node.validate ? !node.validate() : false;
+      const isInvalid =
+        node.validate && node.validate ? !node.validate() : false;
       if (isInvalid) {
         formValid = false;
       }

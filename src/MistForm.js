@@ -147,7 +147,7 @@ export class MistForm extends LitElement {
             .split(',')
             .map(val => val.trim());
         }
-        const isInvalid = node ? !node.validate() : false;
+        const isInvalid = node && node.validate ? !node.validate() : false;
         const notEmpty = util.valueNotEmpty(inputValue);
         if (isInvalid) {
           this.allFieldsValid = false;
@@ -336,7 +336,7 @@ export class MistForm extends LitElement {
       }
     });
     const children = this.shadowRoot.querySelectorAll('*');
-    await Promise.all(Array.from(children).map((c) => c.updateComplete));
+    await Promise.all(Array.from(children).map(c => c.updateComplete));
     this.value = this.getValuesfromDOM(this.shadowRoot);
     const event = new CustomEvent('mist-form-value-changed', {
       detail: {
