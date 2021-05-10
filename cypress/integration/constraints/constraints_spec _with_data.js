@@ -201,7 +201,12 @@ describe('Constraints form with data', () => {
     cy.get('mist-form')
       .find('#field_constraint_container > field-element')
       .find('input')
-      .last()
+      .eq(1)
+      .should('have.value', 'Value2');
+    cy.get('mist-form')
+      .find('#field_constraint_container > field-element')
+      .find('input')
+      .eq(2)
       .should('have.value', 'Field3');
     cy.get('mist-form')
       .find('#field_constraint_container > field-element')
@@ -266,10 +271,13 @@ describe('Constraints form with data', () => {
           field: [
             {
               name: 'Field2',
+              value: 'Value2',
+              show: false,
             },
             {
               show: true,
               name: 'Field3',
+              value: '',
             },
           ],
         })

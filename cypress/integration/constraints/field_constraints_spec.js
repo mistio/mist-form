@@ -54,9 +54,15 @@ describe('Field constraints', () => {
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
       .find('input')
-      .last()
+      .first()
       .clear({ force: true })
       .type('Field1', { force: true });
+    cy.get('mist-form')
+      .find('#field_constraint_container field-element')
+      .find('input')
+      .eq(1)
+      .clear({ force: true })
+      .type('Value1', { force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
       .find('paper-button.add')
@@ -64,7 +70,7 @@ describe('Field constraints', () => {
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
       .find('input')
-      .last()
+      .eq(2)
       .clear({ force: true })
       .type('Field2', { force: true });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
@@ -76,7 +82,7 @@ describe('Field constraints', () => {
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
       .find('input')
-      .last()
+      .first()
       .invoke('val')
       .should('contain', 'Field2');
   });
@@ -89,9 +95,15 @@ describe('Field constraints', () => {
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
       .find('input')
-      .last()
+      .eq(2)
       .clear({ force: true })
       .type('Field3', { force: true });
+    cy.get('mist-form')
+      .find('#field_constraint_container field-element')
+      .find('input')
+      .eq(3)
+      .clear({ force: true })
+      .type('Value3', { force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
       .find('paper-checkbox')
@@ -105,11 +117,14 @@ describe('Field constraints', () => {
         JSON.stringify({
           field: [
             {
+              show: false,
               name: 'Field2',
+              value: '',
             },
             {
               show: true,
               name: 'Field3',
+              value: 'Value3',
             },
           ],
         })
