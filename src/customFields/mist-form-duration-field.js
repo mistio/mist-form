@@ -20,10 +20,10 @@ class DurationField extends LitElement {
     this.units = this.enum || [
       { name: '', value: '' },
       { name: 'months', value: 'mo' },
-      { name: 'weeks', value: 'w' },
       { name: 'days', value: 'd' },
       { name: 'hours', value: 'h' },
       { name: 'minutes', value: 'm' },
+      { name: 'seconds', value: 's' },
     ];
   }
 

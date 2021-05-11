@@ -65,8 +65,8 @@ describe('Cost constraints', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           cost: {
-            max_team_run_rate: '100',
-            max_total_run_rate: '100',
+            max_team_run_rate: 100,
+            max_total_run_rate: 100,
           },
         })
       );

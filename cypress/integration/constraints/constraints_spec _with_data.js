@@ -201,7 +201,12 @@ describe('Constraints form with data', () => {
     cy.get('mist-form')
       .find('#field_constraint_container > field-element')
       .find('input')
-      .last()
+      .eq(1)
+      .should('have.value', 'Value2');
+    cy.get('mist-form')
+      .find('#field_constraint_container > field-element')
+      .find('input')
+      .eq(2)
       .should('have.value', 'Field3');
     cy.get('mist-form')
       .find('#field_constraint_container > field-element')
@@ -223,30 +228,30 @@ describe('Constraints form with data', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           cost: {
-            max_team_run_rate: '100',
-            max_total_run_rate: '200',
+            max_team_run_rate: 100,
+            max_total_run_rate: 200,
           },
           size: {
             allowed: ['test1', 'test2', 'test3'],
             not_allowed: ['test4'],
             cpu: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: false,
             },
             ram: {
-              min: '200',
-              max: '300',
+              min: 200,
+              max: 300,
               show: false,
             },
             disk: {
-              min: '400',
-              max: '500',
+              min: 400,
+              max: 500,
               show: true,
             },
             swap_disk: {
-              min: '600',
-              max: '700',
+              min: 600,
+              max: 700,
               show: true,
             },
           },
@@ -266,10 +271,13 @@ describe('Constraints form with data', () => {
           field: [
             {
               name: 'Field2',
+              value: 'Value2',
+              show: false,
             },
             {
               show: true,
               name: 'Field3',
+              value: '',
             },
           ],
         })

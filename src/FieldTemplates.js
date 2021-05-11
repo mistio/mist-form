@@ -2,6 +2,7 @@ import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 import './customFields/mist-form-duration-field.js';
 import './customFields/field-element.js';
+import './customFields/size-element.js';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: This file is starting to get too big. Maybe I should split it up
@@ -36,6 +37,7 @@ export const FieldTemplates = {
     'iron-selector.checkbox-group',
     'mist-form-duration-field',
     'field-element',
+    'size-element',
     'div.subform-container',
   ],
   getValueProperty: props => {
@@ -58,6 +60,10 @@ export const FieldTemplates = {
       _props.enum = dynamicData;
     }
     const hasEnum = Object.prototype.hasOwnProperty.call(_props, 'enum');
+    // If value is array convert to string
+    if (Array.isArray(_props.value)) {
+      _props.value = _props.value.join(', ');
+    }
     // If a field has dynamic data, load the data and then re-render as a normal dropdown
     if (isDynamic && dynamicData === undefined) {
       // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
@@ -141,8 +147,8 @@ export const FieldTemplates = {
     .label="${getLabel(props)}"
     ?excludeFromPayload="${props.excludeFromPayload}"
   >
-    ${props.prefix && html`<div slot="prefix">${props.prefix}</div>`}
-    ${props.suffix && html`<div slot="suffix">${props.suffix}</div>`}
+    ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
+    ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
   </paper-input>`,
   textArea: (name, props, mistForm) => html`<paper-textarea
     .name=${name}
@@ -177,6 +183,15 @@ export const FieldTemplates = {
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></field-element>`,
+  sizeElement: (name, props, mistForm) =>
+    html`<size-element
+      .name=${name}
+      class="mist-form-input"
+      ...="${spreadProps(props)}"
+      .clouds="${mistForm.dynamicDataNamespace.clouds &&
+      mistForm.dynamicDataNamespace.clouds()}"
+      @value-changed="${mistForm.dispatchValueChangedEvent}"
+    ></size-element>`,
   // Subform container
   object: (name, props, mistForm) => {
     // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.

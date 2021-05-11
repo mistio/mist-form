@@ -165,12 +165,12 @@ describe('Size constraints', () => {
       .find('#size_constraint_container > #cpu_constraint > #min')
       .find('input')
       .clear({ force: true })
-      .type('100', { force: true });
+      .type(100, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #cpu_constraint > #max')
       .find('input')
       .clear({ force: true })
-      .type('200', { force: true });
+      .type(200, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #cpu_constraint > #show')
       .click();
@@ -181,22 +181,22 @@ describe('Size constraints', () => {
       .find('#size_constraint_container > #ram_constraint > #min')
       .find('input')
       .clear({ force: true })
-      .type('100', { force: true });
+      .type(100, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #ram_constraint > #max')
       .find('input')
       .clear({ force: true })
-      .type('200', { force: true });
+      .type(200, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #primary_disk_constraint > #min')
       .find('input')
       .clear({ force: true })
-      .type('100', { force: true });
+      .type(100, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #primary_disk_constraint > #max')
       .find('input')
       .clear({ force: true })
-      .type('200', { force: true });
+      .type(200, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #primary_disk_constraint > #show')
       .click();
@@ -204,12 +204,12 @@ describe('Size constraints', () => {
       .find('#size_constraint_container > #swap_disk_constraint > #min')
       .find('input')
       .clear({ force: true })
-      .type('100', { force: true });
+      .type(100, { force: true });
     cy.get('mist-form')
       .find('#size_constraint_container > #swap_disk_constraint > #max')
       .find('input')
       .clear({ force: true })
-      .type('200', { force: true });
+      .type(200, { force: true });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
     cy.get('mist-form').find('.submit-btn').click();
 
@@ -221,23 +221,23 @@ describe('Size constraints', () => {
             allowed: ['test1', 'test2', 'test3'],
             not_allowed: ['test4'],
             cpu: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: false,
             },
             ram: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: true,
             },
             disk: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: false,
             },
             swap_disk: {
-              min: '100',
-              max: '200',
+              min: 100,
+              max: 200,
               show: true,
             },
           },
