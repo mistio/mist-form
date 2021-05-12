@@ -99,7 +99,7 @@ class SizeElement extends LitElement {
       if (cloudSize.size.value === 'custom') {
         cloudSize.size.customValue = size;
         cloudSize.size.customSizeFields.forEach(field => {
-          if (size[field.name]) {
+          if (size[field.name] !== undefined) {
             field.value = size[field.name];
           }
         });
