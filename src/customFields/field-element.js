@@ -23,7 +23,8 @@ class FieldElement extends LitElement {
         font-family: var(--mist-form-field-element-font-family, Roboto);
       }
 
-      paper-input {
+      paper-input,
+      paper-dropdown-menu {
         width: 90%;
         display: inline-block;
         margin-right: 20px;
@@ -127,7 +128,6 @@ class FieldElement extends LitElement {
           <tr>
             <td>
               <paper-dropdown-menu
-                label="Cloud"
                 class="mist-form-input"
                 no-animations=""
                 attr-for-selected="value"
