@@ -150,7 +150,7 @@ describe('Constraints form with data', () => {
     cy.get('mist-form');
     cy.testPaperDropdownSelected(
       '#expiration_constraint_container > #default',
-      'w'
+      'd'
     );
 
     cy.get('mist-form')
@@ -182,7 +182,7 @@ describe('Constraints form with data', () => {
       .should('have.value', 100);
     cy.testPaperDropdownSelected(
       '#expiration_constraint_container > #expiration_notify > #default',
-      'w'
+      'd'
     );
     cy.get('mist-form')
       .find('#expiration_constraint_container > #expiration_notify > #require')
@@ -257,24 +257,26 @@ describe('Constraints form with data', () => {
           },
           expiration: {
             max: '100mo',
-            default: '20w',
+            default: '20d',
             actions: {
               available: ['destroy', 'undefine'],
               default: 'undefine',
             },
             notify: {
-              default: '100w',
+              default: '100d',
               require: true,
               msg: 'Test',
             },
           },
           field: [
             {
+              cloud: 'cloudId2',
               name: 'Field2',
               value: 'Value2',
               show: false,
             },
             {
+              cloud: '',
               show: true,
               name: 'Field3',
               value: '',

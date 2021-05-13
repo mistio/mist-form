@@ -94,6 +94,18 @@ describe('Field constraints', () => {
       .click({ force: true });
     cy.get('mist-form')
       .find('#field_constraint_container field-element')
+      .find('paper-dropdown-menu')
+      .eq(1)
+      .click();
+    cy.get('mist-form')
+      .find('#field_constraint_container field-element')
+      .find('paper-dropdown-menu')
+      .eq(1)
+      .find('paper-item')
+      .eq(3)
+      .click({ force: true });
+    cy.get('mist-form')
+      .find('#field_constraint_container field-element')
       .find('input')
       .eq(2)
       .clear({ force: true })
@@ -117,11 +129,13 @@ describe('Field constraints', () => {
         JSON.stringify({
           field: [
             {
+              cloud: '',
               show: false,
               name: 'Field2',
               value: '',
             },
             {
+              cloud: 'cloudId3',
               show: true,
               name: 'Field3',
               value: 'Value3',

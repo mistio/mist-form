@@ -52,7 +52,8 @@
                   });
               }),
               dependencies: ['expiration.actions.available'],
-          }
+          },
+          clouds: () => [{id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]
       };
 
       const initialValues = {
@@ -86,22 +87,24 @@
           },
           expiration: {
               max: '100mo',
-              default: '20w',
+              default: '20d',
               actions: {
                   available: ['destroy', 'undefine'],
                   default: 'undefine',
               },
               notify: {
-                  default: '100w',
+                  default: '100d',
                   require: true,
                   msg: 'Test',
               },
           },
           field: [{
+                  cloud:'cloudId2',
                   name: 'Field2',
                   value: 'Value2'
               },
               {
+                  cloud: '',
                   show: true,
                   name: 'Field3',
               },
