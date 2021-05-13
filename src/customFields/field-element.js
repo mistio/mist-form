@@ -4,6 +4,7 @@ class FieldElement extends LitElement {
   static get properties() {
     return {
       value: { type: Array },
+      clouds: { type: Array },
     };
   }
 
@@ -64,6 +65,11 @@ class FieldElement extends LitElement {
     this.value[index].name = name;
     this.valueChanged();
   }
+  updateCloudValue(cloudId, index) {
+    this.value[index].cloud = cloudId;
+    this.requestUpdate();
+    this.valueChanged();
+  }
 
   updateValueValue(value, index) {
     this.value[index].value = value;
@@ -91,7 +97,7 @@ class FieldElement extends LitElement {
   }
 
   valueChanged() {
-    if(!this.value.hasOwnProperty('show') || this.value.show === undefined) {
+    if (!this.value.hasOwnProperty('show') || this.value.show === undefined) {
       this.value.show = false;
     }
     const event = new CustomEvent('value-changed', {
@@ -110,6 +116,7 @@ class FieldElement extends LitElement {
   render() {
     return html` <table style="width:100%">
       <tr>
+        <th>Cloud</th>
         <th>Field name</th>
         <th>Field value</th>
         <th class="show-header">Show</th>
@@ -118,6 +125,35 @@ class FieldElement extends LitElement {
       ${this.value.map((field, index) => {
         return html`
           <tr>
+            <td>
+              <paper-dropdown-menu
+                label="Cloud"
+                class="mist-form-input"
+                no-animations=""
+                attr-for-selected="value"
+              >
+                <paper-listbox
+                  attr-for-selected="value"
+                  selected="${field.cloud || ''}"
+                  class="dropdown-content"
+                  slot="dropdown-content"
+                  @selected-changed=${e => {
+                    this.updateCloudValue(e.detail.value, index);
+                  }}
+                >
+                  <paper-item value="">ALL</paper-item>
+                  ${this.clouds
+                    ? this.clouds.map(
+                        cloud => html`
+                          <paper-item value="${cloud.id}"
+                            >${cloud.title}</paper-item
+                          >
+                        `
+                      )
+                    : ''}
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </td>
             <td>
               <paper-input
                 .value=${field.name}
@@ -138,7 +174,8 @@ class FieldElement extends LitElement {
               <paper-checkbox
                 .checked=${field.show}
                 @checked-changed=${e => {
-                  const value = e.detail.value === undefined ? false : e.detail.value;
+                  const value =
+                    e.detail.value === undefined ? false : e.detail.value;
                   this.updateShowValue(value, index);
                 }}
               ></paper-checkbox>

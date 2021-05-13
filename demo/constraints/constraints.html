@@ -53,6 +53,7 @@
           }),
           dependencies: ['expiration.actions.available'],
         },
+        clouds: () => [{id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]
       };
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>

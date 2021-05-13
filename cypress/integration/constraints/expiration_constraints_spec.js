@@ -186,13 +186,13 @@ describe('Expiration constraints', () => {
         JSON.stringify({
           expiration: {
             max: '100mo',
-            default: '20w',
+            default: '20d',
             actions: {
               available: ['destroy', 'undefine'],
               default: 'undefine',
             },
             notify: {
-              default: '100w',
+              default: '100d',
               require: false,
               msg: 'Test',
             },
