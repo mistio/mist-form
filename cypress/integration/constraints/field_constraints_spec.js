@@ -28,7 +28,7 @@ describe('Field constraints', () => {
     cy.get('mist-form')
       .find('#field_constraint_container > field-element')
       .should('be.visible');
-    cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
+    cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
   it('Submit is disabled when adding new field and not giving a name', () => {

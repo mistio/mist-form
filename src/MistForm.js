@@ -165,7 +165,7 @@ export class MistForm extends LitElement {
 
   updateState() {
     this.allFieldsValid =
-      util.formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+      util.formFieldsValid(this.shadowRoot, true) || this.isEmpty();
   }
 
   updateFieldByConditions(props, fieldName, key, val) {
@@ -349,7 +349,7 @@ export class MistForm extends LitElement {
   // Lifecycle Methods
   constructor() {
     super();
-    this.allFieldsValid = false;
+    this.allFieldsValid = true;
     this.dynamicFieldData = {};
     this.value = {};
     this.subformOpenStates = {};
@@ -369,8 +369,6 @@ export class MistForm extends LitElement {
   }
 
   updated() {
-    this.allFieldsValid =
-      util.formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
     if (this.firstUpdated) {
       this.firstUpdated = false;
     }
