@@ -5,7 +5,7 @@ describe('Constraints form', () => {
   });
 
   it('Add button is disabled, Cancel button is enabled', () => {
-    cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
+    cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
     cy.get('mist-form').find('.cancel-btn').should('not.have.attr', 'disabled');
   });
 });

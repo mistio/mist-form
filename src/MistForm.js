@@ -163,11 +163,6 @@ export class MistForm extends LitElement {
     return formValues;
   }
 
-  updateState() {
-    this.allFieldsValid =
-      util.formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
-  }
-
   updateFieldByConditions(props, fieldName, key, val) {
     const hasEnum = Object.prototype.hasOwnProperty.call(props, 'enum');
 
@@ -368,9 +363,13 @@ export class MistForm extends LitElement {
     return Object.keys(values).length === 0;
   }
 
-  updated() {
+  updateState() {
     this.allFieldsValid =
-      util.formFieldsValid(this.shadowRoot, true) && !this.isEmpty();
+      util.formFieldsValid(this.shadowRoot, true) || this.isEmpty();
+  }
+
+  updated() {
+    this.updateState();
     if (this.firstUpdated) {
       this.firstUpdated = false;
     }
