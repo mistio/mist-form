@@ -68,6 +68,10 @@ class SizeElement extends LitElement {
       .add {
         color: #424242;
       }
+      .no-clouds {
+        font-size: 14px;
+        color: #4b4b4b;
+      }
     `;
   }
 
@@ -150,79 +154,88 @@ class SizeElement extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.sizes = this.value.map(value =>
-      JSON.parse(
-        JSON.stringify(this.clouds.find(cloud => cloud.id === value.cloud))
-      )
-    );
+    if (this.clouds.length > 0) {
+      this.sizes = this.value.map(value =>
+        JSON.parse(
+          JSON.stringify(this.clouds.find(cloud => cloud.id === value.cloud))
+        )
+      );
+    }
   }
 
   render() {
-    return html` <span class="label">${this.label}</span>
-      <div style="width:100%">
-        ${this.value.map((size, index) => {
-          return html`
-            <div style="width: 97%">
-              <div class="sizeRow">
-                <paper-dropdown-menu
-                  label="Cloud"
-                  class="mist-form-input"
-                  no-animations=""
-                  attr-for-selected="value"
-                >
-                  <paper-listbox
+    if (this.clouds.length > 0) {
+      return html` <span class="label">${this.label}</span>
+        <div style="width:100%">
+          ${this.value.map((size, index) => {
+            return html`
+              <div style="width: 97%">
+                <div class="sizeRow">
+                  <paper-dropdown-menu
+                    label="Cloud"
+                    class="mist-form-input"
+                    no-animations=""
                     attr-for-selected="value"
-                    selected="${size.cloud}"
-                    class="dropdown-content"
-                    slot="dropdown-content"
-                    @selected-changed=${e => {
-                      this.updateCloudValue(e.detail.value, index);
+                  >
+                    <paper-listbox
+                      attr-for-selected="value"
+                      selected="${size.cloud}"
+                      class="dropdown-content"
+                      slot="dropdown-content"
+                      @selected-changed=${e => {
+                        this.updateCloudValue(e.detail.value, index);
+                      }}
+                    >
+                      ${this.clouds.map(
+                        cloud => html`
+                          <paper-item value="${cloud.id}"
+                            >${cloud.title}</paper-item
+                          >
+                        `
+                      )}
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                  <paper-icon-button
+                    icon="icons:delete"
+                    alt="Remove row"
+                    title="Remove row"
+                    class="remove"
+                    @tap=${() => {
+                      this.removeRow(index);
                     }}
                   >
-                    ${this.clouds.map(
-                      cloud => html`
-                        <paper-item value="${cloud.id}"
-                          >${cloud.title}</paper-item
-                        >
-                      `
-                    )}
-                  </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-icon-button
-                  icon="icons:delete"
-                  alt="Remove row"
-                  title="Remove row"
-                  class="remove"
-                  @tap=${() => {
-                    this.removeRow(index);
-                  }}
-                >
-                </paper-icon-button>
-                <div class="sizeField">
-                  ${this.getSizeFields(index)
-                    ? html`
-                        <mist-size-field
-                          id="${index}"
-                          .field="${this.getSizeFields(index)}"
-                          @value-changed=${e => {
-                            this.updateSizeValue(e.detail.value, index);
-                          }}
-                        ></mist-size-field>
-                      `
-                    : ''}
+                  </paper-icon-button>
+                  <div class="sizeField">
+                    ${this.getSizeFields(index)
+                      ? html`
+                          <mist-size-field
+                            id="${index}"
+                            .field="${this.getSizeFields(index)}"
+                            @value-changed=${e => {
+                              this.updateSizeValue(e.detail.value, index);
+                            }}
+                          ></mist-size-field>
+                        `
+                      : ''}
+                  </div>
                 </div>
               </div>
-            </div>
-          `;
-        })}
-        <div>
-          <span class="addrule">
-            <paper-button @tap=${this.addSize} class="add">
-              <iron-icon icon="icons:add"></iron-icon> Add a new size
-            </paper-button>
-          </span>
-        </div>
-      </div>`;
+            `;
+          })}
+          <div>
+            <span class="addrule">
+              <paper-button @tap=${this.addSize} class="add">
+                <iron-icon icon="icons:add"></iron-icon> Add a new size
+              </paper-button>
+            </span>
+          </div>
+        </div>`;
+    } else {
+      return html` <span class="label">${this.label}</span>
+        <p class="no-clouds">
+          Please add some clouds in order to add cloud sizes
+        </p>`;
+    }
   }
 }
 

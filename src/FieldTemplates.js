@@ -181,7 +181,8 @@ export const FieldTemplates = {
       .name=${name}
       class="mist-form-input"
       ...="${spreadProps(props)}"
-      .clouds="${mistForm.dynamicDataNamespace.clouds &&
+      .clouds="${mistForm.dynamicDataNamespace &&
+      mistForm.dynamicDataNamespace.clouds &&
       mistForm.dynamicDataNamespace.clouds()}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></field-element>`,
@@ -190,7 +191,8 @@ export const FieldTemplates = {
       .name=${name}
       class="mist-form-input"
       ...="${spreadProps(props)}"
-      .clouds="${mistForm.dynamicDataNamespace.clouds &&
+      .clouds="${mistForm.dynamicDataNamespace &&
+      mistForm.dynamicDataNamespace.clouds &&
       mistForm.dynamicDataNamespace.clouds()}"
       @value-changed="${mistForm.dispatchValueChangedEvent}"
     ></size-element>`,
