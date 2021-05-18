@@ -99,6 +99,10 @@ class SizeElement extends LitElement {
   getSizeFields(index) {
     const { size } = this.value[index];
     const cloudSize = this.sizes[index];
+    if (!cloudSize) {
+      return false;
+    }
+
     if (size) {
       if (cloudSize.size.value === 'custom') {
         cloudSize.size.customValue = size;
@@ -112,9 +116,6 @@ class SizeElement extends LitElement {
       }
     }
 
-    if (!cloudSize) {
-      return false;
-    }
     return cloudSize.size;
   }
 
