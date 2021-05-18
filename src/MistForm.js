@@ -201,13 +201,15 @@ export class MistForm extends LitElement {
   }
 
   updateDynamicData(fieldPath) {
-    for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
-      if (val.dependencies && val.dependencies.includes(fieldPath)) {
-        this.loadDynamicData(key, enumData => {
-          const { target } = val;
-          this.dynamicFieldData[target] = enumData;
-          this.requestUpdate();
-        });
+    if (this.dynamicDataNamespace) {
+      for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
+        if (val.dependencies && val.dependencies.includes(fieldPath)) {
+          this.loadDynamicData(key, enumData => {
+            const { target } = val;
+            this.dynamicFieldData[target] = enumData;
+            this.requestUpdate();
+          });
+        }
       }
     }
   }
