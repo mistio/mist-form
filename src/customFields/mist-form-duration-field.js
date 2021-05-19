@@ -42,7 +42,7 @@ class DurationField extends LitElement {
         padding-left: 0;
       }
       paper-input {
-        width: 55%;
+        width: 30%;
         display: inline-block;
         margin-right: 20px;
         margin-left: auto;

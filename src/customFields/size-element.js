@@ -54,6 +54,7 @@ class SizeElement extends LitElement {
         margin-top: auto;
         margin-bottom: 15px;
         color: #424242;
+        font-weight: bold;
       }
       table {
         border-collapse: collapse;
