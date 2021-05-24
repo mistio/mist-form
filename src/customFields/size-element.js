@@ -128,7 +128,7 @@ class SizeElement extends LitElement {
   isCustomSize(index) {
     const size = this.getSizeFields(index);
     if (size) {
-      return Object.prototype.hasOwnProperty.call(size, 'customSizeFields')
+      return Object.prototype.hasOwnProperty.call(size, 'customSizeFields');
     }
     return false;
   }
@@ -170,14 +170,16 @@ class SizeElement extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     if (this.clouds.length > 0) {
-      this.sizes = this.value.map(value => {
-        const cloud = this.clouds.find(c => c.id === value.cloud);
-        return cloud ? JSON.parse(JSON.stringify(cloud)) : null;
-      }
-      // This filters out the empty sizes if any exist
-      ).filter(size => size);
+      this.sizes = this.value
+        .map(
+          value => {
+            const cloud = this.clouds.find(c => c.id === value.cloud);
+            return cloud ? JSON.parse(JSON.stringify(cloud)) : null;
+          }
+          // This filters out the empty sizes if any exist
+        )
+        .filter(size => size);
     }
-    debugger;
   }
 
   render() {
@@ -235,14 +237,19 @@ class SizeElement extends LitElement {
                         `
                       : ''}
                   </div>
-                  ${this.isCustomSize(index) ?                   html`<paper-input
-                    label="Human friendly size name"
-                    .value=${size.userFriendlyName}
-                    @value-changed=${e => {
-                      this.updateUserFriendlyNameValue(e.detail.value, index);
-                    }}
-                    >
-                    </paper-input>`:''}
+                  ${this.isCustomSize(index)
+                    ? html`<paper-input
+                        label="Human friendly size name"
+                        .value=${size.userFriendlyName}
+                        @value-changed=${e => {
+                          this.updateUserFriendlyNameValue(
+                            e.detail.value,
+                            index
+                          );
+                        }}
+                      >
+                      </paper-input>`
+                    : ''}
                 </div>
               </div>
             `;
