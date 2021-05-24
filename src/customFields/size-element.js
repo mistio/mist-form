@@ -85,9 +85,15 @@ class SizeElement extends LitElement {
   updateCloudValue(cloudId, index) {
     this.value[index].cloud = cloudId;
     this.value[index].size = '';
+    this.value[index].userFriendlyName = '';
     const size = this.clouds.find(cloud => cloud.id === cloudId);
     this.sizes[index] = size ? JSON.parse(JSON.stringify(size)) : null;
     this.requestUpdate();
+    this.valueChanged();
+  }
+
+  updateUserFriendlyNameValue(name, index) {
+    this.value[index].userFriendlyName = name;
     this.valueChanged();
   }
 
@@ -117,6 +123,14 @@ class SizeElement extends LitElement {
     }
 
     return cloudSize.size;
+  }
+
+  isCustomSize(index) {
+    const size = this.getSizeFields(index);
+    if (size) {
+      return Object.prototype.hasOwnProperty.call(size, 'customSizeFields')
+    }
+    return false;
   }
 
   removeRow(indexToRemove) {
@@ -156,12 +170,14 @@ class SizeElement extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     if (this.clouds.length > 0) {
-      this.sizes = this.value.map(value =>
-        JSON.parse(
-          JSON.stringify(this.clouds.find(cloud => cloud.id === value.cloud))
-        )
-      );
+      this.sizes = this.value.map(value => {
+        const cloud = this.clouds.find(c => c.id === value.cloud);
+        return cloud ? JSON.parse(JSON.stringify(cloud)) : null;
+      }
+      // This filters out the empty sizes if any exist
+      ).filter(size => size);
     }
+    debugger;
   }
 
   render() {
@@ -219,6 +235,14 @@ class SizeElement extends LitElement {
                         `
                       : ''}
                   </div>
+                  ${this.isCustomSize(index) ?                   html`<paper-input
+                    label="Human friendly size name"
+                    .value=${size.userFriendlyName}
+                    @value-changed=${e => {
+                      this.updateUserFriendlyNameValue(e.detail.value, index);
+                    }}
+                    >
+                    </paper-input>`:''}
                 </div>
               </div>
             `;
