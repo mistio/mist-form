@@ -1,6 +1,7 @@
-import { html, css, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import { FieldTemplates } from './FieldTemplates.js';
 import * as util from './utilities.js';
+import { mistFormStyles } from './styles/mistFormStyles.js';
 
 export class MistForm extends LitElement {
   static get properties() {
@@ -20,78 +21,7 @@ export class MistForm extends LitElement {
   }
 
   static get styles() {
-    return css`
-      :host {
-        display: block;
-        margin: 0px 10px 20px;
-        padding-bottom: 20px;
-        color: var(--mist-form-text-color, #424242);
-        background-color: var(--mist-form-background-color, white);
-        font-family: var(--mist-form-font-family, Roboto);
-      }
-      .subform-container {
-        border: var(--mist-subform-border, 1px solid white);
-        margin: var(--mist-subform-margin, 10px);
-        padding: var(--mist-subform-padding, 10px);
-        color: var(--mist-subform-text-color, #424242);
-        background-color: var(--mist-subform-background-color, white);
-      }
-      .subform-container > .subform-container > mist-form-duration-field {
-        padding-left: 0;
-      }
-      .subform-container.open.odd {
-        background-color: var(--mist-subform-background-color, #ebebeb);
-      }
-      .subform-container.open.even {
-        background-color: white;
-      }
-      .subform-name {
-        font-weight: bold;
-      }
-      .paper-toggle-button {
-        font-weight: bold;
-      }
-      .buttons {
-        text-align: right;
-      }
-      paper-checkbox {
-        padding-top: 13px;
-        margin-right: 10px;
-        --paper-checkbox-checked-color: #2196f3;
-        --paper-checkbox-checked-ink-color: #2196f3;
-        --paper-checkbox-unchecked-color: #424242;
-      }
-      .helpText {
-        font-size: 14px;
-        align-self: center;
-        color: rgba(0, 0, 0, 0.54);
-        margin-left: 10px;
-      }
-      .submit-btn:not([disabled]) {
-        color: white;
-        background-color: #2196f3;
-      }
-
-      :host *([hidden]) {
-        display: none;
-      }
-      .mist-form-input {
-        margin-top: 10px;
-        margin-left: 10px;
-      }
-      btn-block {
-        margin-top: 10px;
-      }
-      paper-input {
-        --paper-input-container-label: {
-          color: #4b4b4bl
-          font-size: 22px;
-        };
-      }
-      paper-input > [slot='prefix'] {
-        margin-right: 5px;
-      }
-    `;
+    return mistFormStyles;
   }
 
   // "Private" Methods
@@ -190,18 +120,23 @@ export class MistForm extends LitElement {
     }
   }
 
-  isDependantOnField(field, props, key, val) {
-    return (
-      Object.prototype.hasOwnProperty.call(val, 'x-mist-enum') &&
-      this.dynamicDataNamespace &&
-      this.dynamicDataNamespace[
-        props[key]['x-mist-enum']
-      ].dependencies.includes(field)
-    );
-  }
+  // isDependantOnField(field, props, key, val) {
+  //   return (
+  //     Object.prototype.hasOwnProperty.call(val, 'x-mist-enum') &&
+  //     this.dynamicDataNamespace &&
+  //     this.dynamicDataNamespace[
+  //       props[key]['x-mist-enum']
+  //     ].dependencies.includes(field)
+  //   );
+  // }
 
   updateDynamicData(fieldPath) {
+    console.log("fieldPath ", fieldPath)
     if (this.dynamicDataNamespace) {
+      // Update dynamic properties
+      this.dynamicDataNamespace.dynamicProperties.forEach(prop => {
+
+      })
       for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
         if (val.dependencies && val.dependencies.includes(fieldPath)) {
           this.loadDynamicData(key, enumData => {
@@ -216,6 +151,10 @@ export class MistForm extends LitElement {
 
   // Combine field and helpText and return template
   getTemplate(name, properties) {
+    // console.log("properties ", properties)
+    // if (this.dynamicDataNamespace) {
+    //   this.dynamicDataNamespace.
+    // }
     if (!properties.hidden) {
       return FieldTemplates[properties.type]
         ? html`${FieldTemplates[properties.type](
@@ -410,6 +349,15 @@ export class MistForm extends LitElement {
           subforms,
           parentPath
         );
+
+      }
+      else if(properties.type === 'multiRow') {
+        const subForm = util.getSubformFromRef(
+          subforms,
+          properties.properties.subform.$ref
+        );
+        const rowProps = subForm.properties
+        properties.rowProps = rowProps.map(prop => ({...prop, fieldPath: `${fieldPath}.${prop.name}`}));
       }
       const fieldName = properties.type === 'object' ? properties.name : name;
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
@@ -424,12 +372,11 @@ export class MistForm extends LitElement {
               properties.fieldsVisible = true;
             }
           } else {
-            const valueProperty = FieldTemplates.getValueProperty(properties);
+            const valueProperty = util.getValueProperty(properties);
             properties[valueProperty] = initialValue;
           }
         }
       }
-
       return this.getTemplate(name, properties);
     });
   }

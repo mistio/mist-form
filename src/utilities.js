@@ -80,3 +80,13 @@ export function formFieldsValid(root, isValid) {
   });
   return formValid;
 }
+
+export function getValueProperty(props) {
+  if (props.format === 'checkboxGroup') {
+    return 'selectedValues';
+  }
+  if (props.type === 'boolean') {
+    return 'checked';
+  }
+  return 'value';
+}

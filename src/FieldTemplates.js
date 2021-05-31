@@ -1,8 +1,10 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
+
 import './customFields/mist-form-duration-field.js';
 import './customFields/field-element.js';
 import './customFields/size-element.js';
+import './customFields/multi-row.js';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: This file is starting to get too big. Maybe I should split it up
@@ -39,16 +41,8 @@ export const FieldTemplates = {
     'field-element',
     'size-element',
     'div.subform-container',
+    'multi-row'
   ],
-  getValueProperty: props => {
-    if (props.format === 'checkboxGroup') {
-      return 'selectedValues';
-    }
-    if (props.type === 'boolean') {
-      return 'checked';
-    }
-    return 'value';
-  },
   string(name, props, mistForm, cb) {
     const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
@@ -82,7 +76,7 @@ export const FieldTemplates = {
     return FieldTemplates.spinner;
   },
   dropdown: (name, props, mistForm) => html`<paper-dropdown-menu
-    .name=${name}
+
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
     class="mist-form-input"
@@ -103,7 +97,7 @@ export const FieldTemplates = {
     </paper-listbox>
   </paper-dropdown-menu>`,
   radioGroup: (name, props, mistForm) => html` <paper-radio-group
-    .name=${name}
+
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
     class="mist-form-input"
@@ -120,7 +114,7 @@ export const FieldTemplates = {
   </paper-radio-group>`,
   checkboxGroup: (name, props, mistForm) => html`
     <iron-selector
-      .name=${name}
+
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
@@ -139,7 +133,7 @@ export const FieldTemplates = {
     </iron-selector>
   `,
   input: (name, props, mistForm) => html`<paper-input
-    .name=${name}
+
     class="mist-form-input"
     @value-changed=${mistForm.dispatchValueChangedEvent}
     always-float-label
@@ -151,7 +145,7 @@ export const FieldTemplates = {
     ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
   </paper-input>`,
   textArea: (name, props, mistForm) => html`<paper-textarea
-    .name=${name}
+
     class="mist-form-input"
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
@@ -161,7 +155,7 @@ export const FieldTemplates = {
   ></paper-textarea>`,
   boolean: (name, props, mistForm) =>
     html`<paper-checkbox
-      .name=${name}
+
       class="mist-form-input"
       ...="${spreadProps(props)}"
       @checked-changed=${mistForm.dispatchValueChangedEvent}
@@ -171,14 +165,14 @@ export const FieldTemplates = {
     >`,
   durationField: (name, props, mistForm) =>
     html`<mist-form-duration-field
-      .name=${name}
+
       class="mist-form-input"
       ...="${spreadProps(props)}"
       @value-changed=${mistForm.dispatchValueChangedEvent}
     ></mist-form-duration-field>`,
   fieldElement: (name, props, mistForm) =>
     html`<field-element
-      .name=${name}
+
       class="mist-form-input"
       ...="${spreadProps(props)}"
       .clouds="${mistForm.dynamicDataNamespace &&
@@ -188,7 +182,7 @@ export const FieldTemplates = {
     ></field-element>`,
   sizeElement: (name, props, mistForm) =>
     html`<size-element
-      .name=${name}
+
       class="mist-form-input"
       ...="${spreadProps(props)}"
       .clouds="${mistForm.dynamicDataNamespace &&
@@ -197,6 +191,15 @@ export const FieldTemplates = {
       @value-changed="${mistForm.dispatchValueChangedEvent}"
     ></size-element>`,
   // Subform container
+  multiRow: (name, props, mistForm) => {
+    return     html`<multi-row
+
+    ...="${spreadProps(props)}"
+    .mistForm=${mistForm}
+    @value-changed=${mistForm.dispatchValueChangedEvent}
+  ></multi-row>`;
+  }
+,
   object: (name, props, mistForm) => {
     // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
