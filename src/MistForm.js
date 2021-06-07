@@ -132,11 +132,12 @@ export class MistForm extends LitElement {
 
   updateDynamicData(fieldPath) {
     console.log("fieldPath ", fieldPath)
+    console.log("this.dynamicDataNamespace ", this.dynamicDataNamespace)
     if (this.dynamicDataNamespace) {
       // Update dynamic properties
-      this.dynamicDataNamespace.dynamicProperties.forEach(prop => {
+      // this.dynamicDataNamespace.dynamicProperties.forEach(prop => {
 
-      })
+      // })
       for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
         if (val.dependencies && val.dependencies.includes(fieldPath)) {
           this.loadDynamicData(key, enumData => {
@@ -150,17 +151,25 @@ export class MistForm extends LitElement {
   }
 
   // Combine field and helpText and return template
-  getTemplate(name, properties) {
-    // console.log("properties ", properties)
+  // dynamicProperties: [{
+  //   path:'field.cloud',
+  //   prop:'enum',
+  //   value: () => [{id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]
+  //   }]
+  // };
+  getTemplate(properties) {
+    console.log("properties ", properties)
     // if (this.dynamicDataNamespace) {
-    //   this.dynamicDataNamespace.
+    //   const data = this.dynamicDataNamespace.dynamicProperties.filter(prop => prop.path === properties.fieldPath);
+    //   const dynamicProps = {};
+    //   data.forEach(prop => {
+    //     dynamicProps[prop.prop] = prop.value();
+    //   })
     // }
     if (!properties.hidden) {
       return FieldTemplates[properties.type]
         ? html`${FieldTemplates[properties.type](
-            name,
             properties,
-            this,
             enumData => {
               this.dynamicDataNamespace[properties['x-mist-enum']].target =
                 properties.fieldPath;
@@ -223,8 +232,10 @@ export class MistForm extends LitElement {
   }
 
   async dispatchValueChangedEvent(e) {
+    console.log("e in dispatch ", e)
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
+    console.log("this ", this)
     this.updateComplete.then(() => {
       const el = e.path[0];
       const [field, value] = Object.entries(util.getFieldValue(el))[0];
@@ -295,13 +306,69 @@ export class MistForm extends LitElement {
     this.value = {};
     this.subformOpenStates = {};
     this.firstRender = true;
+    // this.addEventListener('mouseup', (e) => {console.log("in event listerner ", e)});
+    // this.addEventListener('keyup', (e) => {console.log("in event listerner ", e)});
+    // this.shadowRoot.addEventListener('mouseup', (e) => {console.log("in shadow event listerner ", e)});
+    // this.shadowRoot.addEventListener('keyup', (e) => {console.log("in shadow event listerner ", e)});
+
+  }
+  connectedCallback() {
+    super.connectedCallback();
   }
 
+  getCustomComponents() {
+    return this.dynamicDataNamespace && this.dynamicDataNamespace.customComponents
+  }
   firstUpdated() {
+    // Get custom elements
+    const customComponents = this.querySelector('#mist-form-custom').children;
+console.log("customComponents, ", customComponents)
+    for (const el of customComponents) {
+      // Add them to fieldTemplates
+      console.log("el ", el.attributes)
+      const elClone = el.cloneNode();
+      const mistForm = this;
+      console.log("this in firstUpdate ", this)
+      if (el.attributes["mist-form-type"]) {
+        const componentName = el.attributes["mist-form-type"].value;
+        console.log("componentNAme ", componentName)
+        FieldTemplates.inputFields.push(el.tagName)
+        FieldTemplates[componentName] = (props) => {
+          for (const [key, val] of Object.entries(props)) {
+            console.log("key ", key);
+            console.log("Val ", val);
+            elClone.setAttribute(key, val);
+
+            elClone[key] = val;
+
+          }
+          const cl = elClone.cloneNode();
+          console.log("this.mistFom ", mistForm)
+          cl.addEventListener('value-changed', mistForm.dispatchValueChangedEvent)
+          return cl;
+        };
+      }
+    }
+
+    console.log("FieldTemplates ", FieldTemplates)
+     FieldTemplates.mistForm = this;
+    // console.log("is this ", this)
+     FieldTemplates.valueChangedEvent = this.dispatchValueChangedEvent;
+    // const customComponents = this.getCustomComponents();
+    // if (customComponents) {
+    //   FieldTemplates.inputFields = [...FieldTemplates.inputFields, ...customComponents.inputFields];
+    //   for (const [key, val] of Object.entries(customComponents.components)) {
+    //     console.log("val ", val)
+    //     //val().addEventListener('value-changed', (e)=>{console.log("trolololololo in slider")})
+    //    FieldTemplates[key] = val;
+    //    }
+    //   console.log("FieldTemplates ", FieldTemplates)
+    // }
     this.getJSON(this.src);
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
+
   }
 
   isEmpty() {
@@ -310,8 +377,12 @@ export class MistForm extends LitElement {
   }
 
   updated() {
-    if (this.firstUpdated) {
-      this.firstUpdated = false;
+
+    console.log("θπδατεσ ", this.shadowRoot.querySelectorAll('slot'));
+console.log("this.firstRender ", this.firstRender)
+    if (this.firstRender) {
+      this.firstRender = false;
+
     }
   }
 
@@ -321,7 +392,8 @@ export class MistForm extends LitElement {
       const [name, properties] = input;
       // Subforms just contain data, they shouldn't be rendered by themselves.
       // They should be rendered in subform containers
-
+      const fieldName = properties.type === 'object' ? properties.name : name;
+      properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.type === 'object') {
         const subForm = util.getSubformFromRef(
@@ -356,11 +428,14 @@ export class MistForm extends LitElement {
           subforms,
           properties.properties.subform.$ref
         );
-        const rowProps = subForm.properties
-        properties.rowProps = rowProps.map(prop => ({...prop, fieldPath: `${fieldPath}.${prop.name}`}));
+        const rowProps = subForm.properties;
+        console.log("rowProps, ", rowProps)
+        properties.rowProps = {};
+        for (const [key, val] of Object.entries(rowProps)) {
+         properties.rowProps[key] = {...val, fieldPath: `${properties.fieldPath}.${val.name || key}`}
+        }
+       console.log("propr ", properties)
       }
-      const fieldName = properties.type === 'object' ? properties.name : name;
-      properties.fieldPath = path ? [path, name].join('.') : fieldName;
       if (this.initialValues) {
         const initialValue = util.getNestedValueFromPath(
           properties.fieldPath,
@@ -377,11 +452,13 @@ export class MistForm extends LitElement {
           }
         }
       }
-      return this.getTemplate(name, properties);
+      console.log("before template properties ", properties)
+      return this.getTemplate(properties);
     });
   }
 
   render() {
+    console.log("this.dynamicDataNamespace ", this.dynamicDataNamespace)
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonProperties = this.data.properties;
@@ -393,7 +470,7 @@ export class MistForm extends LitElement {
       const subforms =
         jsonDefinitions &&
         Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
-
+console.log("this.renderInputs(inputs, subforms) ", this.renderInputs(inputs, subforms))
       return html`
         <div class="mist-header">${this.data.label}</div>
         ${this.renderInputs(inputs, subforms)}
@@ -404,6 +481,7 @@ export class MistForm extends LitElement {
         </div>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
+        <slot name="custom"></slot>
       `;
     }
     if (this.dataError) {

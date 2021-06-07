@@ -55,7 +55,7 @@ export const valueNotEmpty = value => {
 // Get first level input children
 export const getFirstLevelChildren = root =>
   [...root.children].filter(child =>
-    child.matches(FieldTemplates.getInputFields())
+    child.matches(FieldTemplates.inputFields)
   );
 export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];

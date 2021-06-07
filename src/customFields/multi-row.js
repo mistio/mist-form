@@ -92,11 +92,13 @@ class MultiRow extends LitElement {
 
   validate() {
     // Check that all fields have a name
-    const noFieldsEmpty = this.value.every(field => field.name);
-    return noFieldsEmpty;
+    // const noFieldsEmpty = this.value.every(field => field.name);
+    // return noFieldsEmpty;
+    return true;
   }
 
   valueChanged() {
+    console.log("this.value ", this.value)
     if (!this.value.hasOwnProperty('show') || this.value.show === undefined) {
       this.value.show = false;
     }
@@ -124,7 +126,7 @@ class MultiRow extends LitElement {
               const prop = this.rowProps[key];
               const valueProperty = util.getValueProperty(prop);
               prop[valueProperty] = field[prop.name];
-              return html`${this.mistForm.getTemplate(prop.name, prop)}`
+              return html`${this.mistForm.getTemplate(prop)}`
             })
             return html`<div class="row">${row}
             <paper-icon-button
