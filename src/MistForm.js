@@ -165,15 +165,12 @@ export class MistForm extends LitElement {
     // }
     if (!properties.hidden) {
       return FieldTemplates[properties.type]
-        ? html`${FieldTemplates[properties.type](
-            properties,
-            enumData => {
-              this.dynamicDataNamespace[properties['x-mist-enum']].target =
-                properties.fieldPath;
-              this.dynamicFieldData[properties.fieldPath] = enumData;
-              this.requestUpdate();
-            }
-          )}${FieldTemplates.helpText(properties)}`
+        ? html`${FieldTemplates[properties.type](properties, enumData => {
+            this.dynamicDataNamespace[properties['x-mist-enum']].target =
+              properties.fieldPath;
+            this.dynamicFieldData[properties.fieldPath] = enumData;
+            this.requestUpdate();
+          })}${FieldTemplates.helpText(properties)}`
         : console.error(`Invalid field type: ${properties.type}`);
     }
     return '';
@@ -228,7 +225,7 @@ export class MistForm extends LitElement {
     return this.subformOpenStates[fieldPath];
   }
 
-  dispatchValueChangedEvent = async (e) => {
+  dispatchValueChangedEvent = async e => {
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
@@ -291,7 +288,7 @@ export class MistForm extends LitElement {
       },
     });
     this.dispatchEvent(event);
-  }
+  };
 
   // Lifecycle Methods
   constructor() {
@@ -301,53 +298,55 @@ export class MistForm extends LitElement {
     this.value = {};
     this.subformOpenStates = {};
     this.firstRender = true;
-    //TODO: Add custom events. Not all custom events may emit the "value-change" event
-    //I may end up using only this event listener to captur events for all components
-    this.addEventListener("value-change", function (e) {
+    // TODO: Add custom events. Not all custom events may emit the "value-change" event
+    // I may end up using only this event listener to captur events for all components
+    this.addEventListener('value-change', function (e) {
       console.log('target value', e.composedPath()[0].value);
-  });
+    });
   }
+
   connectedCallback() {
     super.connectedCallback();
-        const customComponents = this.querySelector('#mist-form-custom').children;
-        for (const el of customComponents) {
-          if (el.attributes["mist-form-type"]) {
-            const elClone = el.cloneNode();
-            const componentName = el.attributes["mist-form-type"].value;
-            FieldTemplates.inputFields.push(el.tagName)
-            FieldTemplates[componentName] = (props) => {
-              // Example -> const tel = this.shadowRoot.getElementById("default_action1");
-              // Maybe I can check if the element is already rendered (based on it's path?) and it has a value? Then assign it's avalue again
-              // on rerender. Also check if I'm handling the cloning correctly?
-              if (tel && tel.value) {
-                props.value = tel.value;
-              }
-              // Value gets reset here on re-render. this shouldn't be the case
-              for (const [key, val] of Object.entries(props)) {
-                elClone.setAttribute(key, val);
-                elClone[key] = val;
-              }
-
-              const cl =  elClone.cloneNode();
-              return cl;
-            };
+    const customComponents = this.querySelector('#mist-form-custom').children;
+    for (const el of customComponents) {
+      if (el.attributes['mist-form-type']) {
+        const elClone = el.cloneNode();
+        const componentName = el.attributes['mist-form-type'].value;
+        FieldTemplates.inputFields.push(el.tagName);
+        FieldTemplates[componentName] = props => {
+          // Example -> const el = this.shadowRoot.getElementById("default_action1");
+          // Maybe I can check if the element is already rendered (based on it's path?) and it has a value? Then assign it's avalue again
+          // on rerender. Also check if I'm handling the cloning correctly?
+          // if (el && el.value) {
+          //   props.value = el.value;
+          // }
+          // Value gets reset here on re-render. this shouldn't be the case
+          for (const [key, val] of Object.entries(props)) {
+            elClone.setAttribute(key, val);
+            elClone[key] = val;
           }
-        }
+
+          const cl = elClone.cloneNode();
+          return cl;
+        };
+      }
+    }
   }
 
   getCustomComponents() {
-    return this.dynamicDataNamespace && this.dynamicDataNamespace.customComponents
+    return (
+      this.dynamicDataNamespace && this.dynamicDataNamespace.customComponents
+    );
   }
 
   firstUpdated() {
-     FieldTemplates.mistForm = this;
-     FieldTemplates.valueChangedEvent = this.dispatchValueChangedEvent;
+    FieldTemplates.mistForm = this;
+    FieldTemplates.valueChangedEvent = this.dispatchValueChangedEvent;
 
     this.getJSON(this.src);
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
-
   }
 
   isEmpty() {
@@ -358,7 +357,6 @@ export class MistForm extends LitElement {
   updated() {
     if (this.firstRender) {
       this.firstRender = false;
-
     }
   }
 
@@ -397,9 +395,7 @@ export class MistForm extends LitElement {
           subforms,
           parentPath
         );
-
-      }
-      else if(properties.type === 'multiRow') {
+      } else if (properties.type === 'multiRow') {
         const subForm = util.getSubformFromRef(
           subforms,
           properties.properties.subform.$ref
@@ -407,7 +403,10 @@ export class MistForm extends LitElement {
         const rowProps = subForm.properties;
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
-         properties.rowProps[key] = {...val, fieldPath: `${properties.fieldPath}.${val.name || key}`}
+          properties.rowProps[key] = {
+            ...val,
+            fieldPath: `${properties.fieldPath}.${val.name || key}`,
+          };
         }
       }
       if (this.initialValues) {
