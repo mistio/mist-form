@@ -133,8 +133,8 @@ export const FieldTemplates = {
         )}
       </iron-selector>
     `,
-    input: (props) => html`<paper-input
-
+    input: (props) => {console.log("input render ", props);
+     return html `<paper-input
       class="mist-form-input"
       @value-changed=${FieldTemplates.valueChangedEvent}
       always-float-label
@@ -144,7 +144,7 @@ export const FieldTemplates = {
     >
       ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
       ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
-    </paper-input>`,
+    </paper-input>`;},
     textArea: (props) => html`<paper-textarea
 
       class="mist-form-input"

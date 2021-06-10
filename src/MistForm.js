@@ -131,8 +131,6 @@ export class MistForm extends LitElement {
   // }
 
   updateDynamicData(fieldPath) {
-    console.log("fieldPath ", fieldPath)
-    console.log("this.dynamicDataNamespace ", this.dynamicDataNamespace)
     if (this.dynamicDataNamespace) {
       // Update dynamic properties
       // this.dynamicDataNamespace.dynamicProperties.forEach(prop => {
@@ -158,7 +156,6 @@ export class MistForm extends LitElement {
   //   }]
   // };
   getTemplate(properties) {
-    console.log("properties ", properties)
     // if (this.dynamicDataNamespace) {
     //   const data = this.dynamicDataNamespace.dynamicProperties.filter(prop => prop.path === properties.fieldPath);
     //   const dynamicProps = {};
@@ -231,11 +228,9 @@ export class MistForm extends LitElement {
     return this.subformOpenStates[fieldPath];
   }
 
-  async dispatchValueChangedEvent(e) {
-    console.log("e in dispatch ", e)
+  dispatchValueChangedEvent = async (e) => {
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
-    console.log("this ", this)
     this.updateComplete.then(() => {
       const el = e.path[0];
       const [field, value] = Object.entries(util.getFieldValue(el))[0];
@@ -306,64 +301,48 @@ export class MistForm extends LitElement {
     this.value = {};
     this.subformOpenStates = {};
     this.firstRender = true;
-    // this.addEventListener('mouseup', (e) => {console.log("in event listerner ", e)});
-    // this.addEventListener('keyup', (e) => {console.log("in event listerner ", e)});
-    // this.shadowRoot.addEventListener('mouseup', (e) => {console.log("in shadow event listerner ", e)});
-    // this.shadowRoot.addEventListener('keyup', (e) => {console.log("in shadow event listerner ", e)});
-
+    //TODO: Add custom events. Not all custom events may emit the "value-change" event
+    //I may end up using only this event listener to captur events for all components
+    this.addEventListener("value-change", function (e) {
+      console.log('target value', e.composedPath()[0].value);
+  });
   }
   connectedCallback() {
     super.connectedCallback();
+        const customComponents = this.querySelector('#mist-form-custom').children;
+        for (const el of customComponents) {
+          if (el.attributes["mist-form-type"]) {
+            const elClone = el.cloneNode();
+            const componentName = el.attributes["mist-form-type"].value;
+            FieldTemplates.inputFields.push(el.tagName)
+            FieldTemplates[componentName] = (props) => {
+              // Example -> const tel = this.shadowRoot.getElementById("default_action1");
+              // Maybe I can check if the element is already rendered (based on it's path?) and it has a value? Then assign it's avalue again
+              // on rerender. Also check if I'm handling the cloning correctly?
+              if (tel && tel.value) {
+                props.value = tel.value;
+              }
+              // Value gets reset here on re-render. this shouldn't be the case
+              for (const [key, val] of Object.entries(props)) {
+                elClone.setAttribute(key, val);
+                elClone[key] = val;
+              }
+
+              const cl =  elClone.cloneNode();
+              return cl;
+            };
+          }
+        }
   }
 
   getCustomComponents() {
     return this.dynamicDataNamespace && this.dynamicDataNamespace.customComponents
   }
+
   firstUpdated() {
-    // Get custom elements
-    const customComponents = this.querySelector('#mist-form-custom').children;
-console.log("customComponents, ", customComponents)
-    for (const el of customComponents) {
-      // Add them to fieldTemplates
-      console.log("el ", el.attributes)
-      const elClone = el.cloneNode();
-      const mistForm = this;
-      console.log("this in firstUpdate ", this)
-      if (el.attributes["mist-form-type"]) {
-        const componentName = el.attributes["mist-form-type"].value;
-        console.log("componentNAme ", componentName)
-        FieldTemplates.inputFields.push(el.tagName)
-        FieldTemplates[componentName] = (props) => {
-          for (const [key, val] of Object.entries(props)) {
-            console.log("key ", key);
-            console.log("Val ", val);
-            elClone.setAttribute(key, val);
-
-            elClone[key] = val;
-
-          }
-          const cl = elClone.cloneNode();
-          console.log("this.mistFom ", mistForm)
-          cl.addEventListener('value-changed', mistForm.dispatchValueChangedEvent)
-          return cl;
-        };
-      }
-    }
-
-    console.log("FieldTemplates ", FieldTemplates)
      FieldTemplates.mistForm = this;
-    // console.log("is this ", this)
      FieldTemplates.valueChangedEvent = this.dispatchValueChangedEvent;
-    // const customComponents = this.getCustomComponents();
-    // if (customComponents) {
-    //   FieldTemplates.inputFields = [...FieldTemplates.inputFields, ...customComponents.inputFields];
-    //   for (const [key, val] of Object.entries(customComponents.components)) {
-    //     console.log("val ", val)
-    //     //val().addEventListener('value-changed', (e)=>{console.log("trolololololo in slider")})
-    //    FieldTemplates[key] = val;
-    //    }
-    //   console.log("FieldTemplates ", FieldTemplates)
-    // }
+
     this.getJSON(this.src);
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
@@ -377,9 +356,6 @@ console.log("customComponents, ", customComponents)
   }
 
   updated() {
-
-    console.log("θπδατεσ ", this.shadowRoot.querySelectorAll('slot'));
-console.log("this.firstRender ", this.firstRender)
     if (this.firstRender) {
       this.firstRender = false;
 
@@ -429,12 +405,10 @@ console.log("this.firstRender ", this.firstRender)
           properties.properties.subform.$ref
         );
         const rowProps = subForm.properties;
-        console.log("rowProps, ", rowProps)
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
          properties.rowProps[key] = {...val, fieldPath: `${properties.fieldPath}.${val.name || key}`}
         }
-       console.log("propr ", properties)
       }
       if (this.initialValues) {
         const initialValue = util.getNestedValueFromPath(
@@ -452,13 +426,11 @@ console.log("this.firstRender ", this.firstRender)
           }
         }
       }
-      console.log("before template properties ", properties)
       return this.getTemplate(properties);
     });
   }
 
   render() {
-    console.log("this.dynamicDataNamespace ", this.dynamicDataNamespace)
     if (this.data) {
       // The data here will come validated so no checks required
       const jsonProperties = this.data.properties;
@@ -470,7 +442,6 @@ console.log("this.firstRender ", this.firstRender)
       const subforms =
         jsonDefinitions &&
         Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
-console.log("this.renderInputs(inputs, subforms) ", this.renderInputs(inputs, subforms))
       return html`
         <div class="mist-header">${this.data.label}</div>
         ${this.renderInputs(inputs, subforms)}
@@ -481,8 +452,10 @@ console.log("this.renderInputs(inputs, subforms) ", this.renderInputs(inputs, su
         </div>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
-        <slot name="custom"></slot>
+
+        <slot></slot>
       `;
+      // TODO: Check if I really need slots
     }
     if (this.dataError) {
       return html`We couldn't load the form. Please try again`;

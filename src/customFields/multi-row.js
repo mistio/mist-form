@@ -117,6 +117,7 @@ class MultiRow extends LitElement {
   }
 
   render() {
+    // TODO: Add validations and values
       return html` <span class="label">${this.label}</span>
         <div style="width:100%">
         <div class="row-header">${Object.keys(this.rowProps).map(key => html`<span class="row-item">${this.rowProps[key].label}</span>`)}</div>

@@ -28,19 +28,27 @@
 			"id":"field_constraints",
 			"type":"object",
 			"properties":{
+				"min":{
+					"label":"Min size",
+					"id":"min",
+					"type":"string",
+					"format":"number",
+					"value":"",
+					"minimum":1,
+					"autoValidate":true,
+					"helpText":"A minimum of 1 is required"
+				  },
 				"cloud1":{
 					"label":"Default1",
 					"id":"default_action1",
 					"type":"paperSlider",
-					"name": "cloud1",
-					"value": 1
+					"name": "cloud1"
 				  },
 				  "cloud2":{
 					"label":"Default2",
 					"id":"default_action2",
 					"type":"paperSlider",
-					"name": "cloud2",
-					"value": 2
+					"name": "cloud2"
 				  },
 			  "field":{
 				"name":"field",

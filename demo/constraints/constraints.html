@@ -74,10 +74,10 @@
         //       @value-changed=${ev}
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
           <div id="mist-form-custom">
-            <paper-slider slot="custom" max-markers=10  mist-form-type="paperSlider"
+<paper-slider slot="customElement" max-markers=10  mist-form-type="paperSlider"
               editable>
           </paper-slider>
-
+<span slot="customElement">sdfsdf</span>
           </div>
           <iron-ajax
             slot="formRequest"
