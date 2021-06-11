@@ -13,7 +13,6 @@ export class MistForm extends LitElement {
       dataError: { type: Object },
       formError: { type: String },
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
-      value: { type: Object },
       initialValues: { type: Object },
       firstRender: { type: Boolean },
       subformOpenStates: { type: Object },
@@ -314,13 +313,6 @@ export class MistForm extends LitElement {
         const componentName = el.attributes['mist-form-type'].value;
         FieldTemplates.inputFields.push(el.tagName);
         FieldTemplates[componentName] = props => {
-          // Example -> const el = this.shadowRoot.getElementById("default_action1");
-          // Maybe I can check if the element is already rendered (based on it's path?) and it has a value? Then assign it's avalue again
-          // on rerender. Also check if I'm handling the cloning correctly?
-          // if (el && el.value) {
-          //   props.value = el.value;
-          // }
-          // Value gets reset here on re-render. this shouldn't be the case
           for (const [key, val] of Object.entries(props)) {
             elClone.setAttribute(key, val);
             elClone[key] = val;
