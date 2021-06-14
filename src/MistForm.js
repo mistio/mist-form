@@ -231,7 +231,7 @@ export class MistForm extends LitElement {
       const el = e.path[0];
       const [field, value] = Object.entries(util.getFieldValue(el))[0];
       let update = false;
-      this.updateState(field, value, el);
+      this.updateState();
 
       this.updateDynamicData(el.fieldPath);
 
@@ -299,19 +299,17 @@ export class MistForm extends LitElement {
     this.firstRender = true;
     // TODO: Add custom events. Not all custom events may emit the "value-change" event
     // I may end up using only this event listener to captur events for all components
-    this.addEventListener('value-change', function (e) {
-      console.log('target value', e.composedPath()[0].value);
-    });
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  setupCustomComponents() {
+    // Get custom components from slot
     const customComponents = this.querySelector('#mist-form-custom').children;
+    // Setup their properties
     for (const el of customComponents) {
       if (el.attributes['mist-form-type']) {
         const elClone = el.cloneNode();
         const componentName = el.attributes['mist-form-type'].value;
-        FieldTemplates.inputFields.push(el.tagName);
+        FieldTemplates.customInputFields.push({'tagName': el.tagName, 'valueChangedEvent': el.valueChangedEvent});
         FieldTemplates[componentName] = props => {
           for (const [key, val] of Object.entries(props)) {
             elClone.setAttribute(key, val);
@@ -323,12 +321,14 @@ export class MistForm extends LitElement {
         };
       }
     }
-  }
-
-  getCustomComponents() {
-    return (
-      this.dynamicDataNamespace && this.dynamicDataNamespace.customComponents
-    );
+    ;
+    // Add event listeners
+    const eventNames = util.getUniqueEventNames();
+    for (const eventName of eventNames) {
+      this.addEventListener(eventName,  e => {
+        this.dispatchValueChangedEvent(e);
+      });
+    }
   }
 
   firstUpdated() {
@@ -339,6 +339,7 @@ export class MistForm extends LitElement {
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
+    this.setupCustomComponents();
   }
 
   isEmpty() {

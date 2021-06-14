@@ -7,7 +7,8 @@ import './customFields/size-element.js';
 import './customFields/multi-row.js';
 
 // TODO: For now I only spread props, I should spread attributes too
-// TODO: This file is starting to get too big. Maybe I should split it up
+// TODO: Split up components in separate files. One file per component.
+
 // Some of the props need to be converted from their JSON Schema equivalents
 const getConvertedProps = props => {
   const newProps = {
@@ -45,6 +46,11 @@ export const FieldTemplates = {
     'div.subform-container',
     'multi-row'
   ],
+  // Here we store the tag names of the custom components
+  // and the name of their value changed events so we can detect
+  // field changes
+  //{ tagName: 'tag-name', valueChangedEvent: 'value-changed'}
+  customInputFields: [],
     string: (props, cb) => {
       const _props = { ...props };
       const isDynamic = Object.prototype.hasOwnProperty.call(

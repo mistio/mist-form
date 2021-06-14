@@ -29,6 +29,7 @@
 			"type":"object",
 			"properties":{
 				"min":{
+					"name": "min",
 					"label":"Min size",
 					"id":"min",
 					"type":"string",

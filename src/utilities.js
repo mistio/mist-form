@@ -90,3 +90,15 @@ export function getValueProperty(props) {
   }
   return 'value';
 }
+
+export const getUniqueEventNames = () =>{
+const eventNames = FieldTemplates.customInputFields.map(input => {
+  // If no event was set return the default 'value-change' event
+  if (input.valueChangedEvent) {
+    return input.valueChangedEvent.toLowerCase();
+  } else {
+    return 'value-change';
+  }
+});
+return [...new Set(eventNames)];
+}
