@@ -12,7 +12,9 @@ class MultiRow extends LitElement {
   constructor() {
     super();
     this.value = [];
-    this.addEventListener('value-changed', (e)=>{console.log("e ", e)});
+    this.addEventListener('value-changed', e => {
+      console.log('e ', e);
+    });
   }
 
   static get styles() {
@@ -33,7 +35,8 @@ class MultiRow extends LitElement {
         margin-top: -20px;
       }
 
-      .row-header, .row {
+      .row-header,
+      .row {
         display: flex;
         justify-content: space-around;
       }
@@ -98,7 +101,7 @@ class MultiRow extends LitElement {
   }
 
   valueChanged() {
-    console.log("this.value ", this.value)
+    console.log('this.value ', this.value);
     if (!this.value.hasOwnProperty('show') || this.value.show === undefined) {
       this.value.show = false;
     }
@@ -113,43 +116,52 @@ class MultiRow extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.emptyRowValue = Object.keys(this.rowProps).map(key => this.rowProps[key].name);
+    this.emptyRowValue = Object.keys(this.rowProps).map(
+      key => this.rowProps[key].name
+    );
   }
 
   render() {
     // TODO: Add validations and values
-      return html` <span class="label">${this.label}</span>
-        <div style="width:100%">
-        <div class="row-header">${Object.keys(this.rowProps).map(key => html`<span class="row-item">${this.rowProps[key].label}</span>`)}</div>
+    return html` <span class="label">${this.label}</span>
+      <div style="width:100%">
+        <div class="row-header">
+          ${Object.keys(this.rowProps).map(
+            key =>
+              html`<span class="row-item">${this.rowProps[key].label}</span>`
+          )}
+        </div>
 
-          ${this.value.map((field,index) => {
-            const row = Object.keys(this.rowProps).map(key => {
-              const prop = this.rowProps[key];
-              const valueProperty = util.getValueProperty(prop);
-              prop[valueProperty] = field[prop.name];
-              return html`${this.mistForm.getTemplate(prop)}`
-            })
-            return html`<div class="row">${row}
+        ${this.value.map((field, index) => {
+          const row = Object.keys(this.rowProps).map(key => {
+            const prop = this.rowProps[key];
+            const valueProperty = util.getValueProperty(prop);
+            prop[valueProperty] = field[prop.name];
+            return html`${this.mistForm.getTemplate(prop)}`;
+          });
+          return html`<div class="row">
+            ${row}
             <paper-icon-button
-            icon="icons:delete"
-            alt="Remove row"
-            title="Remove row"
-            class="remove"
-            @tap=${() => {
-              this.removeRow(index);
-            }}
-          >
-          </paper-icon-button></div>`
-          })}
+              icon="icons:delete"
+              alt="Remove row"
+              title="Remove row"
+              class="remove"
+              @tap=${() => {
+                this.removeRow(index);
+              }}
+            >
+            </paper-icon-button>
+          </div>`;
+        })}
 
-          <div>
-            <span class="addrule">
-              <paper-button @tap=${this.addRow} class="add">
-                <iron-icon icon="icons:add"></iron-icon> Add a new ${this.label}
-              </paper-button>
-            </span>
-          </div>
-        </div>`;
+        <div>
+          <span class="addrule">
+            <paper-button @tap=${this.addRow} class="add">
+              <iron-icon icon="icons:add"></iron-icon> Add a new ${this.label}
+            </paper-button>
+          </span>
+        </div>
+      </div>`;
   }
 }
 

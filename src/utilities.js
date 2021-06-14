@@ -54,9 +54,7 @@ export const valueNotEmpty = value => {
 
 // Get first level input children
 export const getFirstLevelChildren = root =>
-  [...root.children].filter(child =>
-    child.matches(FieldTemplates.inputFields)
-  );
+  [...root.children].filter(child => child.matches(FieldTemplates.inputFields));
 export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];
   const subForm = subforms.find(el => el[0] === subformName)[1];
@@ -91,14 +89,14 @@ export function getValueProperty(props) {
   return 'value';
 }
 
-export const getUniqueEventNames = () =>{
-const eventNames = FieldTemplates.customInputFields.map(input => {
-  // If no event was set return the default 'value-change' event
-  if (input.valueChangedEvent) {
-    return input.valueChangedEvent.toLowerCase();
-  } else {
-    return 'value-change';
-  }
-});
-return [...new Set(eventNames)];
-}
+export const getUniqueEventNames = () => {
+  const eventNames = FieldTemplates.customInputFields.map(input => {
+    // If no event was set return the default 'value-change' event
+    if (input.valueChangedEvent) {
+      return input.valueChangedEvent.toLowerCase();
+    } else {
+      return 'value-change';
+    }
+  });
+  return [...new Set(eventNames)];
+};

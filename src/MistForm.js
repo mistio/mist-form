@@ -309,7 +309,10 @@ export class MistForm extends LitElement {
       if (el.attributes['mist-form-type']) {
         const elClone = el.cloneNode();
         const componentName = el.attributes['mist-form-type'].value;
-        FieldTemplates.customInputFields.push({'tagName': el.tagName, 'valueChangedEvent': el.valueChangedEvent});
+        FieldTemplates.customInputFields.push({
+          tagName: el.tagName,
+          valueChangedEvent: el.valueChangedEvent,
+        });
         FieldTemplates[componentName] = props => {
           for (const [key, val] of Object.entries(props)) {
             elClone.setAttribute(key, val);
@@ -321,11 +324,10 @@ export class MistForm extends LitElement {
         };
       }
     }
-    ;
     // Add event listeners
     const eventNames = util.getUniqueEventNames();
     for (const eventName of eventNames) {
-      this.addEventListener(eventName,  e => {
+      this.addEventListener(eventName, e => {
         this.dispatchValueChangedEvent(e);
       });
     }
