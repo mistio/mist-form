@@ -446,8 +446,6 @@ export class MistForm extends LitElement {
         </div>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
-
-        <slot></slot>
       `;
       // TODO: Check if I really need slots
     }

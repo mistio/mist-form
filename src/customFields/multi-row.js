@@ -13,7 +13,6 @@ class MultiRow extends LitElement {
     super();
     this.value = [];
     this.addEventListener('value-changed', e => {
-      console.log('e ', e);
     });
   }
 
@@ -59,28 +58,8 @@ class MultiRow extends LitElement {
   }
 
   addRow() {
-    this.value.push(this.emptyRowValue);
+    this.value.push({});
     this.requestUpdate();
-    this.valueChanged();
-  }
-
-  updateNameValue(name, index) {
-    this.value[index].name = name;
-    this.valueChanged();
-  }
-  updateCloudValue(cloudId, index) {
-    this.value[index].cloud = cloudId;
-    this.requestUpdate();
-    this.valueChanged();
-  }
-
-  updateValueValue(value, index) {
-    this.value[index].value = value;
-    this.valueChanged();
-  }
-
-  updateShowValue(show, index) {
-    this.value[index].show = show;
     this.valueChanged();
   }
 
@@ -100,8 +79,18 @@ class MultiRow extends LitElement {
     return true;
   }
 
+  getValue() {
+    const rows = this.shadowRoot.querySelectorAll('.row');
+    const arr = [];
+    for (const row of rows) {
+      const rowValue = this.mistForm.getValuesfromDOM(row);
+      arr.push(rowValue);
+    }
+    this.value = arr;
+    return this.value;
+  }
+//TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged() {
-    console.log('this.value ', this.value);
     if (!this.value.hasOwnProperty('show') || this.value.show === undefined) {
       this.value.show = false;
     }
@@ -113,12 +102,13 @@ class MultiRow extends LitElement {
 
     this.dispatchEvent(event);
   }
-
+// TODO: Add initial values
   connectedCallback() {
     super.connectedCallback();
-    this.emptyRowValue = Object.keys(this.rowProps).map(
-      key => this.rowProps[key].name
-    );
+    // this.emptyRowValue = Object.keys(this.rowProps).map(
+    //   key => this.rowProps[key].name
+    // );
+
   }
 
   render() {

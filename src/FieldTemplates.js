@@ -139,7 +139,6 @@ export const FieldTemplates = {
     </iron-selector>
   `,
   input: props => {
-    console.log('input render ', props);
     return html`<paper-input
       class="mist-form-input"
       @value-changed=${FieldTemplates.valueChangedEvent}
@@ -205,7 +204,6 @@ export const FieldTemplates = {
     ></multi-row>`;
   },
   object: props => {
-    console.log('props in objcet ', props);
     // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
     // TODO: Create component for subform which returns a value so I don't need to find the values in FieldTemplates.mistForm

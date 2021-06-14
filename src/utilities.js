@@ -30,6 +30,8 @@ export const getFieldValue = input => {
     value = input.checked;
   } else if (input.tagName === 'IRON-SELECTOR') {
     value = input.selectedValues;
+  } else if (input.type === 'multiRow') {
+    value = input.getValue();
   } else {
     value = input.value;
   }
@@ -53,8 +55,12 @@ export const valueNotEmpty = value => {
 };
 
 // Get first level input children
-export const getFirstLevelChildren = root =>
-  [...root.children].filter(child => child.matches(FieldTemplates.inputFields));
+export const getFirstLevelChildren = root => {
+  const customComponentTagNames = getUniqueTagNames();
+  const inputFields = [...FieldTemplates.inputFields, ...customComponentTagNames];
+
+  return [...root.children].filter(child => child.matches(inputFields));
+}
 export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];
   const subForm = subforms.find(el => el[0] === subformName)[1];
@@ -99,4 +105,14 @@ export const getUniqueEventNames = () => {
     }
   });
   return [...new Set(eventNames)];
+};
+
+export const getUniqueTagNames = () => {
+  const tagNames = FieldTemplates.customInputFields.map(input => {
+    // If no event was set return the default 'value-change' event
+    if (input.tagName) {
+      return input.tagName.toLowerCase();
+    }
+  });
+  return [...new Set(tagNames)];
 };
