@@ -1,0 +1,107 @@
+{
+	"type":"object",
+	"id":"constraints-form",
+	"$schema":"http://json-schema.org/draft-07/schema#",
+	"label":"Constraints",
+	"description":"Constraints form",
+	"submitButtonLabel":"Add",
+	"canClose":true,
+	"additionalProperties":false,
+	"properties":{
+		"fieldConstraintContainer":{
+			"name":"field",
+			"label":"field constraints",
+			"id":"field_constraint_container",
+			"type":"object",
+			"hasToggle":true,
+			"excludeFromPayload":true,
+			"omitTitle": true,
+			"properties":{
+			  "subform":{
+				"$ref":"#/definitions/fieldConstraints"
+			  }
+			}
+		  }
+	},
+	"definitions":{
+		"fieldConstraints":{
+			"id":"field_constraints",
+			"type":"object",
+			"properties":{
+				"min":{
+					"name": "min",
+					"label":"Min size",
+					"id":"min",
+					"type":"string",
+					"format":"number",
+					"value":"",
+					"minimum":1,
+					"autoValidate":true,
+					"helpText":"A minimum of 1 is required"
+				  },
+				"cloud1":{
+					"label":"Default1",
+					"id":"default_action1",
+					"type":"paperSlider",
+					"name": "cloud1"
+				  },
+				  "cloud2":{
+					"label":"Default2",
+					"id":"default_action2",
+					"type":"paperSlider",
+					"name": "cloud2"
+				  },
+			  "field":{
+				"name":"field",
+				"label":"Field",
+				"id":"field",
+				"type":"multiRow",
+				"properties":{
+				  "subform":{
+					"$ref":"#/definitions/fieldElementSubform"
+				  }
+				}
+			  }
+			}
+		  },
+
+	  "fieldElementSubform":{
+		"id":"field_element_subform",
+		"type":"rowDefinition",
+		"properties":{
+		  "cloud":{
+			"label":"Default",
+			"id":"default_action",
+			"type":"string",
+			"format":"dropdown",
+			"enum": ["Dr", "Mr", "Mrs", "Ms"]
+		  },
+		  "fieldName":{
+			"label":"Field name",
+			"name":"name",
+			"type":"string"
+		  },
+		  "fieldValue":{
+			"label":"Field value",
+			"name":"value",
+			"type":"string"
+		  },
+		  "show":{
+			"label":"Show",
+			"name":"show",
+			"id":"show",
+			"checked":true,
+			"type":"boolean",
+			"noLabelFloat":true
+		  },
+		  "cloud3":{
+			"label":"Default3",
+			"id":"default_action3",
+			"type":"paperSlider",
+			"name": "cloud3",
+			"value": 3
+		  }
+		}
+	  }
+	}
+  }
