@@ -173,10 +173,47 @@
 		"id":"field_constraints",
 		"type":"object",
 		"properties":{
-		  "field":{
-			"label":"Fields",
-			"name": "field",
-			"type":"fieldElement"
+		"field":{
+			"name":"field",
+			"label":"Field",
+			"id":"field",
+			"type":"multiRow",
+			"properties":{
+			  "subform":{
+				"$ref":"#/definitions/fieldElementSubform"
+			  }
+			}
+		  }
+		}
+	  },
+	  "fieldElementSubform":{
+		"id":"field_element_subform",
+		"type":"rowDefinition",
+		"properties":{
+		  "cloud":{
+			"label":"Cloud",
+			"id":"cloud",
+			"type":"string",
+			"format":"dropdown",
+			"x-mist-enum":"getDefaultActions"
+		  },
+		  "fieldName":{
+			"label":"Field name",
+			"name":"name",
+			"type":"string"
+		  },
+		  "fieldValue":{
+			"label":"Field value",
+			"name":"value",
+			"type":"string"
+		  },
+		  "show":{
+			"label":"Show",
+			"name":"show",
+			"id":"show",
+			"checked":true,
+			"type":"boolean",
+			"noLabelFloat":true
 		  }
 		}
 	  },

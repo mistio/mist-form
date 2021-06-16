@@ -50,20 +50,20 @@ export class MistForm extends LitElement {
   }
 
   getValuesfromDOM(root) {
+
     let formValues = {};
     const nodeList = util.getFirstLevelChildren(root);
-
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.classList.contains('subform-container') && notExcluded) {
         const domValues = this.getValuesfromDOM(node);
         if (!util.valueNotEmpty(domValues)) {
-          return;
+          return {};
         }
         if (node.omitTitle) {
           formValues = { ...formValues, ...domValues };
         } else {
-          formValues[node.getAttribute('name')] = domValues;
+          formValues[node.name] = domValues;
         }
       } else if (notExcluded) {
         const input = util.getFieldValue(node);
@@ -362,6 +362,8 @@ export class MistForm extends LitElement {
       // Subforms just contain data, they shouldn't be rendered by themselves.
       // They should be rendered in subform containers
       const fieldName = properties.type === 'object' ? properties.name : name;
+      properties.name = fieldName;
+      // TODO: Should this be [path, name].join('.') or [path, fieldName].join('.')?
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.type === 'object') {
