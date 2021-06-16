@@ -50,9 +50,9 @@ export class MistForm extends LitElement {
   }
 
   getValuesfromDOM(root) {
-
     let formValues = {};
     const nodeList = util.getFirstLevelChildren(root);
+    console.log("nodeList ", nodeList)
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.classList.contains('subform-container') && notExcluded) {
@@ -67,6 +67,7 @@ export class MistForm extends LitElement {
         }
       } else if (notExcluded) {
         const input = util.getFieldValue(node);
+        console.log("fieldValue ", input)
         const inputValue = Object.values(input)[0];
         if (node.type === 'number') {
           input[Object.keys(input)[0]] = parseInt(inputValue, 10);
@@ -401,7 +402,8 @@ export class MistForm extends LitElement {
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
           properties.rowProps[key] = {
-            ...val,
+            name: key,
+            ...val, // If user gave a separate name it will be overwritten here
             fieldPath: `${properties.fieldPath}.${val.name || key}`,
           };
         }

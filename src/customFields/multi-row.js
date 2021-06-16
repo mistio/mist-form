@@ -21,9 +21,65 @@ class MultiRow extends LitElement {
       :host {
         display: block;
         padding: 10px;
-        color: var(--mist-form-multi-row-text-color, black);
-        background: var(--mist-form-multi-row-background-color, white);
-        font-family: var(--mist-form-multi-row-font-family, Roboto);
+        color: var(--mist-form-size-element-text-color, black);
+        background: var(--mist-form-size-element-background-color, white);
+        font-family: var(--mist-form-size-element-font-family, Roboto);
+      }
+
+      paper-input {
+        width: 80%;
+        display: inline-block;
+        margin-right: 20px;
+        margin-top: -20px;
+      }
+      paper-dropdown-menu {
+        width: 100%;
+        display: inline-block;
+      }
+
+      th {
+        text-align: left;
+      }
+      .sizeRow {
+        width: 100%;
+        background-color: #ebebeb;
+        margin-bottom: 10px;
+        padding: 0 0 15px 15px;
+      }
+
+      .sizeRow > paper-dropdown-menu,
+      .sizeRow > .sizeField {
+        width: 89%;
+      }
+      .label {
+        margin-top: auto;
+        margin-bottom: 15px;
+        color: #424242;
+        font-weight: bold;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      tr {
+        border: solid;
+        border-width: 1px 0;
+      }
+      paper-icon-button {
+        color: #adadad;
+      }
+      .add {
+        color: #424242;
+      }
+      .no-clouds {
+        font-size: 14px;
+        color: #4b4b4b;
+      }
+      :host {
+        display: block;
+        padding: 10px;
+        color: var(--mist-form-field-element-text-color, black);
+        background: var(--mist-form-field-element-background-color, white);
+        font-family: var(--mist-form-field-element-font-family, Roboto);
       }
 
       paper-input,
@@ -34,10 +90,12 @@ class MultiRow extends LitElement {
         margin-top: -20px;
       }
 
-      .row-header,
-      .row {
-        display: flex;
-        justify-content: space-around;
+      th {
+        text-align: left;
+      }
+      .show-header,
+      .checkbox-cell {
+        text-align: center;
       }
       .label {
         margin-top: auto;
@@ -53,6 +111,11 @@ class MultiRow extends LitElement {
         --paper-checkbox-checked-color: #2196f3;
         --paper-checkbox-checked-ink-color: #2196f3;
         --paper-checkbox-unchecked-color: #424242;
+      }
+
+      .row-header {
+        display: flex;
+        justify-content: space-between;
       }
     `;
   }
@@ -86,14 +149,12 @@ class MultiRow extends LitElement {
       const rowValue = this.mistForm.getValuesfromDOM(row);
       arr.push(rowValue);
     }
+
     this.value = arr;
     return this.value;
   }
 //TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged() {
-    if (!this.value.hasOwnProperty('show') || this.value.show === undefined) {
-      this.value.show = false;
-    }
     const event = new CustomEvent('value-changed', {
       detail: {
         value: this.value,

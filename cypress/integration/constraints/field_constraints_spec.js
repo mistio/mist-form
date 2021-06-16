@@ -31,14 +31,6 @@ describe('Field constraints', () => {
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
-  it('Submit is disabled when adding new field and not giving a name', () => {
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-button')
-      .click({ force: true });
-    cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
-  });
-
   it('Add two fields, give values and delete one', () => {
     // Reset field subform
     cy.get('mist-form')
@@ -129,16 +121,13 @@ describe('Field constraints', () => {
         JSON.stringify({
           field: [
             {
-              cloud: '',
-              show: false,
               name: 'Field2',
-              value: '',
             },
             {
               cloud: 'cloudId3',
-              show: true,
               name: 'Field3',
               value: 'Value3',
+              show: true
             },
           ],
         })

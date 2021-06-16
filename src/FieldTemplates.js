@@ -52,6 +52,7 @@ export const FieldTemplates = {
   //{ tagName: 'tag-name', valueChangedEvent: 'value-changed'}
   customInputFields: [],
   string: (props, cb) => {
+    console.log("first props ", props)
     const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
       _props,
@@ -84,26 +85,26 @@ export const FieldTemplates = {
     }
     return FieldTemplates.spinner;
   },
-  dropdown: props => html`<paper-dropdown-menu
+  dropdown: props => {console.log("props in dropdown", props.enum); return html`<paper-dropdown-menu
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
     class="mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
     no-animations=""
     attr-for-selected="value"
-    @value-changed=${FieldTemplates.valueChangedEvent}
   >
     <paper-listbox
       attr-for-selected="value"
-      selected="${props.value}"
+      selected="${props.value || ''}"
       class="dropdown-content"
       slot="dropdown-content"
+      @value-changed=${FieldTemplates.valueChangedEvent}
     >
       ${props.enum.map(
-        item => html`<paper-item value="${item}">${item}</paper-item>`
+        item => html`<paper-item value="${item.id || item}">${item.title || item}</paper-item>`
       )}
     </paper-listbox>
-  </paper-dropdown-menu>`,
+  </paper-dropdown-menu>`},
   radioGroup: props => html` <paper-radio-group
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
@@ -168,23 +169,23 @@ export const FieldTemplates = {
       value=""
       >${props.label}</paper-checkbox
     >`,
-  // durationField: (props) =>
-  //   html`<mist-form-duration-field
+  durationField: (props) =>
+    html`<mist-form-duration-field
 
-  //     class="mist-form-input"
-  //     ...="${spreadProps(props)}"
-  //     @value-changed=${FieldTemplates.valueChangedEvent}
-  //   ></mist-form-duration-field>`,
-  // fieldElement: (props) =>
-  //   html`<field-element
+      class="mist-form-input"
+      ...="${spreadProps(props)}"
+      @value-changed=${FieldTemplates.valueChangedEvent}
+    ></mist-form-duration-field>`,
+  fieldElement: (props) =>
+    html`<field-element
 
-  //     class="mist-form-input"
-  //     ...="${spreadProps(props)}"
-  //     .clouds="${FieldTemplates.mistForm.dynamicDataNamespace &&
-  //     FieldTemplates.mistForm.dynamicDataNamespace.clouds &&
-  //     FieldTemplates.mistForm.dynamicDataNamespace.clouds()}"
-  //     @value-changed=${FieldTemplates.mistForm.dispatchValueChangedEvent}
-  //   ></field-element>`,
+      class="mist-form-input"
+      ...="${spreadProps(props)}"
+      .clouds="${FieldTemplates.mistForm.dynamicDataNamespace &&
+      FieldTemplates.mistForm.dynamicDataNamespace.clouds &&
+      FieldTemplates.mistForm.dynamicDataNamespace.clouds()}"
+      @value-changed=${FieldTemplates.mistForm.dispatchValueChangedEvent}
+    ></field-element>`,
   // sizeElement: ( props) =>
   //   html`<size-element
 

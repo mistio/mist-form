@@ -195,7 +195,7 @@
 			"id":"cloud",
 			"type":"string",
 			"format":"dropdown",
-			"x-mist-enum":"getDefaultActions"
+			"x-mist-enum":"clouds"
 		  },
 		  "fieldName":{
 			"label":"Field name",

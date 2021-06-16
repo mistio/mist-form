@@ -115,6 +115,7 @@ class FieldElement extends LitElement {
   }
 
   render() {
+    console.log("this.clouds ", this.clouds)
     return html` <table style="width:100%">
       <tr>
         <th>Cloud</th>
