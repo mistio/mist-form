@@ -143,14 +143,20 @@ class MultiRow extends LitElement {
   }
 
   getValue() {
-    const rows = this.shadowRoot.querySelectorAll('.row');
-    const arr = [];
-    for (const row of rows) {
-      const rowValue = this.mistForm.getValuesfromDOM(row);
-      arr.push(rowValue);
+    if (this.initialValue) {
+      this.value = [...this.initialValue];
+      this.initialValue = null;
+    } else {
+      const rows = this.shadowRoot.querySelectorAll('.row');
+      console.log("this.value ", this.value)
+      const value = [];
+      for (const row of rows) {
+        const rowValue = this.mistForm.getValuesfromDOM(row);
+        value.push(rowValue);
+      }
+      this.value = value;
     }
 
-    this.value = arr;
     return this.value;
   }
 //TODO: Trigger this. Or maybe not. It's triggered in mistForm

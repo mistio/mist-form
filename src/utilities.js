@@ -22,17 +22,18 @@ export const displaySubmitButton = mistForm =>
     'submit-btn'
   );
 export const getFieldValue = input => {
-  console.log("input in getFieldValue", input)
   let value;
   if (
     input.getAttribute('role') === 'checkbox' ||
     input.getAttribute('role') === 'button'
   ) {
     value = input.checked;
+
+  } else if (input.tagName === 'IRON-SELECTOR') {
+    value = input.selectedValues;
   } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
 
     value = input.querySelector('paper-listbox').selected;
-    console.log("listbox value ", value)
 
   } else if (input.type === 'multiRow') {
     value = input.getValue();

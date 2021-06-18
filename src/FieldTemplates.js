@@ -52,7 +52,6 @@ export const FieldTemplates = {
   //{ tagName: 'tag-name', valueChangedEvent: 'value-changed'}
   customInputFields: [],
   string: (props, cb) => {
-    console.log("first props ", props)
     const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
       _props,
@@ -85,7 +84,7 @@ export const FieldTemplates = {
     }
     return FieldTemplates.spinner;
   },
-  dropdown: props => {console.log("props in dropdown", props.enum); return html`<paper-dropdown-menu
+  dropdown: props => { console.log("dropdown props ", props.value );return html`<paper-dropdown-menu
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
     class="mist-form-input"

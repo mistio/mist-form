@@ -194,27 +194,27 @@ describe('Constraints form with data', () => {
   });
   it('Check that data appears correctly in field subform', () => {
     cy.get('mist-form')
-      .find('#field_constraint_container > field-element')
+      .find('#field_constraint_container > multi-row')
       .find('input')
       .first()
       .should('have.value', 'Field2');
     cy.get('mist-form')
-      .find('#field_constraint_container > field-element')
+      .find('#field_constraint_container > multi-row')
       .find('input')
       .eq(1)
       .should('have.value', 'Value2');
     cy.get('mist-form')
-      .find('#field_constraint_container > field-element')
+      .find('#field_constraint_container > multi-row')
       .find('input')
       .eq(2)
       .should('have.value', 'Field3');
     cy.get('mist-form')
-      .find('#field_constraint_container > field-element')
+      .find('#field_constraint_container > multi-row')
       .find('paper-checkbox')
       .first()
       .should('not.have.attr', 'checked');
     cy.get('mist-form')
-      .find('#field_constraint_container > field-element')
+      .find('#field_constraint_container > multi-row')
       .find('paper-checkbox')
       .last()
       .should('have.attr', 'checked');

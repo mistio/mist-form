@@ -52,7 +52,6 @@ export class MistForm extends LitElement {
   getValuesfromDOM(root) {
     let formValues = {};
     const nodeList = util.getFirstLevelChildren(root);
-    console.log("nodeList ", nodeList)
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.classList.contains('subform-container') && notExcluded) {
@@ -67,7 +66,6 @@ export class MistForm extends LitElement {
         }
       } else if (notExcluded) {
         const input = util.getFieldValue(node);
-        console.log("fieldValue ", input)
         const inputValue = Object.values(input)[0];
         if (node.type === 'number') {
           input[Object.keys(input)[0]] = parseInt(inputValue, 10);
@@ -164,14 +162,16 @@ export class MistForm extends LitElement {
     //   })
     // }
     if (!properties.hidden) {
-      return FieldTemplates[properties.type]
-        ? html`${FieldTemplates[properties.type](properties, enumData => {
-            this.dynamicDataNamespace[properties['x-mist-enum']].target =
-              properties.fieldPath;
-            this.dynamicFieldData[properties.fieldPath] = enumData;
-            this.requestUpdate();
-          })}${FieldTemplates.helpText(properties)}`
-        : console.error(`Invalid field type: ${properties.type}`);
+      if (FieldTemplates[properties.type]) {
+        return html`${FieldTemplates[properties.type](properties, enumData => {
+          this.dynamicDataNamespace[properties['x-mist-enum']].target =
+            properties.fieldPath;
+          this.dynamicFieldData[properties.fieldPath] = enumData;
+          this.requestUpdate();
+        })}${FieldTemplates.helpText(properties)}`
+      } else {
+        console.error(`Invalid field type: ${properties.type}`);
+      }
     }
     return '';
   }
@@ -304,7 +304,8 @@ export class MistForm extends LitElement {
 
   setupCustomComponents() {
     // Get custom components from slot
-    const customComponents = this.querySelector('#mist-form-custom').children;
+    const customComponents = this.querySelector('#mist-form-custom') && this.querySelector('#mist-form-custom').children;
+    if (!customComponents) { return; }
     // Setup their properties
     for (const el of customComponents) {
       if (el.attributes['mist-form-type']) {
@@ -421,6 +422,9 @@ export class MistForm extends LitElement {
           } else {
             const valueProperty = util.getValueProperty(properties);
             properties[valueProperty] = initialValue;
+            if (properties.type === 'multiRow') {
+              properties.initialValue = initialValue;
+            }
           }
         }
       }
