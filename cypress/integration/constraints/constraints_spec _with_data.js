@@ -273,13 +273,10 @@ describe('Constraints form with data', () => {
               cloud: 'cloudId2',
               name: 'Field2',
               value: 'Value2',
-              show: false,
             },
             {
-              cloud: '',
-              show: true,
               name: 'Field3',
-              value: '',
+              show: true
             },
           ],
         })

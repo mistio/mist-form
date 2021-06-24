@@ -4,16 +4,13 @@ import * as util from './../utilities.js';
 class MultiRow extends LitElement {
   static get properties() {
     return {
-      value: { type: Array },
-      inputs: { type: Array },
+      inputs: { type: Array }
     };
   }
 
   constructor() {
     super();
     this.value = [];
-    this.addEventListener('value-changed', e => {
-    });
   }
 
   static get styles() {
@@ -121,12 +118,13 @@ class MultiRow extends LitElement {
   }
 
   addRow() {
-    this.value.push({});
+    this.value = [...this.getValue(), {}];
     this.requestUpdate();
     this.valueChanged();
   }
 
   removeRow(indexToRemove) {
+    this.value = this.getValue();
     this.value = [
       ...this.value.slice(0, indexToRemove),
       ...this.value.slice(indexToRemove + 1),
@@ -143,43 +141,27 @@ class MultiRow extends LitElement {
   }
 
   getValue() {
-    if (this.initialValue) {
-      this.value = [...this.initialValue];
-      this.initialValue = null;
-    } else {
-      const rows = this.shadowRoot.querySelectorAll('.row');
-      console.log("this.value ", this.value)
       const value = [];
-      for (const row of rows) {
-        const rowValue = this.mistForm.getValuesfromDOM(row);
-        value.push(rowValue);
-      }
-      this.value = value;
-    }
+        const rows = this.shadowRoot.querySelectorAll('.row');
 
-    return this.value;
+        for (const row of rows) {
+          const rowValue = this.mistForm.getValuesfromDOM(row);
+          value.push(rowValue);
+        }
+    return value;
   }
 //TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged() {
     const event = new CustomEvent('value-changed', {
       detail: {
-        value: this.value,
+        value: this.getValue(),
       },
     });
 
     this.dispatchEvent(event);
   }
-// TODO: Add initial values
-  connectedCallback() {
-    super.connectedCallback();
-    // this.emptyRowValue = Object.keys(this.rowProps).map(
-    //   key => this.rowProps[key].name
-    // );
-
-  }
 
   render() {
-    // TODO: Add validations and values
     return html` <span class="label">${this.label}</span>
       <div style="width:100%">
         <div class="row-header">
@@ -191,7 +173,7 @@ class MultiRow extends LitElement {
 
         ${this.value.map((field, index) => {
           const row = Object.keys(this.rowProps).map(key => {
-            const prop = this.rowProps[key];
+            const prop = {...this.rowProps[key]};
             const valueProperty = util.getValueProperty(prop);
             prop[valueProperty] = field[prop.name];
             return html`${this.mistForm.getTemplate(prop)}`;

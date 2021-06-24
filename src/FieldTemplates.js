@@ -1,9 +1,7 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
-
+import {until} from 'lit-html/directives/until.js';
 import './customFields/mist-form-duration-field.js';
-import './customFields/field-element.js';
-import './customFields/size-element.js';
 import './customFields/multi-row.js';
 
 // TODO: For now I only spread props, I should spread attributes too
@@ -41,8 +39,6 @@ export const FieldTemplates = {
     'paper-radio-group',
     'iron-selector.checkbox-group',
     'mist-form-duration-field',
-    'field-element',
-    'size-element',
     'div.subform-container',
     'multi-row',
   ],
@@ -51,7 +47,7 @@ export const FieldTemplates = {
   // field changes
   //{ tagName: 'tag-name', valueChangedEvent: 'value-changed'}
   customInputFields: [],
-  string: (props, cb) => {
+  string: (props) => {
     const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
       _props,
@@ -69,10 +65,26 @@ export const FieldTemplates = {
     }
     // If a field has dynamic data, load the data and then re-render as a normal dropdown
     if (isDynamic && dynamicData === undefined) {
-      // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
-      FieldTemplates.mistForm.loadDynamicData(_props['x-mist-enum'], cb);
+      const dynamicEnumData = FieldTemplates.mistForm.loadDynamicData(_props['x-mist-enum']);
+      return html`
+      ${until(
+        dynamicEnumData.then(enumData => {
+          FieldTemplates.mistForm.dynamicDataNamespace[_props['x-mist-enum']].target =
+            _props.fieldPath;
+            FieldTemplates.mistForm.dynamicFieldData[_props.fieldPath] = enumData;
+
+            const enumDataIncludesValue = enumData.some(item => item === _props.value || item.id === _props.value )
+          if (!enumDataIncludesValue) {
+            _props.value = null;
+          }
+          return enumData
+          ? html `${FieldTemplates.dropdown({..._props, enum: enumData})}`
+          : html`Not found`
+        }),
+        html`${FieldTemplates.spinner}`,
+      )}`;
       // Dropdown
-    } else if (hasEnum) {
+    }  else if (hasEnum) {
       const format = _props.format || 'dropdown';
       return FieldTemplates[format](_props);
       // Text area
@@ -82,9 +94,8 @@ export const FieldTemplates = {
     } else {
       return FieldTemplates.input(_props);
     }
-    return FieldTemplates.spinner;
   },
-  dropdown: props => { console.log("dropdown props ", props.value );return html`<paper-dropdown-menu
+  dropdown: props => html`<paper-dropdown-menu
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
     class="mist-form-input"
@@ -99,11 +110,18 @@ export const FieldTemplates = {
       slot="dropdown-content"
       @value-changed=${FieldTemplates.valueChangedEvent}
     >
-      ${props.enum.map(
-        item => html`<paper-item value="${item.id || item}">${item.title || item}</paper-item>`
-      )}
+    ${until(
+      props.enum.map(item =>
+        html`
+      <paper-item value="${item.id || item}">
+        ${item.title || item}
+      </paper-item>`
+      )
+
+      , html`<span>Loading...</span>`)}
+
     </paper-listbox>
-  </paper-dropdown-menu>`},
+  </paper-dropdown-menu>`,
   radioGroup: props => html` <paper-radio-group
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
@@ -159,43 +177,23 @@ export const FieldTemplates = {
     ?excludeFromPayload="${props.excludeFromPayload}"
     @value-changed=${FieldTemplates.valueChangedEvent}
   ></paper-textarea>`,
-  boolean: props =>
-    html`<paper-checkbox
-      class="mist-form-input"
-      ...="${spreadProps(props)}"
-      @checked-changed=${FieldTemplates.valueChangedEvent}
-      ?excludeFromPayload="${props.excludeFromPayload}"
-      value=""
-      >${props.label}</paper-checkbox
-    >`,
+  boolean: props => {
+    return html`<paper-checkbox
+    class="mist-form-input"
+    ...="${spreadProps(props)}"
+    @checked-changed=${FieldTemplates.valueChangedEvent}
+    ?excludeFromPayload="${props.excludeFromPayload}"
+    value=""
+    >${props.label}</paper-checkbox
+  >`
+  },
   durationField: (props) =>
-    html`<mist-form-duration-field
+  html`<mist-form-duration-field
 
-      class="mist-form-input"
-      ...="${spreadProps(props)}"
-      @value-changed=${FieldTemplates.valueChangedEvent}
-    ></mist-form-duration-field>`,
-  fieldElement: (props) =>
-    html`<field-element
-
-      class="mist-form-input"
-      ...="${spreadProps(props)}"
-      .clouds="${FieldTemplates.mistForm.dynamicDataNamespace &&
-      FieldTemplates.mistForm.dynamicDataNamespace.clouds &&
-      FieldTemplates.mistForm.dynamicDataNamespace.clouds()}"
-      @value-changed=${FieldTemplates.mistForm.dispatchValueChangedEvent}
-    ></field-element>`,
-  // sizeElement: ( props) =>
-  //   html`<size-element
-
-  //     class="mist-form-input"
-  //     ...="${spreadProps(props)}"
-  //     .clouds="${FieldTemplates.mistForm.dynamicDataNamespace &&
-  //     FieldTemplates.mistForm.dynamicDataNamespace.clouds &&
-  //     FieldTemplates.mistForm.dynamicDataNamespace.clouds()}"
-  //     @value-changed="${FieldTemplates.mistForm.dispatchValueChangedEvent}"
-  //   ></size-element>`,
-  // Subform container
+    class="mist-form-input"
+    ...="${spreadProps(props)}"
+    @value-changed=${FieldTemplates.valueChangedEvent}
+  ></mist-form-duration-field>`,
   multiRow: props => {
     return html`<multi-row
       ...="${spreadProps(props)}"

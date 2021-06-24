@@ -14,7 +14,6 @@ export class MistForm extends LitElement {
       formError: { type: String },
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
       initialValues: { type: Object },
-      firstRender: { type: Boolean },
       subformOpenStates: { type: Object },
     };
   }
@@ -118,22 +117,9 @@ export class MistForm extends LitElement {
     }
   }
 
-  // isDependantOnField(field, props, key, val) {
-  //   return (
-  //     Object.prototype.hasOwnProperty.call(val, 'x-mist-enum') &&
-  //     this.dynamicDataNamespace &&
-  //     this.dynamicDataNamespace[
-  //       props[key]['x-mist-enum']
-  //     ].dependencies.includes(field)
-  //   );
-  // }
-
   updateDynamicData(fieldPath) {
     if (this.dynamicDataNamespace) {
-      // Update dynamic properties
-      // this.dynamicDataNamespace.dynamicProperties.forEach(prop => {
-
-      // })
+      // Update dynamic data that depends on dependencies
       for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
         if (val.dependencies && val.dependencies.includes(fieldPath)) {
           this.loadDynamicData(key, enumData => {
@@ -147,20 +133,7 @@ export class MistForm extends LitElement {
   }
 
   // Combine field and helpText and return template
-  // dynamicProperties: [{
-  //   path:'field.cloud',
-  //   prop:'enum',
-  //   value: () => [{id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]
-  //   }]
-  // };
   getTemplate(properties) {
-    // if (this.dynamicDataNamespace) {
-    //   const data = this.dynamicDataNamespace.dynamicProperties.filter(prop => prop.path === properties.fieldPath);
-    //   const dynamicProps = {};
-    //   data.forEach(prop => {
-    //     dynamicProps[prop.prop] = prop.value();
-    //   })
-    // }
     if (!properties.hidden) {
       if (FieldTemplates[properties.type]) {
         return html`${FieldTemplates[properties.type](properties, enumData => {
@@ -203,13 +176,17 @@ export class MistForm extends LitElement {
 
   // Public methods
   loadDynamicData(dynamicDataName, cb) {
-    if (this.dynamicDataNamespace) {
-      this.dynamicDataNamespace[dynamicDataName].func
+    if (this.dynamicDataNamespace && this.dynamicDataNamespace[dynamicDataName]) {
+      return this.dynamicDataNamespace[dynamicDataName].func
         // func is a promise
         // getEnumData is the function returned by the promise. We pass the values of the form there
         .then(getEnumData => {
           const formValues = this.getValuesfromDOM(this.shadowRoot);
-          cb(getEnumData(formValues));
+          if (cb) {
+            cb(getEnumData(formValues));
+          } else {
+            return getEnumData(formValues);
+          }
         })
         .catch(error => {
           console.error('Error loading dynamic data: ', error);
@@ -236,7 +213,6 @@ export class MistForm extends LitElement {
 
       this.updateDynamicData(el.fieldPath);
 
-      // TODO: inspect if this works for booleans
       if (!this.data.allOf) {
         return;
       }
@@ -326,7 +302,7 @@ export class MistForm extends LitElement {
         };
       }
     }
-    // Add event listeners
+    // Add event listeners for custom components
     const eventNames = util.getUniqueEventNames();
     for (const eventName of eventNames) {
       this.addEventListener(eventName, e => {
@@ -349,12 +325,6 @@ export class MistForm extends LitElement {
   isEmpty() {
     const values = this.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
-  }
-
-  updated() {
-    if (this.firstRender) {
-      this.firstRender = false;
-    }
   }
 
   renderInputs(inputs, subforms, path) {
@@ -444,9 +414,13 @@ export class MistForm extends LitElement {
       const subforms =
         jsonDefinitions &&
         Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
+      const formFields = this.renderInputs(inputs, subforms);
+        if (this.firstRender) {
+          this.firstRender = false;
+        }
       return html`
         <div class="mist-header">${this.data.label}</div>
-        ${this.renderInputs(inputs, subforms)}
+        ${formFields}
 
         <div class="buttons">
           ${util.displayCancelButton(this.data.canClose, this)}
