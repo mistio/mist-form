@@ -30,13 +30,13 @@ export class MistForm extends LitElement {
     this.value = {};
     this.subformOpenStates = {};
     this.firstRender = true;
-    this.fieldTemplates = new FieldTemplates(this, this.valueChangedEvent);
+    this.fieldTemplates = new FieldTemplates(
+      this,
+      this.dispatchValueChangedEvent
+    );
   }
 
   firstUpdated() {
-    this.fieldTemplates.mistForm = this;
-    this.fieldTemplates.valueChangedEvent = this.dispatchValueChangedEvent;
-
     this.getJSON(this.src);
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);

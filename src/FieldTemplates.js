@@ -65,19 +65,19 @@ export class FieldTemplates extends FieldTemplateHelpers {
     }
     // If a field has dynamic data, load the data
     if (isDynamic && dynamicData === undefined) {
-      this.dynamicDropdown(_props);
+      return this.dynamicDropdown(_props);
       // Dropdown
-    } else if (hasEnum) {
+    }
+    if (hasEnum) {
       const format = _props.format || 'dropdown';
       return this[format](_props);
       // Text area
-    } else if (_props.format === 'textarea') {
+    }
+    if (_props.format === 'textarea') {
       return this.textArea(_props);
       // Input field
-    } else {
-      return this.input(_props);
     }
-    return '';
+    return this.input(_props);
   }
 
   dynamicDropdown(props) {
@@ -99,7 +99,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
           ? html`${this.dropdown({ ..._props, enum: enumData })}`
           : html`Not found`;
       }),
-      html`${this.spinner}`
+      this.spinner
     )}`;
   }
 
@@ -118,15 +118,11 @@ export class FieldTemplates extends FieldTemplateHelpers {
       slot="dropdown-content"
       @value-changed=${this.valueChangedEvent}
     >
-      ${until(
-        props.enum.map(
-          item =>
-            html` <paper-item value="${item.id || item}">
-              ${item.title || item}
-            </paper-item>`
-        ),
-
-        html`<span>Loading...</span>`
+      ${props.enum.map(
+        item =>
+          html` <paper-item value="${item.id || item}">
+            ${item.title || item}
+          </paper-item>`
       )}
     </paper-listbox>
   </paper-dropdown-menu>`;
