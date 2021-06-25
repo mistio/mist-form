@@ -1,26 +1,3 @@
-import { FieldTemplates } from './FieldTemplates.js';
-
-export const displayCancelButton = (canClose = true, mistForm) =>
-  // TODO: Add functionality to cancel button
-  canClose
-    ? FieldTemplates.button(
-        'Cancel',
-        () => {
-          mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'));
-        },
-        null,
-        'cancel-btn'
-      )
-    : '';
-export const displaySubmitButton = mistForm =>
-  FieldTemplates.button(
-    mistForm.data.submitButtonLabel || 'Submit',
-    () => {
-      mistForm.submitForm(mistForm);
-    },
-    !mistForm.allFieldsValid,
-    'submit-btn'
-  );
 export const getFieldValue = input => {
   let value;
   if (
@@ -28,16 +5,12 @@ export const getFieldValue = input => {
     input.getAttribute('role') === 'button'
   ) {
     value = input.checked;
-
   } else if (input.tagName === 'IRON-SELECTOR') {
     value = input.selectedValues;
   } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
-
     value = input.querySelector('paper-listbox').selected;
-
   } else if (input.type === 'multiRow') {
     value = input.getValue();
-
   } else {
     value = input.value;
   }
@@ -60,36 +33,11 @@ export const valueNotEmpty = value => {
   return value !== undefined;
 };
 
-// Get first level input children
-export const getFirstLevelChildren = root => {
-  const customComponentTagNames = getUniqueTagNames();
-  const inputFields = [...FieldTemplates.inputFields, ...customComponentTagNames];
-
-  return [...root.children].filter(child => child.matches(inputFields));
-}
 export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];
   const subForm = subforms.find(el => el[0] === subformName)[1];
   return subForm;
 };
-// Traverse all fields in DOM and validate them
-export function formFieldsValid(root, isValid) {
-  const nodeList = getFirstLevelChildren(root);
-  let formValid = isValid;
-  nodeList.forEach(node => {
-    const notExcluded = !node.hasAttribute('excludeFromPayload');
-    if (node.classList.contains('subform-container') && notExcluded) {
-      formValid = formFieldsValid(node, formValid);
-    } else if (notExcluded) {
-      const isInvalid =
-        node.validate && node.validate ? !node.validate() : false;
-      if (isInvalid) {
-        formValid = false;
-      }
-    }
-  });
-  return formValid;
-}
 
 export function getValueProperty(props) {
   if (props.format === 'checkboxGroup') {
@@ -100,25 +48,3 @@ export function getValueProperty(props) {
   }
   return 'value';
 }
-
-export const getUniqueEventNames = () => {
-  const eventNames = FieldTemplates.customInputFields.map(input => {
-    // If no event was set return the default 'value-change' event
-    if (input.valueChangedEvent) {
-      return input.valueChangedEvent.toLowerCase();
-    } else {
-      return 'value-change';
-    }
-  });
-  return [...new Set(eventNames)];
-};
-
-export const getUniqueTagNames = () => {
-  const tagNames = FieldTemplates.customInputFields.map(input => {
-    // If no event was set return the default 'value-change' event
-    if (input.tagName) {
-      return input.tagName.toLowerCase();
-    }
-  });
-  return [...new Set(tagNames)];
-};

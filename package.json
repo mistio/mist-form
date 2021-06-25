@@ -57,7 +57,8 @@
             "log"
           ]
         }
-      ]
+      ],
+      "array-callback-return": "off"
     },
     "extends": [
       "@open-wc/eslint-config",
