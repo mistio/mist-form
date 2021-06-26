@@ -1,6 +1,7 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';
+import {styleMap} from 'lit-html/directives/style-map.js';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './customFields/mist-form-duration-field.js';
 import './customFields/multi-row.js';
@@ -206,6 +207,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     ...="${spreadProps(props)}"
     .mistForm=${this.mistForm}
     @value-changed=${this.valueChangedEvent}
+    exportparts="row: multirow-row"
   ></multi-row>`;
 
   object = props => {

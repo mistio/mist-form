@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import * as util from './../utilities.js';
+import {styleMap} from 'lit-html/directives/style-map.js';
 
 class MultiRow extends LitElement {
   static get properties() {
@@ -18,7 +19,6 @@ class MultiRow extends LitElement {
       :host {
         display: block;
         padding: 10px;
-        color: var(--mist-form-size-element-text-color, black);
         background: var(--mist-form-size-element-background-color, white);
         font-family: var(--mist-form-size-element-font-family, Roboto);
       }
@@ -34,9 +34,6 @@ class MultiRow extends LitElement {
         display: inline-block;
       }
 
-      th {
-        text-align: left;
-      }
       .sizeRow {
         width: 100%;
         background-color: #ebebeb;
@@ -48,18 +45,11 @@ class MultiRow extends LitElement {
       .sizeRow > .sizeField {
         width: 89%;
       }
-      .label {
+      :host .label {
         margin-top: auto;
         margin-bottom: 15px;
         color: #424242;
         font-weight: bold;
-      }
-      table {
-        border-collapse: collapse;
-      }
-      tr {
-        border: solid;
-        border-width: 1px 0;
       }
       paper-icon-button {
         color: #adadad;
@@ -87,13 +77,7 @@ class MultiRow extends LitElement {
         margin-top: -20px;
       }
 
-      th {
-        text-align: left;
-      }
       .show-header,
-      .checkbox-cell {
-        text-align: center;
-      }
       .label {
         margin-top: auto;
         margin-bottom: 15px;
@@ -110,9 +94,15 @@ class MultiRow extends LitElement {
         --paper-checkbox-unchecked-color: #424242;
       }
 
-      .row-header {
-        display: flex;
-        justify-content: space-between;
+      .container {
+        display: grid;
+        grid-row-gap: 5px;
+      }
+      :host .row, :host .row-header {
+        display: grid;
+        grid-auto-columns: 1fr;
+        grid-column-gap: 5px;
+        grid-auto-flow: column;
       }
     `;
   }
@@ -162,13 +152,21 @@ class MultiRow extends LitElement {
   }
 
   render() {
+    const styles = {
+      row: {
+        backgroundColor: 'blue'
+      }
+    }
+    // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
+   // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
-      <div style="width:100%">
+      <div class="container" style="width:100%">
         <div class="row-header">
           ${Object.keys(this.rowProps).map(
             key =>
               html`<span class="row-item">${this.rowProps[key].label}</span>`
           )}
+          <span></span>
         </div>
 
         ${this.value.map((field, index) => {
@@ -178,7 +176,7 @@ class MultiRow extends LitElement {
             prop[valueProperty] = field[prop.name];
             return html`${this.mistForm.getTemplate(prop)}`;
           });
-          return html`<div class="row">
+          return html`<div class="row" part="row" style=${styleMap(styles['row'])}>
             ${row}
             <paper-icon-button
               icon="icons:delete"

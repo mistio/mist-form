@@ -217,11 +217,14 @@ export class MistForm extends LitElement {
   // Combine field and helpText and return template
   getTemplate(properties) {
     if (!properties.hidden) {
-      if (this.fieldTemplates[properties.type]) {
-        return html` ${this.fieldTemplates[properties.type](properties)}
-        ${this.fieldTemplates.helpText(properties)}`;
+      const fieldType = properties.type || properties.format;
+
+      if (fieldType) {
+        const template = this.fieldTemplates[fieldType](properties);
+        const helpTextTemplate = this.fieldTemplates.helpText(properties);
+        return html` ${template}${helpTextTemplate}`;
       }
-      console.error(`Invalid field type: ${properties.type}`);
+      console.error(`Invalid field type: ${fieldType}`);
     }
     return '';
   }
@@ -408,7 +411,7 @@ export class MistForm extends LitElement {
           subforms,
           parentPath
         );
-      } else if (properties.type === 'multiRow') {
+      } else if (properties.format === 'multiRow') {
         const subForm = util.getSubformFromRef(
           subforms,
           properties.properties.subform.$ref
@@ -436,7 +439,7 @@ export class MistForm extends LitElement {
           } else {
             const valueProperty = util.getValueProperty(properties);
             properties[valueProperty] = initialValue;
-            if (properties.type === 'multiRow') {
+            if (properties.format === 'multiRow') {
               properties.initialValue = initialValue;
             }
           }

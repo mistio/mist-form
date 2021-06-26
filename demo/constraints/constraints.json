@@ -101,7 +101,7 @@
 			"name":"default",
 			"id": "default",
 			"label":"Default",
-			"type":"durationField"
+			"format":"durationField"
 		  },
 		  "require":{
 			"label":"Require",
@@ -111,7 +111,7 @@
 		  "msg":{
 			"label":"Message",
 			"id": "message",
-			"type":"textArea"
+			"format":"textArea"
 		  }
 		}
 	  },
@@ -177,7 +177,7 @@
 			"name":"field",
 			"label":"Field",
 			"id":"field",
-			"type":"multiRow",
+			"format":"multiRow",
 			"properties":{
 			  "subform":{
 				"$ref":"#/definitions/fieldElementSubform"
@@ -188,7 +188,7 @@
 	  },
 	  "fieldElementSubform":{
 		"id":"field_element_subform",
-		"type":"rowDefinition",
+		"format":"rowDefinition",
 		"properties":{
 		  "cloud":{
 			"label":"Cloud",
@@ -225,13 +225,13 @@
 			"name":"max",
 			"id": "max",
 			"label":"Max",
-			"type":"durationField"
+			"format":"durationField"
 		  },
 		  "default":{
 			"name":"default",
 			"id": "default",
 			"label":"Default",
-			"type":"durationField"
+			"format":"durationField"
 		  },
 		  "actions":{
 			"name":"actions",

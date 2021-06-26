@@ -9,7 +9,7 @@ export const getFieldValue = input => {
     value = input.selectedValues;
   } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
     value = input.querySelector('paper-listbox').selected;
-  } else if (input.type === 'multiRow') {
+  } else if (input.format === 'multiRow') {
     value = input.getValue();
   } else {
     value = input.value;
