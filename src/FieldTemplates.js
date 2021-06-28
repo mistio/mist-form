@@ -239,6 +239,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
         .checked="${showFields}"
         @checked-changed="${e => {
           this.mistForm.setSubformState(props.fieldPath, e.detail.value);
+          //this.mistForm.refreshCustomComponents(props.fieldPath);
           this.mistForm.requestUpdate();
         }}"
         >${props.label}</paper-toggle-button

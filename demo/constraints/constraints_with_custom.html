@@ -44,20 +44,9 @@
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
-      const constraintsData = {
-        getDefaultActions: {
-          func: new Promise((resolve, reject) => {
-              resolve(formValues => {
-                const values = formValues && formValues.expiration && formValues.expiration.actions && formValues.expiration.actions.available;
-                return values || [];
-              });
-          }),
-          dependencies: ['expiration.actions.available'],
-        },
-        clouds: () => [{id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]
-      };
+      const initialValues = {field:{"cloud1":23,"cloud2":52}};
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
+        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .initialValues=${initialValues}>
           <div id="mist-form-custom">
             <paper-slider slot="customElement" max-markers=10  mist-form-type="paperSlider"
               editable>

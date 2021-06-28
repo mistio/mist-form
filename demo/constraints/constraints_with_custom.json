@@ -14,8 +14,6 @@
 			"id":"field_constraint_container",
 			"type":"object",
 			"hasToggle":true,
-			"excludeFromPayload":true,
-			"omitTitle": true,
 			"properties":{
 			  "subform":{
 				"$ref":"#/definitions/fieldConstraints"
@@ -50,18 +48,8 @@
 					"id":"default_action2",
 					"type":"paperSlider",
 					"name": "cloud2"
-				  },
-			  "field":{
-				"name":"field",
-				"label":"Field",
-				"id":"field",
-				"type":"multiRow",
-				"properties":{
-				  "subform":{
-					"$ref":"#/definitions/fieldElementSubform"
 				  }
-				}
-			  }
+
 			}
 		  },
 

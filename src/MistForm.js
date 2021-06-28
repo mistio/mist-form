@@ -29,6 +29,7 @@ export class MistForm extends LitElement {
     this.dynamicFieldData = {};
     this.value = {};
     this.subformOpenStates = {};
+    this.customComponents = {};
     this.firstRender = true;
     this.fieldTemplates = new FieldTemplates(
       this,
@@ -41,6 +42,7 @@ export class MistForm extends LitElement {
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
+    console.log("first update")
     this.setupCustomComponents();
   }
 
@@ -214,12 +216,15 @@ export class MistForm extends LitElement {
     }
   }
 
+  updateCustomValues(fieldPath, value) {
+    this.customValues[fieldPath] = value;
+  }
   // Combine field and helpText and return template
   getTemplate(properties) {
     if (!properties.hidden) {
       const fieldType = properties.type || properties.format;
 
-      if (fieldType) {
+      if (fieldType && this.fieldTemplates[fieldType]) {
         const template = this.fieldTemplates[fieldType](properties);
         const helpTextTemplate = this.fieldTemplates.helpText(properties);
         return html` ${template}${helpTextTemplate}`;
@@ -313,7 +318,9 @@ export class MistForm extends LitElement {
       this.updateState();
 
       this.updateDynamicData(el.fieldPath);
-
+      if (el.hasAttribute('mist-form-type')) {
+        //this.updateCustomValues(el.fieldPath, value)
+      }
       if (this.data.allOf) {
         if (this.shouldUpdateForm(field, value)) {
           this.requestUpdate();
@@ -343,20 +350,31 @@ export class MistForm extends LitElement {
     // Setup their properties
     for (const el of customComponents) {
       if (el.attributes['mist-form-type']) {
-        const elClone = el.cloneNode();
         const componentName = el.attributes['mist-form-type'].value;
         this.fieldTemplates.customInputFields.push({
           tagName: el.tagName,
           valueChangedEvent: el.valueChangedEvent,
+          valueProp: el['mist-form-value-prop'] || 'value'
+          // Add the value prop here
         });
         this.fieldTemplates[componentName] = props => {
-          for (const [key, val] of Object.entries(props)) {
-            elClone.setAttribute(key, val);
-            elClone[key] = val;
+          if (!this.customComponents[props.fieldPath]) {
+            this.customComponents[props.fieldPath] = el.cloneNode();
           }
 
-          const cl = elClone.cloneNode();
-          return cl;
+          const customElement = this.customComponents[props.fieldPath];
+
+          for (const [key, val] of Object.entries(props)) {
+            customElement.setAttribute(key, val);
+           // customElement.setValue[props.fieldPath]
+            customElement[key] = val;
+          }
+          // Set value through this.customValues
+          // First I need to set a way to get value
+          // elClone.setAttribute()
+
+         // const cl = elClone.cloneNode();
+          return customElement;
         };
       }
     }
@@ -373,7 +391,17 @@ export class MistForm extends LitElement {
     const values = this.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
   }
-
+  refreshCustomComponents(fieldPath) {
+    const subformOpen = this.getSubformState(fieldPath);
+    if (!subformOpen) {
+      console.log("refresh")
+      for (const [key, val] of Object.entries(this.customComponents)) {
+        if (key.startsWith(fieldPath)) {
+          delete this.customComponents[key];
+        }
+      }
+    }
+  }
   renderInputs(inputs, subforms, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
@@ -386,6 +414,7 @@ export class MistForm extends LitElement {
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.type === 'object') {
+
         const subForm = util.getSubformFromRef(
           subforms,
           properties.properties.subform.$ref
@@ -426,7 +455,7 @@ export class MistForm extends LitElement {
           };
         }
       }
-      if (this.initialValues) {
+      if (this.initialValues && this.firstRender) {
         const initialValue = util.getNestedValueFromPath(
           properties.fieldPath,
           this.initialValues

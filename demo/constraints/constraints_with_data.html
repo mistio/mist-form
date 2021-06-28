@@ -125,6 +125,10 @@
       };
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues}>
+          <div id="mist-form-custom">
+            <paper-slider mist-form-type="paperSlider" editable></paper-slider>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
+          </div>
           <iron-ajax
             slot="formRequest"
             id="formAjax"

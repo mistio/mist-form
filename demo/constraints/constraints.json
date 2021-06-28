@@ -56,6 +56,18 @@
 			"$ref":"#/definitions/fieldConstraints"
 		  }
 		}
+	  },
+	  "customComponentsContainer":{
+		"name":"custom",
+		"label":"Custom components",
+		"id":"custom_components_container",
+		"type":"object",
+		"hasToggle":true,
+		"properties":{
+		  "subform":{
+			"$ref":"#/definitions/customComponents"
+		  }
+		}
 	  }
 	},
 	"definitions":{
@@ -325,6 +337,31 @@
 			  }
 			}
 		  }
+		}
+	  },
+	  "customComponents":{
+		"id":"custom_Components",
+		"type":"object",
+		"properties":{
+			"paperSlider1":{
+				"label":"Paper slider 1",
+				"id":"paper_slider1",
+				"format":"paperSlider",
+				"name": "paperSlider1"
+			  },
+			  "paperSlider2":{
+				"label":"Paper slider 2",
+				"id":"paper_slider2",
+				"format":"paperSlider",
+				"name": "paperSlider2",
+				"value": 2
+			  },
+			  "colorSwatch":{
+				"label":"Color swatch",
+				"id":"color_swatch",
+				"format":"colorSwatch",
+				"name": "colorSwatch"
+			  }
 		}
 	  }
 	}

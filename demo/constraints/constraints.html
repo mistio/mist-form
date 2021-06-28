@@ -38,6 +38,7 @@
       import '@polymer/iron-icons/iron-icons.js';
       import '@polymer/iron-selector/iron-selector.js';
       import '@polymer/paper-slider/paper-slider.js'
+      import '@polymer/paper-swatch-picker/paper-swatch-picker.js';
       import '../../mist-form.js';
 
       const jsonUrl = 'constraints.json';
@@ -65,10 +66,8 @@
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
           <div id="mist-form-custom">
-<paper-slider slot="customElement" max-markers=10  mist-form-type="paperSlider"
-              editable>
-          </paper-slider>
-<span slot="customElement">sdfsdf</span>
+            <paper-slider mist-form-type="paperSlider" editable></paper-slider>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
           </div>
           <iron-ajax
             slot="formRequest"
