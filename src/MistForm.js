@@ -455,7 +455,7 @@ export class MistForm extends LitElement {
           };
         }
       }
-      if (this.initialValues && this.firstRender) {
+      if (this.initialValues) {
         const initialValue = util.getNestedValueFromPath(
           properties.fieldPath,
           this.initialValues
