@@ -52,12 +52,10 @@
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       const constraintsData = {
-        getDefaultActions: {
+        dynamicData: {
+          getDefaultActions: {
           func: new Promise((resolve, reject) => {
-              resolve(formValues => {
-                const values = formValues && formValues.expiration && formValues.expiration.actions && formValues.expiration.actions.available;
-                return values || [];
-              });
+              resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
           }),
           dependencies: ['expiration.actions.available'],
         },
@@ -67,6 +65,17 @@
                 return ['ALL', {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
               });
           })
+        },
+        },
+        conditionals: {
+          fieldNameHidden: {
+          func: (formValues) => true,
+          dependencies: ['field.cloud'],
+        },
+        fieldNameHiddenMax: {
+          func: dependencyValues => dependencyValues['custom.min'] > 5,
+          dependencies: ['custom.min'],
+        },
         }
       };
 

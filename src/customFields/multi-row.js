@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import * as util from './../utilities.js';
 import {styleMap} from 'lit-html/directives/style-map.js';
+import { FieldTemplateHelpers } from '../FieldTemplateHelpers.js';
 
 class MultiRow extends LitElement {
   static get properties() {
@@ -142,6 +143,7 @@ class MultiRow extends LitElement {
   }
 //TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged() {
+    console.log("this.value changed")
     const event = new CustomEvent('value-changed', {
       detail: {
         value: this.getValue(),
@@ -153,28 +155,55 @@ class MultiRow extends LitElement {
 
   render() {
     const styles = {
-      row: {
-        backgroundColor: 'blue'
-      }
+
     }
+console.log("this.value ", this.getValue())
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
    // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
       <div class="container" style="width:100%">
         <div class="row-header">
           ${Object.keys(this.rowProps).map(
-            key =>
-              html`<span class="row-item">${this.rowProps[key].label}</span>`
+            key => !this.rowProps[key].hidden ?
+              html`<span class="row-item">${this.rowProps[key].label}</span>` : ''
           )}
           <span></span>
         </div>
 
         ${this.value.map((field, index) => {
           const row = Object.keys(this.rowProps).map(key => {
+            console.log("field ", field);
             const prop = {...this.rowProps[key]};
-            const valueProperty = util.getValueProperty(prop);
+            const valueProperty = FieldTemplates.getValueProperty(prop);
             prop[valueProperty] = field[prop.name];
-            return html`${this.mistForm.getTemplate(prop)}`;
+
+            if (prop.deps) {
+      for (const [key, val] of Object.entries(prop.deps)) {
+        const dependencies = this.mistForm.dynamicDataNamespace.conditionals[val].dependencies;
+
+       // const dependencyValues =
+        // const dependencyValues = util.getDependencyValues(formValues, dependencies);
+        const dependencyValues = {};
+        dependencies.forEach(dep => {
+          console.log("dep ", dep)
+          // We assume the dependency is in the same row
+          const dependencyField = dep.split('.').pop();
+          console.log("dependencyField ", dependencyField)
+          console.log("this.getValue() ", this.getValue())
+
+          dependencyValues[dependencyField] = this.getValue()[index] && this.getValue()[index][dependencyField];
+
+        });
+        console.log("dependencyValues muktirow", dependencyValues)
+         const newData = this.mistForm.dynamicDataNamespace.conditionals[val].func(dependencyValues);
+         console.log("newData ", newData)
+         if (newData !== undefined) {
+           prop[key] = newData;
+         }
+      }
+    }
+
+            return prop.hidden ? html`<span></span><div></div>` : html`${this.mistForm.getTemplate(prop)}`;
           });
           return html`<div class="row" part="row" style=${styleMap(styles['row'])}>
             ${row}

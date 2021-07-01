@@ -96,6 +96,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
           // Clear selected value if it's not included in the new available values
           _props.value = null;
         }
+        console.log("enumData ", enumData)
         return enumData
           ? html`${this.dropdown({ ..._props, enum: enumData })}`
           : html`Not found`;
@@ -111,13 +112,14 @@ export class FieldTemplates extends FieldTemplateHelpers {
     ?excludeFromPayload="${props.excludeFromPayload}"
     no-animations=""
     attr-for-selected="value"
+    @value-changed=${this.valueChangedEvent}
   >
     <paper-listbox
       attr-for-selected="value"
       selected="${props.value || ''}"
       class="dropdown-content"
       slot="dropdown-content"
-      @value-changed=${this.valueChangedEvent}
+
     >
       ${props.enum.map(
         item =>

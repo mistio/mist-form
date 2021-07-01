@@ -1,24 +1,3 @@
-export const getFieldValue = input => {
-  let value;
-  if (
-    input.getAttribute('role') === 'checkbox' ||
-    input.getAttribute('role') === 'button'
-  ) {
-    value = input.checked;
-  } else if (input.tagName === 'IRON-SELECTOR') {
-    value = input.selectedValues;
-  } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
-    value = input.querySelector('paper-listbox').selected;
-  } else if (input.format === 'multiRow') {
-    value = input.getValue();
-  } else {
-    value = input.value;
-  }
-  return {
-    [input.name]: value,
-  };
-};
-
 export const getNestedValueFromPath = (path, obj) =>
   path.split('.').reduce((p, c) => p && p[c], obj);
 
@@ -39,12 +18,11 @@ export const getSubformFromRef = (subforms, ref) => {
   return subForm;
 };
 
-export function getValueProperty(props) {
-  if (props.format === 'checkboxGroup') {
-    return 'selectedValues';
-  }
-  if (props.type === 'boolean') {
-    return 'checked';
-  }
-  return 'value';
+export const getDependencyValues = (formValues, dependencies) => {
+const dependencyValues = {};
+dependencies.forEach(dep => {
+  dependencyValues[dep] = getNestedValueFromPath(dep, formValues);
+
+})
+return dependencyValues;
 }

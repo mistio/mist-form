@@ -9,6 +9,7 @@ export class MistForm extends LitElement {
       src: { type: String },
       dynamicDataNamespace: { type: Object },
       dynamicFieldData: { type: Object },
+      conditionalData: {type: Object},
       data: { type: Object },
       dataError: { type: Object },
       formError: { type: String },
@@ -27,6 +28,7 @@ export class MistForm extends LitElement {
     super();
     this.allFieldsValid = true;
     this.dynamicFieldData = {};
+    this.conditionalData = {};
     this.value = {};
     this.subformOpenStates = {};
     this.customComponents = {};
@@ -42,7 +44,7 @@ export class MistForm extends LitElement {
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
-    console.log("first update")
+
     this.setupCustomComponents();
   }
 
@@ -110,6 +112,7 @@ export class MistForm extends LitElement {
   getValuesfromDOM(root) {
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
+
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.classList.contains('subform-container') && notExcluded) {
@@ -123,8 +126,10 @@ export class MistForm extends LitElement {
           formValues[node.name] = domValues;
         }
       } else if (notExcluded) {
-        const input = util.getFieldValue(node);
+        const input = this.fieldTemplates.getFieldValue(node);
+        console.log("input ", input)
         const inputValue = Object.values(input)[0];
+        console.log("inputValue ", inputValue)
         if (node.type === 'number') {
           input[Object.keys(input)[0]] = parseInt(inputValue, 10);
         }
@@ -180,18 +185,21 @@ export class MistForm extends LitElement {
 
   loadDynamicData(dynamicDataName, fieldPath) {
     if (
-      this.dynamicDataNamespace &&
-      this.dynamicDataNamespace[dynamicDataName]
+      this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData &&
+      this.dynamicDataNamespace.dynamicData[dynamicDataName]
     ) {
       return (
-        this.dynamicDataNamespace[dynamicDataName].func
+        this.dynamicDataNamespace.dynamicData[dynamicDataName].func
           // func is a promise
           // getEnumData is the function returned by the promise. We pass the values of the form there
           .then(getEnumData => {
             const formValues = this.getValuesfromDOM(this.shadowRoot);
-            const enumData = getEnumData(formValues);
+            const dependencies = this.dynamicDataNamespace.dynamicData[dynamicDataName].dependencies;
+            const dependencyValues = dependencies ? util.getDependencyValues(formValues, dependencies) : {};
 
-            this.dynamicDataNamespace[dynamicDataName].target = fieldPath;
+            const enumData = getEnumData(dependencyValues);
+
+            this.dynamicDataNamespace.dynamicData[dynamicDataName].target = fieldPath;
             this.dynamicFieldData[fieldPath] = enumData;
             this.requestUpdate();
 
@@ -206,9 +214,9 @@ export class MistForm extends LitElement {
   }
 
   updateDynamicData(fieldPath) {
-    if (this.dynamicDataNamespace) {
+    if (this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData) {
       // Update dynamic data that depends on dependencies
-      for (const [key, val] of Object.entries(this.dynamicDataNamespace)) {
+      for (const [key, val] of Object.entries(this.dynamicDataNamespace.dynamicData)) {
         if (val.dependencies && val.dependencies.includes(fieldPath)) {
           this.loadDynamicData(key, val.target);
         }
@@ -223,7 +231,6 @@ export class MistForm extends LitElement {
   getTemplate(properties) {
     if (!properties.hidden) {
       const fieldType = properties.type || properties.format;
-
       if (fieldType && this.fieldTemplates[fieldType]) {
         const template = this.fieldTemplates[fieldType](properties);
         const helpTextTemplate = this.fieldTemplates.helpText(properties);
@@ -269,42 +276,53 @@ export class MistForm extends LitElement {
     return this.subformOpenStates[fieldPath];
   }
 
-  shouldUpdateForm(field, value) {
+  shouldUpdateForm(fieldPath, value) {
     let update = false;
-    this.data.allOf.forEach(conditional => {
-      const condition = conditional.if.properties;
-      const result = conditional.then.properties;
-      const conditionMap = Object.keys(condition).map(key => [
-        key,
-        condition[key],
-      ]);
-
-      const resultMap = Object.keys(result).map(key => [key, result[key]]);
-      const [targetField, targetValues] = conditionMap[0];
-      if (
-        targetField === field &&
-        (targetValues === 'toggle' || targetValues === 'reverseToggle')
-      ) {
-        update = true;
-        const toggleValue = targetValues === 'toggle' ? value : !value;
-        const updatedResult = [
-          resultMap[0][0],
-          { [resultMap[0][1].property]: toggleValue },
-        ];
-
-        this.updateFormByConditions(updatedResult);
-      } else {
-        const targetValuesArray = targetValues.enum || [targetValues.const];
-
-        if (targetField === field && targetValuesArray.includes(value)) {
-          update = true;
-
-          resultMap.forEach(res => {
-            this.updateFormByConditions(res);
-          });
+    if (this.dynamicDataNamespace && this.dynamicDataNamespace.conditionals) {
+      // Update dynamic data that depends on dependencies
+      for (const [key, val] of Object.entries(this.dynamicDataNamespace.conditionals)) {
+        if (val.dependencies && val.dependencies.includes(fieldPath)) {
+          //debugger;
+          this.conditionalData[fieldPath] = val.func(this.getValuesfromDOM(this.shadowRoot));
+          this.requestUpdate();
+          //this.loadDynamicData(key, val.target);
         }
       }
-    });
+    }
+    // this.data.allOf.forEach(conditional => {
+    //   const condition = conditional.if.properties;
+    //   const result = conditional.then.properties;
+    //   const conditionMap = Object.keys(condition).map(key => [
+    //     key,
+    //     condition[key],
+    //   ]);
+
+    //   const resultMap = Object.keys(result).map(key => [key, result[key]]);
+    //   const [targetField, targetValues] = conditionMap[0];
+    //   if (
+    //     targetField === fieldPath &&
+    //     (targetValues === 'toggle' || targetValues === 'reverseToggle')
+    //   ) {
+    //     update = true;
+    //     const toggleValue = targetValues === 'toggle' ? value : !value;
+    //     const updatedResult = [
+    //       resultMap[0][0],
+    //       { [resultMap[0][1].property]: toggleValue },
+    //     ];
+
+    //     this.updateFormByConditions(updatedResult);
+    //   } else {
+    //     const targetValuesArray = targetValues.enum || [targetValues.const];
+
+    //     if (targetField === fieldPath && targetValuesArray.includes(value)) {
+    //       update = true;
+
+    //       resultMap.forEach(res => {
+    //         this.updateFormByConditions(res);
+    //       });
+    //     }
+    //   }
+    // });
     return update;
   }
 
@@ -313,7 +331,11 @@ export class MistForm extends LitElement {
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
       const el = e.path[0];
-      const [field, value] = Object.entries(util.getFieldValue(el))[0];
+
+      if (el.getRootNode().host.tagName === 'MULTI-ROW') {
+        el.getRootNode().host.requestUpdate();
+      }
+      const [value] = Object.entries(this.fieldTemplates.getFieldValue(el))[0];
 
       this.updateState();
 
@@ -321,11 +343,12 @@ export class MistForm extends LitElement {
       if (el.hasAttribute('mist-form-type')) {
         //this.updateCustomValues(el.fieldPath, value)
       }
-      if (this.data.allOf) {
-        if (this.shouldUpdateForm(field, value)) {
+
+    //  if (this.data.allOf) {
+        if (this.shouldUpdateForm(el.fieldPath, value)) {
           this.requestUpdate();
         }
-      }
+     // }
       // Check if this works for subforms
     });
     const children = this.shadowRoot.querySelectorAll('*');
@@ -352,9 +375,10 @@ export class MistForm extends LitElement {
       if (el.attributes['mist-form-type']) {
         const componentName = el.attributes['mist-form-type'].value;
         this.fieldTemplates.customInputFields.push({
+          name: componentName,
           tagName: el.tagName,
           valueChangedEvent: el.valueChangedEvent,
-          valueProp: el['mist-form-value-prop'] || 'value'
+          valueProp: (el.attributes['mist-form-value-prop'] && el.attributes['mist-form-value-prop'].value) || 'value'
           // Add the value prop here
         });
         this.fieldTemplates[componentName] = props => {
@@ -394,13 +418,15 @@ export class MistForm extends LitElement {
   refreshCustomComponents(fieldPath) {
     const subformOpen = this.getSubformState(fieldPath);
     if (!subformOpen) {
-      console.log("refresh")
       for (const [key, val] of Object.entries(this.customComponents)) {
         if (key.startsWith(fieldPath)) {
           delete this.customComponents[key];
         }
       }
     }
+  }
+  getDependencyValues() {
+
   }
   renderInputs(inputs, subforms, path) {
     // Ignore subform, its data was already passed to subform container
@@ -410,7 +436,10 @@ export class MistForm extends LitElement {
       // They should be rendered in subform containers
       const fieldName = properties.type === 'object' ? properties.name : name;
       properties.name = fieldName;
+
       // TODO: Should this be [path, name].join('.') or [path, fieldName].join('.')?
+
+
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.type === 'object') {
@@ -435,6 +464,7 @@ export class MistForm extends LitElement {
             hidden: properties.hidden || subForm.properties[key].hidden,
           },
         ]);
+
         properties.inputs = this.renderInputs(
           subFormInputs,
           subforms,
@@ -448,6 +478,16 @@ export class MistForm extends LitElement {
         const rowProps = subForm.properties;
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
+          // console.log("val.name || key ", val.name || key)
+          // console.log("rowProps[key].deps ", rowProps[key].deps)
+          // const dependencies = rowProps[key].deps;
+          // if (dependencies) {
+          //   for (const [key, val] of Object.entries(dependencies)) {
+          //     const data = this.dynamicDataNamespace[dynamicDataName][val];
+          //     console.log("input.deps ", dependencies)
+          //     debugger;
+          //   }
+          // }
           properties.rowProps[key] = {
             name: key,
             ...val, // If user gave a separate name it will be overwritten here
@@ -466,13 +506,37 @@ export class MistForm extends LitElement {
               properties.fieldsVisible = true;
             }
           } else {
-            const valueProperty = util.getValueProperty(properties);
+            const valueProperty = this.fieldTemplates.getValueProperty(properties);
             properties[valueProperty] = initialValue;
             if (properties.format === 'multiRow') {
               properties.initialValue = initialValue;
             }
           }
         }
+      }
+      if (properties.deps) {
+        for (const [key, val] of Object.entries(properties.deps)) {
+          const formValues = this.getValuesfromDOM(this.shadowRoot);
+          const dependencies = this.dynamicDataNamespace.conditionals[val].dependencies;
+          const dependencyValues = util.getDependencyValues(formValues, dependencies);
+          const newData = this.dynamicDataNamespace.conditionals[val].func(dependencyValues);
+          if (newData !== undefined) {
+            properties[key] = newData;
+          }
+        }
+      } else if (properties.format === 'multiRow') {
+        // properties.rowProps.forEach(prop => {
+        //   for (const [key, val] of Object.entries(prop.deps)) {
+        //     const formValues = this.getValuesfromDOM(this.shadowRoot);
+        //     const dependencies = this.dynamicDataNamespace.conditionals[val].dependencies;
+        //     const dependencyValues = util.getDependencyValues(formValues, dependencies);
+        //     const newData = this.dynamicDataNamespace.conditionals[val].func(dependencyValues);
+        //     console.log("in sdfsdf ", properties)
+        //     if (newData !== undefined) {
+        //       prop[key] = newData;
+        //     }
+        //   }
+        // })
       }
       return this.getTemplate(properties);
     });

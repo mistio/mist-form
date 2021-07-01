@@ -60,7 +60,7 @@
 	  "customComponentsContainer":{
 		"name":"custom",
 		"label":"Custom components",
-		"id":"custom_components_container",
+		"id":"custom_constraint_container",
 		"type":"object",
 		"hasToggle":true,
 		"properties":{
@@ -212,7 +212,8 @@
 		  "fieldName":{
 			"label":"Field name",
 			"name":"name",
-			"type":"string"
+			"type":"string",
+			"deps": {"hidden": "fieldNameHidden"}
 		  },
 		  "fieldValue":{
 			"label":"Field value",
@@ -347,7 +348,8 @@
 				"label":"Paper slider 1",
 				"id":"paper_slider1",
 				"format":"paperSlider",
-				"name": "paperSlider1"
+				"name": "paperSlider1",
+				"deps": {"hidden": "hidePaperSlider1"}
 			  },
 			  "paperSlider2":{
 				"label":"Paper slider 2",
@@ -361,6 +363,11 @@
 				"id":"color_swatch",
 				"format":"colorSwatch",
 				"name": "colorSwatch"
+			  },
+			  "hidePaperSlider1":{
+				"label":"Hide paperSlider1?",
+				"id":"hide_paper_slider1",
+				"type":"string"
 			  }
 		}
 	  }

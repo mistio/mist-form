@@ -72,4 +72,52 @@ export class FieldTemplateHelpers {
         )
       : '';
   }
+
+  getValueProperty(props) {
+    const customInputFields = this.customInputFields.find(customInput => {
+      return props.type === customInput.name;
+    });
+
+    if (props.format === 'checkboxGroup') {
+      return 'selectedValues';
+    }
+    if (props.type === 'boolean') {
+      return 'checked';
+    }
+    if (customInputFields) {
+      return customInputFields && customInputFields.valueProp;
+    }
+    return 'value';
+  }
+
+  getFieldValue(input) {
+    let value;
+    const customInputFields = this.customInputFields.find(customInput => {
+      return input.format === customInput.name;
+    });
+    console.log("input ", input)
+    console.log("this.customInputFields ", this.customInputFields)
+    console.log("customInputs ", customInputFields)
+    if (
+      input.getAttribute('role') === 'checkbox' ||
+      input.getAttribute('role') === 'button'
+    ) {
+      value = input.checked;
+    } else if (input.tagName === 'IRON-SELECTOR') {
+      value = input.selectedValues;
+    } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
+      value = input.querySelector('paper-listbox').selected;
+    } else if (input.format === 'multiRow') {
+      value = input.getValue();
+    } else if (customInputFields) {
+      const valueProp = customInputFields && customInputFields.valueProp;
+      value = input[valueProp];
+    } else {
+      value = input.value;
+    }
+    return {
+      [input.name]: value,
+    };
+  };
+
 }
