@@ -12,7 +12,7 @@ describe('Custom field constraints', () => {
         .should('not.have.attr', 'active');
       cy.get('mist-form')
         .find('#custom_constraint_container paper-toggle-button')
-        .should('contain', 'custom constraints');
+        .should('contain', 'Custom components');
       cy.get('mist-form')
         .find('#custom_constraint_container > paper-input')
         .should('not.exist');
@@ -31,12 +31,52 @@ describe('Custom field constraints', () => {
         .find('#custom_constraint_container > #paper_slider2')
         .should('be.visible');
         cy.get('mist-form')
-        .find('#custom_constraint_container > #color_swatch')
+        .find('#custom_constraint_container > #hide_paper_slider1')
         .should('be.visible');
     cy.get('mist-form')
         .find('#custom_constraint_container > #color_swatch')
         .should('be.visible');
       cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
+    });
+
+    it('Typing yes or sure in in text field should hide paperSlider1', () => {
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #hide_paper_slider1')
+      .find('input')
+      .clear({ force: true })
+      .type('yes', { force: true });
+
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #paper_slider1')
+      .should('not.exist');
+
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #hide_paper_slider1')
+      .find('input')
+      .clear({ force: true })
+      .type('no', { force: true });
+
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #paper_slider1')
+      .should('be.visible');
+
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #hide_paper_slider1')
+      .find('input')
+      .clear({ force: true })
+      .type('sure', { force: true });
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #paper_slider1')
+      .should('not.exist');
+
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #hide_paper_slider1')
+      .find('input')
+      .clear({ force: true })
+      .type('Test', { force: true });
+      cy.get('mist-form')
+      .find('#custom_constraint_container > #paper_slider1')
+      .should('be.visible');
     });
 
     it('Enter values in custom components', () => {
@@ -55,6 +95,11 @@ describe('Custom field constraints', () => {
         .click();
     cy.get('mist-form')
         .find('#custom_constraint_container > #color_swatch').find('paper-item').first().click();
+        cy.get('mist-form')
+        .find('#custom_constraint_container > #hide_paper_slider1')
+        .find('input')
+        .clear({ force: true })
+        .type('Text', { force: true });
     });
 
     it('Clicking submit button should give object', () => {
@@ -66,6 +111,8 @@ describe('Custom field constraints', () => {
             custom: {
               paperSlider1: 20,
               paperSlider2: 50,
+              colorSwatch: "#ffebee",
+              hidePaperSlider1: "Text"
             },
           })
         );

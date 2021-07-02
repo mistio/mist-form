@@ -96,7 +96,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
           // Clear selected value if it's not included in the new available values
           _props.value = null;
         }
-        console.log("enumData ", enumData)
+
         return enumData
           ? html`${this.dropdown({ ..._props, enum: enumData })}`
           : html`Not found`;
@@ -105,22 +105,28 @@ export class FieldTemplates extends FieldTemplateHelpers {
     )}`;
   }
 
-  dropdown = props => html`<paper-dropdown-menu
+  dropdown = props => {
+    console.log("props.enum ", props.enum)
+    console.log("props.value ", props.value)
+    console.log("trololo ", props.value ? props.enum.find(x=>x.id === props.value).title : '')
+    return html`<paper-dropdown-menu
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    class="mist-form-input"
+    class="${props.classes || ''} mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
     no-animations=""
-    attr-for-selected="value"
     @value-changed=${this.valueChangedEvent}
+    value="${props.value || ''}"
   >
     <paper-listbox
-      attr-for-selected="value"
-      selected="${props.value || ''}"
-      class="dropdown-content"
+
+     selected="${props.value || ''}"
+     attr-for-selected="value"
+      class="${props.classes || ''} dropdown-content"
       slot="dropdown-content"
 
     >
+    <iron-input slot="">dgdfgdf${props.value ? props.enum.find(x=>x.id === props.value).title : ''}</iron-input>
       ${props.enum.map(
         item =>
           html` <paper-item value="${item.id || item}">
@@ -128,12 +134,13 @@ export class FieldTemplates extends FieldTemplateHelpers {
           </paper-item>`
       )}
     </paper-listbox>
-  </paper-dropdown-menu>`;
+  </paper-dropdown-menu>`
+  };
 
   radioGroup = props => html` <paper-radio-group
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    class="mist-form-input"
+    class="${props.classes || ''} mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
     @selected-changed=${this.valueChangedEvent}
   >
@@ -152,7 +159,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
       @selected-values-changed=${this.valueChangedEvent}
-      class="checkbox-group mist-form-input"
+      class="${props.classes || ''} checkbox-group mist-form-input"
       attr-for-selected="key"
       selected-attribute="checked"
       multi
@@ -168,7 +175,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   input(props) {
     return html`<paper-input
-      class="mist-form-input"
+      class="${props.classes || ''} mist-form-input"
       @value-changed=${this.valueChangedEvent}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
@@ -181,7 +188,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
   }
 
   textArea = props => html`<paper-textarea
-    class="mist-form-input"
+    class="${props.classes || ''} mist-form-input"
     always-float-label
     ...="${spreadProps(getConvertedProps(props))}"
     .label="${getLabel(props)}"
@@ -190,7 +197,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
   ></paper-textarea>`;
 
   boolean = props => html`<paper-checkbox
-    class="mist-form-input"
+    class="${props.classes || ''} mist-form-input"
     ...="${spreadProps(props)}"
     @checked-changed=${this.valueChangedEvent}
     ?excludeFromPayload="${props.excludeFromPayload}"
@@ -200,7 +207,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   durationField = props =>
     html`<mist-form-duration-field
-      class="mist-form-input"
+      class="${props.classes || ''} mist-form-input"
       ...="${spreadProps(props)}"
       @value-changed=${this.valueChangedEvent}
     ></mist-form-duration-field>`;
@@ -208,6 +215,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
   multiRow = props => html`<multi-row
     ...="${spreadProps(props)}"
     .mistForm=${this.mistForm}
+    .getValueProperty=${this.getValueProperty}
+    .customInputFields=${this.customInputFields}
     @value-changed=${this.valueChangedEvent}
     exportparts="row: multirow-row"
   ></multi-row>`;
@@ -228,11 +237,11 @@ export class FieldTemplates extends FieldTemplateHelpers {
       id="${props.id}-subform"
       ...="${spreadProps(props)}"
       ?excludeFromPayload="${!showFields}"
-      class="subform-container ${showFields ? 'open' : ''} ${isEvenOrOdd(
+      class="${props.classes || ''} subform-container ${showFields ? 'open' : ''} ${isEvenOrOdd(
         props.fieldPath
       )}"
     >
-      <span class="subform-name">${!props.hasToggle ? props.label : ''}</span>
+      <span class="${props.classes || ''} subform-name">${!props.hasToggle ? props.label : ''}</span>
 
       ${props.hasToggle &&
       html` <paper-toggle-button
@@ -241,7 +250,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
         .checked="${showFields}"
         @checked-changed="${e => {
           this.mistForm.setSubformState(props.fieldPath, e.detail.value);
-          //this.mistForm.refreshCustomComponents(props.fieldPath);
+          // this.mistForm.refreshCustomComponents(props.fieldPath);
           this.mistForm.requestUpdate();
         }}"
         >${props.label}</paper-toggle-button

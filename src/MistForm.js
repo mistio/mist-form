@@ -127,9 +127,8 @@ export class MistForm extends LitElement {
         }
       } else if (notExcluded) {
         const input = this.fieldTemplates.getFieldValue(node);
-        console.log("input ", input)
         const inputValue = Object.values(input)[0];
-        console.log("inputValue ", inputValue)
+
         if (node.type === 'number') {
           input[Object.keys(input)[0]] = parseInt(inputValue, 10);
         }
@@ -194,7 +193,7 @@ export class MistForm extends LitElement {
           // getEnumData is the function returned by the promise. We pass the values of the form there
           .then(getEnumData => {
             const formValues = this.getValuesfromDOM(this.shadowRoot);
-            const dependencies = this.dynamicDataNamespace.dynamicData[dynamicDataName].dependencies;
+            const {dependencies} = this.dynamicDataNamespace.dynamicData[dynamicDataName];
             const dependencyValues = dependencies ? util.getDependencyValues(formValues, dependencies) : {};
 
             const enumData = getEnumData(dependencyValues);
@@ -227,6 +226,7 @@ export class MistForm extends LitElement {
   updateCustomValues(fieldPath, value) {
     this.customValues[fieldPath] = value;
   }
+
   // Combine field and helpText and return template
   getTemplate(properties) {
     if (!properties.hidden) {
@@ -282,47 +282,49 @@ export class MistForm extends LitElement {
       // Update dynamic data that depends on dependencies
       for (const [key, val] of Object.entries(this.dynamicDataNamespace.conditionals)) {
         if (val.dependencies && val.dependencies.includes(fieldPath)) {
-          //debugger;
+
           this.conditionalData[fieldPath] = val.func(this.getValuesfromDOM(this.shadowRoot));
           this.requestUpdate();
-          //this.loadDynamicData(key, val.target);
+          // this.loadDynamicData(key, val.target);
         }
       }
     }
-    // this.data.allOf.forEach(conditional => {
-    //   const condition = conditional.if.properties;
-    //   const result = conditional.then.properties;
-    //   const conditionMap = Object.keys(condition).map(key => [
-    //     key,
-    //     condition[key],
-    //   ]);
+    if (this.data.allOf) {
+      this.data.allOf.forEach(conditional => {
+        const condition = conditional.if.properties;
+        const result = conditional.then.properties;
+        const conditionMap = Object.keys(condition).map(key => [
+          key,
+          condition[key],
+        ]);
 
-    //   const resultMap = Object.keys(result).map(key => [key, result[key]]);
-    //   const [targetField, targetValues] = conditionMap[0];
-    //   if (
-    //     targetField === fieldPath &&
-    //     (targetValues === 'toggle' || targetValues === 'reverseToggle')
-    //   ) {
-    //     update = true;
-    //     const toggleValue = targetValues === 'toggle' ? value : !value;
-    //     const updatedResult = [
-    //       resultMap[0][0],
-    //       { [resultMap[0][1].property]: toggleValue },
-    //     ];
+        const resultMap = Object.keys(result).map(key => [key, result[key]]);
+        const [targetField, targetValues] = conditionMap[0];
+        if (
+          targetField === fieldPath &&
+          (targetValues === 'toggle' || targetValues === 'reverseToggle')
+        ) {
+          update = true;
+          const toggleValue = targetValues === 'toggle' ? value : !value;
+          const updatedResult = [
+            resultMap[0][0],
+            { [resultMap[0][1].property]: toggleValue },
+          ];
 
-    //     this.updateFormByConditions(updatedResult);
-    //   } else {
-    //     const targetValuesArray = targetValues.enum || [targetValues.const];
+          this.updateFormByConditions(updatedResult);
+        } else {
+          const targetValuesArray = targetValues.enum || [targetValues.const];
 
-    //     if (targetField === fieldPath && targetValuesArray.includes(value)) {
-    //       update = true;
+          if (targetField === fieldPath && targetValuesArray.includes(value)) {
+            update = true;
 
-    //       resultMap.forEach(res => {
-    //         this.updateFormByConditions(res);
-    //       });
-    //     }
-    //   }
-    // });
+            resultMap.forEach(res => {
+              this.updateFormByConditions(res);
+            });
+          }
+        }
+      });
+    }
     return update;
   }
 
@@ -341,7 +343,7 @@ export class MistForm extends LitElement {
 
       this.updateDynamicData(el.fieldPath);
       if (el.hasAttribute('mist-form-type')) {
-        //this.updateCustomValues(el.fieldPath, value)
+        // this.updateCustomValues(el.fieldPath, value)
       }
 
     //  if (this.data.allOf) {
@@ -415,19 +417,22 @@ export class MistForm extends LitElement {
     const values = this.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
   }
+
   refreshCustomComponents(fieldPath) {
     const subformOpen = this.getSubformState(fieldPath);
     if (!subformOpen) {
-      for (const [key, val] of Object.entries(this.customComponents)) {
+      for (const [key] of Object.entries(this.customComponents)) {
         if (key.startsWith(fieldPath)) {
           delete this.customComponents[key];
         }
       }
     }
   }
+
   getDependencyValues() {
 
   }
+
   renderInputs(inputs, subforms, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
@@ -478,16 +483,6 @@ export class MistForm extends LitElement {
         const rowProps = subForm.properties;
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
-          // console.log("val.name || key ", val.name || key)
-          // console.log("rowProps[key].deps ", rowProps[key].deps)
-          // const dependencies = rowProps[key].deps;
-          // if (dependencies) {
-          //   for (const [key, val] of Object.entries(dependencies)) {
-          //     const data = this.dynamicDataNamespace[dynamicDataName][val];
-          //     console.log("input.deps ", dependencies)
-          //     debugger;
-          //   }
-          // }
           properties.rowProps[key] = {
             name: key,
             ...val, // If user gave a separate name it will be overwritten here
@@ -517,26 +512,14 @@ export class MistForm extends LitElement {
       if (properties.deps) {
         for (const [key, val] of Object.entries(properties.deps)) {
           const formValues = this.getValuesfromDOM(this.shadowRoot);
-          const dependencies = this.dynamicDataNamespace.conditionals[val].dependencies;
+          const {dependencies} = this.dynamicDataNamespace.conditionals[val];
           const dependencyValues = util.getDependencyValues(formValues, dependencies);
           const newData = this.dynamicDataNamespace.conditionals[val].func(dependencyValues);
+
           if (newData !== undefined) {
             properties[key] = newData;
           }
         }
-      } else if (properties.format === 'multiRow') {
-        // properties.rowProps.forEach(prop => {
-        //   for (const [key, val] of Object.entries(prop.deps)) {
-        //     const formValues = this.getValuesfromDOM(this.shadowRoot);
-        //     const dependencies = this.dynamicDataNamespace.conditionals[val].dependencies;
-        //     const dependencyValues = util.getDependencyValues(formValues, dependencies);
-        //     const newData = this.dynamicDataNamespace.conditionals[val].func(dependencyValues);
-        //     console.log("in sdfsdf ", properties)
-        //     if (newData !== undefined) {
-        //       prop[key] = newData;
-        //     }
-        //   }
-        // })
       }
       return this.getTemplate(properties);
     });

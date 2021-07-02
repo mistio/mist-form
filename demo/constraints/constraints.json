@@ -213,6 +213,7 @@
 			"label":"Field name",
 			"name":"name",
 			"type":"string",
+			"classes": "field-name",
 			"deps": {"hidden": "fieldNameHidden"}
 		  },
 		  "fieldValue":{
@@ -355,8 +356,7 @@
 				"label":"Paper slider 2",
 				"id":"paper_slider2",
 				"format":"paperSlider",
-				"name": "paperSlider2",
-				"value": 2
+				"name": "paperSlider2"
 			  },
 			  "colorSwatch":{
 				"label":"Color swatch",

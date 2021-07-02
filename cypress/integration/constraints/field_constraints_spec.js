@@ -79,6 +79,45 @@ describe('Field constraints', () => {
       .should('contain', 'Field2');
   });
 
+  it('Selecting Cloud1 should hide field name', () => {
+    cy.get('mist-form')
+      .find('#field_constraint_container multi-row')
+      .find('paper-dropdown-menu')
+      .eq(0)
+      .click();
+
+    cy.get('mist-form')
+      .find('#field_constraint_container multi-row')
+      .find('paper-dropdown-menu')
+      .eq(0)
+      .find('paper-item')
+      .eq(1)
+      .click({ force: true });
+
+      cy.get('mist-form')
+      .find('#field_constraint_container multi-row')
+      .find('.field-name')
+      .should('not.exist');
+
+      cy.get('mist-form')
+      .find('#field_constraint_container multi-row')
+      .find('paper-dropdown-menu')
+      .eq(0)
+      .click();
+    cy.get('mist-form')
+      .find('#field_constraint_container multi-row')
+      .find('paper-dropdown-menu')
+      .eq(0)
+      .find('paper-item')
+      .eq(3)
+      .click({ force: true });
+
+      cy.get('mist-form')
+      .find('#field_constraint_container multi-row')
+      .find('.field-name')
+      .should('be.visible');
+  });
+
   it('Add another field and click submit button to get object', () => {
     cy.get('mist-form')
       .find('#field_constraint_container multi-row')
@@ -121,6 +160,7 @@ describe('Field constraints', () => {
         JSON.stringify({
           field: [
             {
+              cloud:"cloudId3",
               name: 'Field2',
             },
             {

@@ -54,13 +54,13 @@
       const constraintsData = {
         dynamicData: {
           getDefaultActions: {
-          func: new Promise((resolve, reject) => {
+          func: new Promise((resolve) => {
               resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
           }),
           dependencies: ['expiration.actions.available'],
         },
         clouds: {
-          func: new Promise((resolve, reject) => {
+          func: new Promise((resolve) => {
               resolve(() => {
                 return ['ALL', {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
               });
@@ -69,12 +69,19 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: (formValues) => true,
+          func: (dependencyValues) => {
+            console.log("dependendency values ", dependencyValues);
+            return dependencyValues.cloud === 'cloudId1';
+          },
           dependencies: ['field.cloud'],
         },
-        fieldNameHiddenMax: {
-          func: dependencyValues => dependencyValues['custom.min'] > 5,
-          dependencies: ['custom.min'],
+        hidePaperSlider1: {
+          func: dependencyValues => {
+            console.log("dependencyValues ", dependencyValues)
+            const value = dependencyValues['custom.hidePaperSlider1'];
+            return value === 'yes' || value === 'sure';
+          },
+          dependencies: ['custom.hidePaperSlider1']
         },
         }
       };

@@ -34,7 +34,7 @@
 
       const dynaData = {
         getTestData: {
-          func: new Promise((resolve, reject) => {
+          func: new Promise((resolve) => {
             setTimeout(function () {
               resolve(formValues => {
                 return [formValues.title || 'title', formValues.age || 'age'];

@@ -95,9 +95,7 @@ export class FieldTemplateHelpers {
     const customInputFields = this.customInputFields.find(customInput => {
       return input.format === customInput.name;
     });
-    console.log("input ", input)
-    console.log("this.customInputFields ", this.customInputFields)
-    console.log("customInputs ", customInputFields)
+
     if (
       input.getAttribute('role') === 'checkbox' ||
       input.getAttribute('role') === 'button'
