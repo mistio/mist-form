@@ -19,10 +19,9 @@ export const getSubformFromRef = (subforms, ref) => {
 };
 
 export const getDependencyValues = (formValues, dependencies) => {
-const dependencyValues = {};
-dependencies.forEach(dep => {
-  dependencyValues[dep] = getNestedValueFromPath(dep, formValues);
-
-})
-return dependencyValues;
-}
+  const dependencyValues = {};
+  dependencies.forEach(dep => {
+    dependencyValues[dep] = getNestedValueFromPath(dep, formValues);
+  });
+  return dependencyValues;
+};

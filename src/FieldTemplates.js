@@ -1,7 +1,7 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';
-import {styleMap} from 'lit-html/directives/style-map.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './customFields/mist-form-duration-field.js';
 import './customFields/multi-row.js';
@@ -88,51 +88,56 @@ export class FieldTemplates extends FieldTemplateHelpers {
       _props.fieldPath
     );
     return html` ${until(
-      dynamicEnumData.then(enumData => {
-        const enumDataIncludesValue = enumData.some(
-          item => item === _props.value || item.id === _props.value
-        );
-        if (!enumDataIncludesValue) {
-          // Clear selected value if it's not included in the new available values
-          _props.value = null;
-        }
+      dynamicEnumData &&
+        dynamicEnumData.then(enumData => {
+          const enumDataIncludesValue = enumData.some(
+            item => item === _props.value || item.id === _props.value
+          );
+          if (!enumDataIncludesValue) {
+            // Clear selected value if it's not included in the new available values
+            _props.value = null;
+          }
 
-        return enumData
-          ? html`${this.dropdown({ ..._props, enum: enumData })}`
-          : html`Not found`;
-      }),
+          return enumData
+            ? html`${this.dropdown({ ..._props, enum: enumData })}`
+            : html`Not found`;
+        }),
       this.spinner
     )}`;
   }
 
   dropdown = props => {
-    const _props = {...props}
-      const value = _props.enum.find(prop => prop.id === props.value);
-      if (value) { _props.value = value.title;}
+    const _props = { ...props };
+    const value = _props.enum.find(prop => prop.id === props.value);
+    if (value) {
+      _props.value = value.title;
+    }
     return html`<paper-dropdown-menu
-    ...="${spreadProps(_props)}"
-    .label="${getLabel(_props)}"
-    class="${_props.classes || ''} mist-form-input"
-    ?excludeFromPayload="${_props.excludeFromPayload}"
-    no-animations=""
-    value="${_props.value || ''}"
-  >
-    <paper-listbox
-     selected="${_props.value || ''}"
-     @selected-changed=${_props.valueChangedEvent || this.valueChangedEvent}
-     attr-for-selected="value"
-      class="${_props.classes || ''} dropdown-content"
-      slot="dropdown-content"
-
+      ...="${spreadProps(_props)}"
+      .label="${getLabel(_props)}"
+      class="${_props.classes || ''} mist-form-input"
+      ?excludeFromPayload="${_props.excludeFromPayload}"
+      no-animations=""
+      value="${_props.value || ''}"
     >
-      ${_props.enum.map(
-        item =>
-          html`<paper-item value="${item.title || item}" item-id="${item.id || item}">
-            ${item.title || item}
-          </paper-item>`
-      )}
-    </paper-listbox>
-  </paper-dropdown-menu>`
+      <paper-listbox
+        selected="${_props.value || ''}"
+        @selected-changed=${_props.valueChangedEvent || this.valueChangedEvent}
+        attr-for-selected="value"
+        class="${_props.classes || ''} dropdown-content"
+        slot="dropdown-content"
+      >
+        ${_props.enum.map(
+          item =>
+            html`<paper-item
+              value="${item.title || item}"
+              item-id="${item.id || item}"
+            >
+              ${item.title || item}
+            </paper-item>`
+        )}
+      </paper-listbox>
+    </paper-dropdown-menu>`;
   };
 
   radioGroup = props => html` <paper-radio-group
@@ -156,7 +161,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
-      @selected-values-changed=${props.valueChangedEvent || this.valueChangedEvent}
+      @selected-values-changed=${props.valueChangedEvent ||
+      this.valueChangedEvent}
       class="${props.classes || ''} checkbox-group mist-form-input"
       attr-for-selected="key"
       selected-attribute="checked"
@@ -220,7 +226,6 @@ export class FieldTemplates extends FieldTemplateHelpers {
   ></multi-row>`;
 
   object = props => {
-    // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
     // TODO: Create component for subform which returns a value so I don't need to find the values in this.mistForm
     // Subform should be attached to subform container in json
@@ -235,11 +240,13 @@ export class FieldTemplates extends FieldTemplateHelpers {
       id="${props.id}-subform"
       ...="${spreadProps(props)}"
       ?excludeFromPayload="${!showFields}"
-      class="${props.classes || ''} subform-container ${showFields ? 'open' : ''} ${isEvenOrOdd(
-        props.fieldPath
-      )}"
+      class="${props.classes || ''} subform-container ${showFields
+        ? 'open'
+        : ''} ${isEvenOrOdd(props.fieldPath)}"
     >
-      <span class="${props.classes || ''} subform-name">${!props.hasToggle ? props.label : ''}</span>
+      <span class="${props.classes || ''} subform-name"
+        >${!props.hasToggle ? props.label : ''}</span
+      >
 
       ${props.hasToggle &&
       html` <paper-toggle-button
@@ -248,7 +255,6 @@ export class FieldTemplates extends FieldTemplateHelpers {
         .checked="${showFields}"
         @checked-changed="${e => {
           this.mistForm.setSubformState(props.fieldPath, e.detail.value);
-          // this.mistForm.refreshCustomComponents(props.fieldPath);
           this.mistForm.requestUpdate();
         }}"
         >${props.label}</paper-toggle-button
@@ -287,8 +293,4 @@ export class FieldTemplates extends FieldTemplateHelpers {
           </a>
         </div>`
       : html`<div class="helpText">${helpText}</div>`;
-  // Here we store the tag names of the custom components
-  // and the name of their value changed events so we can detect
-  // field changes
-  // { tagName: 'tag-name', valueChangedEvent: 'value-changed'}
 }

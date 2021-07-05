@@ -1,11 +1,11 @@
 import { LitElement, html, css } from 'lit-element';
-import {styleMap} from 'lit-html/directives/style-map.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 class MultiRow extends LitElement {
   static get properties() {
     return {
       value: { type: Array },
-      inputs: { type: Array }
+      inputs: { type: Array },
     };
   }
 
@@ -19,8 +19,9 @@ class MultiRow extends LitElement {
       :host {
         display: block;
         padding: 10px;
-        background: var(--mist-form-size-element-background-color, white);
-        font-family: var(--mist-form-size-element-font-family, Roboto);
+        color: var(--mist-form-field-element-text-color, black);
+        background: var(--mist-form-field-element-background-color, white);
+        font-family: var(--mist-form-field-element-font-family, Roboto);
       }
 
       paper-input {
@@ -34,17 +35,6 @@ class MultiRow extends LitElement {
         display: inline-block;
       }
 
-      .sizeRow {
-        width: 100%;
-        background-color: #ebebeb;
-        margin-bottom: 10px;
-        padding: 0 0 15px 15px;
-      }
-
-      .sizeRow > paper-dropdown-menu,
-      .sizeRow > .sizeField {
-        width: 89%;
-      }
       :host .label {
         margin-top: auto;
         margin-bottom: 15px;
@@ -56,17 +46,6 @@ class MultiRow extends LitElement {
       }
       .add {
         color: #424242;
-      }
-      .no-clouds {
-        font-size: 14px;
-        color: #4b4b4b;
-      }
-      :host {
-        display: block;
-        padding: 10px;
-        color: var(--mist-form-field-element-text-color, black);
-        background: var(--mist-form-field-element-background-color, white);
-        font-family: var(--mist-form-field-element-font-family, Roboto);
       }
 
       paper-input,
@@ -98,7 +77,8 @@ class MultiRow extends LitElement {
         display: grid;
         grid-row-gap: 5px;
       }
-      :host .row, :host .row-header {
+      :host .row,
+      :host .row-header {
         display: grid;
         grid-auto-columns: 1fr;
         grid-column-gap: 5px;
@@ -136,17 +116,17 @@ class MultiRow extends LitElement {
   }
 
   getValue() {
-      const value = [];
-        const rows = this.shadowRoot.querySelectorAll('.row');
+    const value = [];
+    const rows = this.shadowRoot.querySelectorAll('.row');
 
-        for (const row of rows) {
-          const rowValue = this.mistForm.getValuesfromDOM(row);
-          value.push(rowValue);
-        }
+    for (const row of rows) {
+      const rowValue = this.mistForm.getValuesfromDOM(row);
+      value.push(rowValue);
+    }
     return value;
   }
 
-// TODO: Trigger this. Or maybe not. It's triggered in mistForm
+  // TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged() {
     const event = new CustomEvent('value-changed', {
       detail: {
@@ -157,49 +137,58 @@ class MultiRow extends LitElement {
   }
 
   render() {
-    const styles = {
-
-    }
+    const styles = {};
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
-   // const rowStyles = { backgroundColor: 'blue', color: 'white' };
+    // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
       <div class="container" style="width:100%">
         <div class="row-header">
-          ${Object.keys(this.rowProps).map(
-            key => !this.rowProps[key].hidden ?
-              html`<span class="row-item">${this.rowProps[key].label}</span>` : ''
+          ${Object.keys(this.rowProps).map(key =>
+            !this.rowProps[key].hidden
+              ? html`<span class="row-item">${this.rowProps[key].label}</span>`
+              : ''
           )}
           <span></span>
         </div>
 
         ${this.value.map((field, index) => {
           const row = Object.keys(this.rowProps).map(key => {
-            const prop = {...this.rowProps[key]};
+            const prop = { ...this.rowProps[key] };
 
-            prop.valueChangedEvent = (e) => { this.updateFieldValue(e, prop.name, index)};
+            prop.valueChangedEvent = e => {
+              this.updateFieldValue(e, prop.name, index);
+            };
             const valueProperty = this.getValueProperty(prop);
             prop[valueProperty] = field[prop.name];
 
             if (prop.deps) {
-      for (const [depKey, depVal] of Object.entries(prop.deps)) {
-        const {dependencies} = this.mistForm.dynamicDataNamespace.conditionals[depVal];
+              for (const [depKey, depVal] of Object.entries(prop.deps)) {
+                const {
+                  dependencies,
+                } = this.mistForm.dynamicDataNamespace.conditionals[depVal];
 
-       // const dependencyValues =
-        // const dependencyValues = util.getDependencyValues(formValues, dependencies);
-        const dependencyValues = {};
-        dependencies.forEach(dep => {
-          // We assume the dependency is in the same row
-          const dependencyField = dep.split('.').pop();
-          dependencyValues[dependencyField] = this.getValue()[index] && this.getValue()[index][dependencyField];
-
-        });
-         const newData = this.mistForm.dynamicDataNamespace.conditionals[depVal].func(dependencyValues);
-         if (newData !== undefined) {
-           prop[depKey] = newData;
-         }
-      }
-    }
-            return prop.hidden ? html`<span></span><div></div>` : html`${this.mistForm.getTemplate(prop)}`;
+                // const dependencyValues =
+                // const dependencyValues = util.getDependencyValues(formValues, dependencies);
+                const dependencyValues = {};
+                dependencies.forEach(dep => {
+                  // We assume the dependency is in the same row
+                  const dependencyField = dep.split('.').pop();
+                  dependencyValues[dependencyField] =
+                    this.getValue()[index] &&
+                    this.getValue()[index][dependencyField];
+                });
+                const newData = this.mistForm.dynamicDataNamespace.conditionals[
+                  depVal
+                ].func(dependencyValues);
+                if (newData !== undefined) {
+                  prop[depKey] = newData;
+                }
+              }
+            }
+            return prop.hidden
+              ? html`<span></span>
+                  <div></div>`
+              : html`${this.mistForm.getTemplate(prop)}`;
           });
           return html`<div class="row" part="row" style=${styleMap(styles.row)}>
             ${row}

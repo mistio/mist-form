@@ -276,7 +276,7 @@ describe('Constraints form with data', () => {
             },
             {
               name: 'Field3',
-              show: true
+              show: true,
             },
           ],
         })

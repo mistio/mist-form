@@ -63,15 +63,11 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: (dependencyValues) => {
-            console.log("dependendency values ", dependencyValues);
-            return dependencyValues.cloud === 'cloudId1';
-          },
+          func: dependencyValues=> dependencyValues.cloud === 'cloudId1',
           dependencies: ['field.cloud'],
         },
         hidePaperSlider1: {
           func: dependencyValues => {
-            console.log("dependencyValues ", dependencyValues)
             const value = dependencyValues['custom.hidePaperSlider1'];
             return value === 'yes' || value === 'sure';
           },
