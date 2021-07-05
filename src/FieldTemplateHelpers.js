@@ -104,7 +104,7 @@ export class FieldTemplateHelpers {
     } else if (input.tagName === 'IRON-SELECTOR') {
       value = input.selectedValues;
     } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
-      value = input.querySelector('paper-listbox').selected;
+      value = input.selectedItem && input.selectedItem.getAttribute('item-id')
     } else if (input.format === 'multiRow') {
       value = input.getValue();
     } else if (customInputFields) {

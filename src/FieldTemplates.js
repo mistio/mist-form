@@ -106,30 +106,28 @@ export class FieldTemplates extends FieldTemplateHelpers {
   }
 
   dropdown = props => {
-    console.log("props.enum ", props.enum)
-    console.log("props.value ", props.value)
-    console.log("trololo ", props.value ? props.enum.find(x=>x.id === props.value).title : '')
+    const _props = {...props}
+      const value = _props.enum.find(prop => prop.id === props.value);
+      if (value) { _props.value = value.title;}
     return html`<paper-dropdown-menu
-    ...="${spreadProps(props)}"
-    .label="${getLabel(props)}"
-    class="${props.classes || ''} mist-form-input"
-    ?excludeFromPayload="${props.excludeFromPayload}"
+    ...="${spreadProps(_props)}"
+    .label="${getLabel(_props)}"
+    class="${_props.classes || ''} mist-form-input"
+    ?excludeFromPayload="${_props.excludeFromPayload}"
     no-animations=""
-    @value-changed=${this.valueChangedEvent}
-    value="${props.value || ''}"
+    value="${_props.value || ''}"
   >
     <paper-listbox
-
-     selected="${props.value || ''}"
+     selected="${_props.value || ''}"
+     @selected-changed=${_props.valueChangedEvent || this.valueChangedEvent}
      attr-for-selected="value"
-      class="${props.classes || ''} dropdown-content"
+      class="${_props.classes || ''} dropdown-content"
       slot="dropdown-content"
 
     >
-    <iron-input slot="">dgdfgdf${props.value ? props.enum.find(x=>x.id === props.value).title : ''}</iron-input>
-      ${props.enum.map(
+      ${_props.enum.map(
         item =>
-          html` <paper-item value="${item.id || item}">
+          html`<paper-item value="${item.title || item}" item-id="${item.id || item}">
             ${item.title || item}
           </paper-item>`
       )}
@@ -142,7 +140,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     .label="${getLabel(props)}"
     class="${props.classes || ''} mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
-    @selected-changed=${this.valueChangedEvent}
+    @selected-changed=${props.valueChangedEvent || this.valueChangedEvent}
   >
     <label>${getLabel(props)}</label>
     ${props.enum.map(
@@ -158,7 +156,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
-      @selected-values-changed=${this.valueChangedEvent}
+      @selected-values-changed=${props.valueChangedEvent || this.valueChangedEvent}
       class="${props.classes || ''} checkbox-group mist-form-input"
       attr-for-selected="key"
       selected-attribute="checked"
@@ -176,7 +174,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
   input(props) {
     return html`<paper-input
       class="${props.classes || ''} mist-form-input"
-      @value-changed=${this.valueChangedEvent}
+      @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
       always-float-label
       ...="${spreadProps(getConvertedProps(props))}"
       .label="${getLabel(props)}"
@@ -193,13 +191,13 @@ export class FieldTemplates extends FieldTemplateHelpers {
     ...="${spreadProps(getConvertedProps(props))}"
     .label="${getLabel(props)}"
     ?excludeFromPayload="${props.excludeFromPayload}"
-    @value-changed=${this.valueChangedEvent}
+    @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
   ></paper-textarea>`;
 
   boolean = props => html`<paper-checkbox
     class="${props.classes || ''} mist-form-input"
     ...="${spreadProps(props)}"
-    @checked-changed=${this.valueChangedEvent}
+    @checked-changed=${props.valueChangedEvent || this.valueChangedEvent}
     ?excludeFromPayload="${props.excludeFromPayload}"
     value=""
     >${props.label}</paper-checkbox
@@ -209,7 +207,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     html`<mist-form-duration-field
       class="${props.classes || ''} mist-form-input"
       ...="${spreadProps(props)}"
-      @value-changed=${this.valueChangedEvent}
+      @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
     ></mist-form-duration-field>`;
 
   multiRow = props => html`<multi-row
@@ -217,7 +215,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     .mistForm=${this.mistForm}
     .getValueProperty=${this.getValueProperty}
     .customInputFields=${this.customInputFields}
-    @value-changed=${this.valueChangedEvent}
+    @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
     exportparts="row: multirow-row"
   ></multi-row>`;
 

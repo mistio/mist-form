@@ -4,6 +4,7 @@ import {styleMap} from 'lit-html/directives/style-map.js';
 class MultiRow extends LitElement {
   static get properties() {
     return {
+      value: { type: Array },
       inputs: { type: Array }
     };
   }
@@ -107,23 +108,22 @@ class MultiRow extends LitElement {
   }
 
   addRow() {
-    this.value = [...this.getValue(), {}];
-   // this.value.push({});
+    this.value.push({});
     this.requestUpdate();
     this.valueChanged();
   }
 
-  removeRow(indexToRemove) {
+  updateFieldValue(e, name, index) {
+    this.value[index][name] = e.detail.value;
+    this.mistForm.dispatchValueChangedEvent(e);
+    this.valueChanged();
+  }
 
-    //this.shadowRoot.querySelectorAll('.row')[indexToRemove].remove();
-    this.value = this.getValue();
+  removeRow(indexToRemove) {
     this.value = [
       ...this.value.slice(0, indexToRemove),
       ...this.value.slice(indexToRemove + 1),
     ];
-    //this.value.splice(indexToRemove, 1);
-
-
     this.requestUpdate();
     this.valueChanged();
   }
@@ -143,7 +143,6 @@ class MultiRow extends LitElement {
           const rowValue = this.mistForm.getValuesfromDOM(row);
           value.push(rowValue);
         }
-        console.log("value ", value)
     return value;
   }
 
@@ -151,7 +150,7 @@ class MultiRow extends LitElement {
   valueChanged() {
     const event = new CustomEvent('value-changed', {
       detail: {
-        value: this.getValue(),
+        value: this.value,
       },
     });
     this.dispatchEvent(event);
@@ -176,6 +175,8 @@ class MultiRow extends LitElement {
         ${this.value.map((field, index) => {
           const row = Object.keys(this.rowProps).map(key => {
             const prop = {...this.rowProps[key]};
+
+            prop.valueChangedEvent = (e) => { this.updateFieldValue(e, prop.name, index)};
             const valueProperty = this.getValueProperty(prop);
             prop[valueProperty] = field[prop.name];
 
