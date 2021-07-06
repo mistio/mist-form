@@ -40,13 +40,13 @@
 				"cloud1":{
 					"label":"Default1",
 					"id":"default_action1",
-					"type":"paperSlider",
+					"format":"paperSlider",
 					"name": "cloud1"
 				  },
 				  "cloud2":{
 					"label":"Default2",
 					"id":"default_action2",
-					"type":"paperSlider",
+					"format":"paperSlider",
 					"name": "cloud2"
 				  }
 
@@ -55,7 +55,7 @@
 
 	  "fieldElementSubform":{
 		"id":"field_element_subform",
-		"type":"rowDefinition",
+		"format":"rowDefinition",
 		"properties":{
 		  "cloud":{
 			"label":"Default",
@@ -85,7 +85,7 @@
 		  "cloud3":{
 			"label":"Default3",
 			"id":"default_action3",
-			"type":"paperSlider",
+			"format":"paperSlider",
 			"name": "cloud3",
 			"value": 3
 		  }
