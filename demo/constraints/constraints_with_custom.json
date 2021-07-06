@@ -1,5 +1,6 @@
 {
 	"type":"object",
+	"format": "form",
 	"id":"constraints-form",
 	"$schema":"http://json-schema.org/draft-07/schema#",
 	"label":"Constraints",
@@ -13,6 +14,7 @@
 			"label":"field constraints",
 			"id":"field_constraint_container",
 			"type":"object",
+			"format":"subformContainer",
 			"hasToggle":true,
 			"properties":{
 			  "subform":{
@@ -25,6 +27,7 @@
 		"fieldConstraints":{
 			"id":"field_constraints",
 			"type":"object",
+			"format":"subform",
 			"properties":{
 				"min":{
 					"name": "min",
@@ -40,12 +43,14 @@
 				"cloud1":{
 					"label":"Default1",
 					"id":"default_action1",
+					"type": "string",
 					"format":"paperSlider",
 					"name": "cloud1"
 				  },
 				  "cloud2":{
 					"label":"Default2",
 					"id":"default_action2",
+					"type": "string",
 					"format":"paperSlider",
 					"name": "cloud2"
 				  }
@@ -55,6 +60,7 @@
 
 	  "fieldElementSubform":{
 		"id":"field_element_subform",
+		"type":"object",
 		"format":"rowDefinition",
 		"properties":{
 		  "cloud":{
@@ -85,6 +91,7 @@
 		  "cloud3":{
 			"label":"Default3",
 			"id":"default_action3",
+			"type": "string",
 			"format":"paperSlider",
 			"name": "cloud3",
 			"value": 3
