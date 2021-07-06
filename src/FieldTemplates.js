@@ -74,8 +74,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
       return this[format](_props);
       // Text area
     }
-    if (_props.format === 'textarea') {
-      return this.textArea(_props);
+    if (_props.format !== 'number') {
+      return this[_props.format || 'input'](_props);
       // Input field
     }
     return this.input(_props);

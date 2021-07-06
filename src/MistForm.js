@@ -238,7 +238,12 @@ export class MistForm extends LitElement {
   // Combine field and helpText and return template
   getTemplate(properties) {
     if (!properties.hidden) {
-      const fieldType = properties.type || properties.format;
+      let fieldType;
+      if (properties.format === 'multiRow') {
+        fieldType = 'multiRow'
+      } else {
+        fieldType = properties.type || properties.format;
+      }
       if (fieldType && this.fieldTemplates[fieldType]) {
         const template = this.fieldTemplates[fieldType](properties);
         const helpTextTemplate = this.fieldTemplates.helpText(properties);
@@ -438,11 +443,11 @@ export class MistForm extends LitElement {
       const [name, properties] = input;
       // Subforms just contain data, they shouldn't be rendered by themselves.
       // They should be rendered in subform containers
-      const fieldName = properties.type === 'object' ? properties.name : name;
+      const fieldName = properties.format === 'subformContainer' ? properties.name : name;
       properties.name = fieldName;
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
-      if (properties.type === 'object') {
+      if (properties.format === 'subformContainer') {
         const subForm = util.getSubformFromRef(
           subforms,
           properties.properties.subform.$ref
@@ -490,7 +495,7 @@ export class MistForm extends LitElement {
           this.initialValues
         );
         if (initialValue !== undefined) {
-          if (properties.type === 'object') {
+          if (properties.format === 'subformContainer') {
             if (this.firstRender) {
               properties.fieldsVisible = true;
             }
