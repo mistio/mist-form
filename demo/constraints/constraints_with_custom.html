@@ -38,48 +38,20 @@
       import '@polymer/iron-icons/iron-icons.js';
       import '@polymer/iron-selector/iron-selector.js';
       import '@polymer/paper-slider/paper-slider.js'
-      import '@polymer/paper-swatch-picker/paper-swatch-picker.js';
       import '../../mist-form.js';
 
-      const jsonUrl = 'constraints.json';
+      const jsonUrl = 'constraints_with_custom.json';
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
-      const constraintsData = {
-        dynamicData: {
-          getDefaultActions: {
-          func: new Promise((resolve) => {
-              resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
-          }),
-          dependencies: ['expiration.actions.available'],
-        },
-        clouds: {
-          func: new Promise((resolve) => {
-              resolve(() => {
-                return ['ALL', {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
-              });
-          })
-        },
-        },
-        conditionals: {
-          fieldNameHidden: {
-          func: dependencyValues=> dependencyValues.cloud === 'cloudId1',
-          dependencies: ['field.cloud'],
-        },
-        hidePaperSlider1: {
-          func: dependencyValues => {
-            const value = dependencyValues['custom.hidePaperSlider1'];
-            return value === 'yes' || value === 'sure';
-          },
-          dependencies: ['custom.hidePaperSlider1']
-        },
-        }
-      };
+      const initialValues = {field:{"cloud1":23,"cloud2":52}};
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
+        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .initialValues=${initialValues}>
           <div id="mist-form-custom">
-            <paper-slider mist-form-type="paperSlider" editable></paper-slider>
-            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
+            <paper-slider slot="customElement" max-markers=10  mist-form-type="paperSlider"
+              editable>
+          </paper-slider>
+        <span slot="customElement">sdfsdf</span>
           </div>
           <iron-ajax
             slot="formRequest"

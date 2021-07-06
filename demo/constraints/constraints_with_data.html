@@ -9,6 +9,14 @@
       mist-form {
         --mist-form-border: 2px solid white;
       }
+/*
+      multi-row .label {
+        color: red;
+      }
+
+      mist-form::part(multirow-row) {
+              color:red;
+            } */
     </style>
   </head>
 
@@ -44,16 +52,34 @@
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       const constraintsData = {
+        dynamicData: {
           getDefaultActions: {
-              func: new Promise((resolve, reject) => {
-                  resolve(formValues => {
-                      const values = formValues && formValues.expiration && formValues.expiration.actions && formValues.expiration.actions.available;
-                      return values || [];
-                  });
-              }),
-              dependencies: ['expiration.actions.available'],
+          func: new Promise((resolve) => {
+              resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
+          }),
+          dependencies: ['expiration.actions.available'],
+        },
+        clouds: {
+          func: new Promise((resolve) => {
+              resolve(() => {
+                return ['ALL', {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
+              });
+          })
+        },
+        },
+        conditionals: {
+          fieldNameHidden: {
+          func: dependencyValues=> dependencyValues.cloud === 'cloudId1',
+          dependencies: ['field.cloud'],
+        },
+        hidePaperSlider1: {
+          func: dependencyValues => {
+            const value = dependencyValues['custom.hidePaperSlider1'];
+            return value === 'yes' || value === 'sure';
           },
-          clouds: () => [{id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]
+          dependencies: ['custom.hidePaperSlider1']
+        },
+        }
       };
 
       const initialValues = {
@@ -104,7 +130,6 @@
                   value: 'Value2'
               },
               {
-                  cloud: '',
                   show: true,
                   name: 'Field3',
               },
@@ -112,6 +137,10 @@
       };
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues}>
+          <div id="mist-form-custom">
+            <paper-slider mist-form-type="paperSlider" editable></paper-slider>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
+          </div>
           <iron-ajax
             slot="formRequest"
             id="formAjax"

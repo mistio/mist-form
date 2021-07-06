@@ -1,11 +1,14 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
+import { until } from 'lit-html/directives/until.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
+import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './customFields/mist-form-duration-field.js';
-import './customFields/field-element.js';
-import './customFields/size-element.js';
+import './customFields/multi-row.js';
 
 // TODO: For now I only spread props, I should spread attributes too
-// TODO: This file is starting to get too big. Maybe I should split it up
+// TODO: Split up components in separate files. One file per component.
+
 // Some of the props need to be converted from their JSON Schema equivalents
 const getConvertedProps = props => {
   const newProps = {
@@ -26,36 +29,33 @@ const isEvenOrOdd = fieldPath =>
 
 const getLabel = props => (props.required ? `${props.label} *` : props.label);
 
-export const FieldTemplates = {
-  getInputFields: () => [
-    'paper-dropdown-menu',
-    'paper-textarea',
-    'paper-input',
-    'paper-toggle-button',
-    'paper-checkbox',
-    'paper-radio-group',
-    'iron-selector.checkbox-group',
-    'mist-form-duration-field',
-    'field-element',
-    'size-element',
-    'div.subform-container',
-  ],
-  getValueProperty: props => {
-    if (props.format === 'checkboxGroup') {
-      return 'selectedValues';
-    }
-    if (props.type === 'boolean') {
-      return 'checked';
-    }
-    return 'value';
-  },
-  string(name, props, mistForm, cb) {
+export class FieldTemplates extends FieldTemplateHelpers {
+  constructor(mistForm, valueChangedEvent) {
+    super();
+    this.mistForm = mistForm;
+    this.valueChangedEvent = valueChangedEvent;
+    this.inputFields = [
+      'paper-dropdown-menu',
+      'paper-textarea',
+      'paper-input',
+      'paper-toggle-button',
+      'paper-checkbox',
+      'paper-radio-group',
+      'iron-selector.checkbox-group',
+      'mist-form-duration-field',
+      'div.subform-container',
+      'multi-row',
+    ];
+    this.customInputFields = [];
+  }
+
+  string(props) {
     const _props = { ...props };
     const isDynamic = Object.prototype.hasOwnProperty.call(
       _props,
       'x-mist-enum'
     );
-    const dynamicData = mistForm.dynamicFieldData[_props.fieldPath];
+    const dynamicData = this.mistForm.dynamicFieldData[_props.fieldPath];
     if (isDynamic && dynamicData) {
       _props.enum = dynamicData;
     }
@@ -64,51 +64,88 @@ export const FieldTemplates = {
     if (Array.isArray(_props.value)) {
       _props.value = _props.value.join(', ');
     }
-    // If a field has dynamic data, load the data and then re-render as a normal dropdown
+    // If a field has dynamic data, load the data
     if (isDynamic && dynamicData === undefined) {
-      // Expect the response of a promise and pass the data to a callback that updates the enum property of the field
-      mistForm.loadDynamicData(_props['x-mist-enum'], cb);
+      return this.dynamicDropdown(_props);
       // Dropdown
-    } else if (hasEnum) {
-      const format = _props.format || 'dropdown';
-      return FieldTemplates[format](name, _props, mistForm);
-      // Text area
-    } else if (_props.format === 'textarea') {
-      return this.textArea(name, _props, mistForm);
-      // Input field
-    } else {
-      return this.input(name, _props, mistForm);
     }
-    return FieldTemplates.spinner;
-  },
-  dropdown: (name, props, mistForm) => html`<paper-dropdown-menu
-    .name=${name}
-    ...="${spreadProps(props)}"
-    .label="${getLabel(props)}"
-    class="mist-form-input"
-    ?excludeFromPayload="${props.excludeFromPayload}"
-    no-animations=""
-    attr-for-selected="value"
-    @value-changed=${mistForm.dispatchValueChangedEvent}
-  >
-    <paper-listbox
-      attr-for-selected="value"
-      selected="${props.value}"
-      class="dropdown-content"
-      slot="dropdown-content"
+    if (hasEnum) {
+      const format = _props.format || 'dropdown';
+      return this[format](_props);
+      // Text area
+    }
+    if (_props.format === 'textarea') {
+      return this.textArea(_props);
+      // Input field
+    }
+    return this.input(_props);
+  }
+
+  dynamicDropdown(props) {
+    const _props = { ...props };
+    const dynamicEnumData = this.mistForm.loadDynamicData(
+      _props['x-mist-enum'],
+      _props.fieldPath
+    );
+    return html` ${until(
+      dynamicEnumData &&
+        dynamicEnumData.then(enumData => {
+          const enumDataIncludesValue = enumData.some(
+            item => item === _props.value || item.id === _props.value
+          );
+          if (!enumDataIncludesValue) {
+            // Clear selected value if it's not included in the new available values
+            _props.value = null;
+          }
+
+          return enumData
+            ? html`${this.dropdown({ ..._props, enum: enumData })}`
+            : html`Not found`;
+        }),
+      this.spinner
+    )}`;
+  }
+
+  dropdown = props => {
+    const _props = { ...props };
+    const value = _props.enum.find(prop => prop.id === props.value);
+    if (value) {
+      _props.value = value.title;
+    }
+    return html`<paper-dropdown-menu
+      ...="${spreadProps(_props)}"
+      .label="${getLabel(_props)}"
+      class="${_props.classes || ''} mist-form-input"
+      ?excludeFromPayload="${_props.excludeFromPayload}"
+      no-animations=""
+      value="${_props.value || ''}"
     >
-      ${props.enum.map(
-        item => html`<paper-item value="${item}">${item}</paper-item>`
-      )}
-    </paper-listbox>
-  </paper-dropdown-menu>`,
-  radioGroup: (name, props, mistForm) => html` <paper-radio-group
-    .name=${name}
+      <paper-listbox
+        selected="${_props.value || ''}"
+        @selected-changed=${_props.valueChangedEvent || this.valueChangedEvent}
+        attr-for-selected="value"
+        class="${_props.classes || ''} dropdown-content"
+        slot="dropdown-content"
+      >
+        ${_props.enum.map(
+          item =>
+            html`<paper-item
+              value="${item.title || item}"
+              item-id="${item.id || item}"
+            >
+              ${item.title || item}
+            </paper-item>`
+        )}
+      </paper-listbox>
+    </paper-dropdown-menu>`;
+  };
+
+  radioGroup = props => html` <paper-radio-group
     ...="${spreadProps(props)}"
     .label="${getLabel(props)}"
-    class="mist-form-input"
+    class="${props.classes || ''} mist-form-input"
     ?excludeFromPayload="${props.excludeFromPayload}"
-    @selected-changed=${mistForm.dispatchValueChangedEvent}
+    @selected-changed=${props.valueChangedEvent || this.valueChangedEvent}
   >
     <label>${getLabel(props)}</label>
     ${props.enum.map(
@@ -117,15 +154,16 @@ export const FieldTemplates = {
           >${item}</paper-radio-button
         >`
     )}
-  </paper-radio-group>`,
-  checkboxGroup: (name, props, mistForm) => html`
+  </paper-radio-group>`;
+
+  checkboxGroup = props => html`
     <iron-selector
-      .name=${name}
       ...="${spreadProps(props)}"
       .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
-      @selected-values-changed=${mistForm.dispatchValueChangedEvent}
-      class="checkbox-group mist-form-input"
+      @selected-values-changed=${props.valueChangedEvent ||
+      this.valueChangedEvent}
+      class="${props.classes || ''} checkbox-group mist-form-input"
       attr-for-selected="key"
       selected-attribute="checked"
       multi
@@ -137,88 +175,78 @@ export const FieldTemplates = {
           >`
       )}
     </iron-selector>
-  `,
-  input: (name, props, mistForm) => html`<paper-input
-    .name=${name}
-    class="mist-form-input"
-    @value-changed=${mistForm.dispatchValueChangedEvent}
-    always-float-label
-    ...="${spreadProps(getConvertedProps(props))}"
-    .label="${getLabel(props)}"
-    ?excludeFromPayload="${props.excludeFromPayload}"
-  >
-    ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
-    ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
-  </paper-input>`,
-  textArea: (name, props, mistForm) => html`<paper-textarea
-    .name=${name}
-    class="mist-form-input"
-    always-float-label
-    ...="${spreadProps(getConvertedProps(props))}"
-    .label="${getLabel(props)}"
-    ?excludeFromPayload="${props.excludeFromPayload}"
-    @value-changed=${mistForm.dispatchValueChangedEvent}
-  ></paper-textarea>`,
-  boolean: (name, props, mistForm) =>
-    html`<paper-checkbox
-      .name=${name}
-      class="mist-form-input"
-      ...="${spreadProps(props)}"
-      @checked-changed=${mistForm.dispatchValueChangedEvent}
+  `;
+
+  input(props) {
+    return html`<paper-input
+      class="${props.classes || ''} mist-form-input"
+      @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
+      always-float-label
+      ...="${spreadProps(getConvertedProps(props))}"
+      .label="${getLabel(props)}"
       ?excludeFromPayload="${props.excludeFromPayload}"
-      value=""
-      >${props.label}</paper-checkbox
-    >`,
-  durationField: (name, props, mistForm) =>
+    >
+      ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
+      ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
+    </paper-input>`;
+  }
+
+  textArea = props => html`<paper-textarea
+    class="${props.classes || ''} mist-form-input"
+    always-float-label
+    ...="${spreadProps(getConvertedProps(props))}"
+    .label="${getLabel(props)}"
+    ?excludeFromPayload="${props.excludeFromPayload}"
+    @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
+  ></paper-textarea>`;
+
+  boolean = props => html`<paper-checkbox
+    class="${props.classes || ''} mist-form-input"
+    ...="${spreadProps(props)}"
+    @checked-changed=${props.valueChangedEvent || this.valueChangedEvent}
+    ?excludeFromPayload="${props.excludeFromPayload}"
+    value=""
+    >${props.label}</paper-checkbox
+  >`;
+
+  durationField = props =>
     html`<mist-form-duration-field
-      .name=${name}
-      class="mist-form-input"
+      class="${props.classes || ''} mist-form-input"
       ...="${spreadProps(props)}"
-      @value-changed=${mistForm.dispatchValueChangedEvent}
-    ></mist-form-duration-field>`,
-  fieldElement: (name, props, mistForm) =>
-    html`<field-element
-      .name=${name}
-      class="mist-form-input"
-      ...="${spreadProps(props)}"
-      .clouds="${mistForm.dynamicDataNamespace &&
-      mistForm.dynamicDataNamespace.clouds &&
-      mistForm.dynamicDataNamespace.clouds()}"
-      @value-changed=${mistForm.dispatchValueChangedEvent}
-    ></field-element>`,
-  sizeElement: (name, props, mistForm) =>
-    html`<size-element
-      .name=${name}
-      class="mist-form-input"
-      ...="${spreadProps(props)}"
-      .clouds="${mistForm.dynamicDataNamespace &&
-      mistForm.dynamicDataNamespace.clouds &&
-      mistForm.dynamicDataNamespace.clouds()}"
-      @value-changed="${mistForm.dispatchValueChangedEvent}"
-    ></size-element>`,
-  // Subform container
-  object: (name, props, mistForm) => {
-    // TODO: Setting props.fieldsVisibile isn't so good. I'm assigning to the property of a function parameter.
+      @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
+    ></mist-form-duration-field>`;
+
+  multiRow = props => html`<multi-row
+    ...="${spreadProps(props)}"
+    .mistForm=${this.mistForm}
+    .getValueProperty=${this.getValueProperty}
+    .customInputFields=${this.customInputFields}
+    @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
+    exportparts="row: multirow-row"
+  ></multi-row>`;
+
+  object = props => {
     // In addition to the hidden property, subforms have a fieldsVisible property which hides/shows the contents of the subform (excluding it's toggle)
-    // TODO: Create component for subform which returns a value so I don't need to find the values in MistForm
+    // TODO: Create component for subform which returns a value so I don't need to find the values in this.mistForm
     // Subform should be attached to subform container in json
-    if (mistForm.getSubformState(props.fieldPath) === undefined) {
-      mistForm.setSubformState(
+    if (this.mistForm.getSubformState(props.fieldPath) === undefined) {
+      this.mistForm.setSubformState(
         props.fieldPath,
         props.fieldsVisible || !props.hasToggle
       );
     }
-    const showFields = mistForm.getSubformState(props.fieldPath);
+    const showFields = this.mistForm.getSubformState(props.fieldPath);
     return html`<div
       id="${props.id}-subform"
       ...="${spreadProps(props)}"
-      name=${props.name}
       ?excludeFromPayload="${!showFields}"
-      class="subform-container ${showFields ? 'open' : ''} ${isEvenOrOdd(
-        props.fieldPath
-      )}"
+      class="${props.classes || ''} subform-container ${showFields
+        ? 'open'
+        : ''} ${isEvenOrOdd(props.fieldPath)}"
     >
-      <span class="subform-name">${!props.hasToggle ? props.label : ''}</span>
+      <span class="${props.classes || ''} subform-name"
+        >${!props.hasToggle ? props.label : ''}</span
+      >
 
       ${props.hasToggle &&
       html` <paper-toggle-button
@@ -226,17 +254,19 @@ export const FieldTemplates = {
         excludeFromPayload
         .checked="${showFields}"
         @checked-changed="${e => {
-          mistForm.setSubformState(props.fieldPath, e.detail.value);
-          mistForm.requestUpdate();
+          this.mistForm.setSubformState(props.fieldPath, e.detail.value);
+          this.mistForm.requestUpdate();
         }}"
         >${props.label}</paper-toggle-button
       >`}
       ${showFields ? html`${props.inputs}` : ''}
     </div>`;
-  },
-  spinner: html`<paper-spinner active></paper-spinner>`,
+  };
+
+  spinner = html`<paper-spinner active></paper-spinner>`;
+
   // Submit button should be disabled until all required fields are filled
-  button: (
+  button = (
     title = 'Submit',
     tapFunc,
     isDisabled = false,
@@ -247,8 +277,9 @@ export const FieldTemplates = {
     @tap="${tapFunc}"
     ?disabled=${isDisabled}
     >${title}</paper-button
-  >`,
-  helpText: ({ helpUrl, helpText }) =>
+  >`;
+
+  helpText = ({ helpUrl, helpText }) =>
     helpUrl
       ? html` <div class="helpText">
           ${helpText}<a href="${helpUrl}" target="new">
@@ -261,5 +292,5 @@ export const FieldTemplates = {
             </paper-icon-button>
           </a>
         </div>`
-      : html`<div class="helpText">${helpText}</div>`,
-};
+      : html`<div class="helpText">${helpText}</div>`;
+}
