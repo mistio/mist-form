@@ -109,5 +109,5 @@
     "test:cypress": "cypress open",
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
-  "version": "0.3.8"
+  "version": "0.3.9"
 }
