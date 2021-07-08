@@ -1,28 +1,21 @@
 # \<mist-form>
 
-Create a form from a json schema.
-*Explain how you can add new fields*
-*Explain how to add styling*
-*Have a couple examples explaining how to use it*
-This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+## What is mist-form?
 
+Mist form is a web component that generates forms from a json file following the JSON schema standards.
+The form ui elements are made of web components. You can use the basic predefined elements or pass any other ewb components.
 ## Installation
 
 ```bash
 npm i @mistio/mist-form
 ```
 
-## Usage
-
+## Getting started
+You can get started with a json configuration file. Read more information in the get started guide
 ```html
-<script type="module">
-  import '@mistio/mist-form/mist-form.js';
-</script>
-
 <mist-form></mist-form>
 ```
-TODO:
-Add some examples in readme, explain how to add new fields, explain how to see demos
+
 ## Linting with ESLint, Prettier, and Types
 
 To scan the project for linting errors, run
@@ -57,18 +50,12 @@ npm run format:eslint
 npm run format:prettier
 ```
 
-## Testing with Karma
+## Testing with Cypress
 
 To run the suite of karma tests, run
 
 ```bash
-npm run test
-```
-
-To run the tests in watch mode (for <abbr title="test driven development">TDD</abbr>, for example), run
-
-```bash
-npm run test:watch
+npm run test:cypress
 ```
 
 ## Demoing with Storybook
@@ -98,5 +85,3 @@ npm start
 ```
 
 To run a local development server that serves the basic demo located in `demo/index.html`
-You can also see other form demos:
-`demo/createVolume.html` : Demo of the create volume form
