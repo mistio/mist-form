@@ -16,6 +16,7 @@ export class MistForm extends LitElement {
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
       initialValues: { type: Object },
       subformOpenStates: { type: Object },
+      value: {type: Object}
     };
   }
 
@@ -181,42 +182,6 @@ export class MistForm extends LitElement {
     }
   }
 
-  loadDynamicData(dynamicDataName, fieldPath) {
-    if (
-      this.dynamicDataNamespace &&
-      this.dynamicDataNamespace.dynamicData &&
-      this.dynamicDataNamespace.dynamicData[dynamicDataName]
-    ) {
-      return (
-        this.dynamicDataNamespace.dynamicData[dynamicDataName].func
-          // func is a promise
-          // getEnumData is the function returned by the promise. We pass the values of the form there
-          .then(getEnumData => {
-            const formValues = this.getValuesfromDOM(this.shadowRoot);
-            const { dependencies } = this.dynamicDataNamespace.dynamicData[
-              dynamicDataName
-            ];
-            const dependencyValues = dependencies
-              ? util.getDependencyValues(formValues, dependencies)
-              : {};
-
-            const enumData = getEnumData(dependencyValues);
-
-            this.dynamicDataNamespace.dynamicData[
-              dynamicDataName
-            ].target = fieldPath;
-            this.dynamicFieldData[fieldPath] = enumData;
-            this.requestUpdate();
-
-            return enumData;
-          })
-          .catch(error => {
-            console.error('Error loading dynamic data: ', error);
-          })
-      );
-    }
-    return false;
-  }
 
   updateDynamicData(fieldPath) {
     if (this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData) {
@@ -344,19 +309,21 @@ export class MistForm extends LitElement {
   }
 
   dispatchValueChangedEvent = async e => {
+    console.log("sdfsd ", this.shadowRoot.querySelector('[fieldpath="cost.max_team_run_rate"]'));
+//   this.shadowRoot.querySelector('[fieldpath="cost.max_team_run_rate"]').value = "10204"
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
       const el = e.path[0];
 
       if (el.getRootNode().host.tagName === 'MULTI-ROW') {
-        el.getRootNode().host.requestUpdate();
+       // el.getRootNode().host.requestUpdate();
       }
       const [value] = Object.entries(this.fieldTemplates.getFieldValue(el))[0];
-
+      // Check field validity
       this.updateState();
-
-      this.updateDynamicData(el.fieldPath);
+      // Get the field and update via the field
+      //this.updateDynamicData(el.fieldPath);
       if (this.shouldUpdateForm(el.fieldPath, value)) {
         this.requestUpdate();
       }
@@ -435,8 +402,17 @@ export class MistForm extends LitElement {
     }
   }
 
-  getDependencyValues() {}
-
+  shouldUpdate(changedProperties) {
+    let update = true;
+    changedProperties.forEach((oldValue, propName) => {
+      console.log(`${propName} changed. oldValue: ${JSON.stringify(oldValue)}`);
+      if (propName === 'value' && JSON.stringify(oldValue) !== JSON.stringify(this.value) && oldValue != undefined) {
+        update = false;
+      }
+    });
+    console.log("this.value ", this.value)
+    return update;
+  }
   renderInputs(inputs, subforms, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {

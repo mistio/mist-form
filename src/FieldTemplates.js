@@ -5,6 +5,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './customFields/mist-form-duration-field.js';
 import './customFields/multi-row.js';
+import './basicFields/mist-form-dropdown.js';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: Split up components in separate files. One file per component.
@@ -26,8 +27,6 @@ const getConvertedProps = props => {
 };
 const isEvenOrOdd = fieldPath =>
   fieldPath.split('.').length % 2 ? 'odd' : 'even';
-
-const getLabel = props => (props.required ? `${props.label} *` : props.label);
 
 export class FieldTemplates extends FieldTemplateHelpers {
   constructor(mistForm, valueChangedEvent) {
@@ -51,24 +50,13 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   string(props) {
     const _props = { ...props };
-    const isDynamic = Object.prototype.hasOwnProperty.call(
-      _props,
-      'x-mist-enum'
-    );
-    const dynamicData = this.mistForm.dynamicFieldData[_props.fieldPath];
-    if (isDynamic && dynamicData) {
-      _props.enum = dynamicData;
-    }
     const hasEnum = Object.prototype.hasOwnProperty.call(_props, 'enum');
+
     // If value is array convert to string
     if (Array.isArray(_props.value)) {
       _props.value = _props.value.join(', ');
     }
-    // If a field has dynamic data, load the data
-    if (isDynamic && dynamicData === undefined) {
-      return this.dynamicDropdown(_props);
-      // Dropdown
-    }
+
     if (hasEnum) {
       const format = _props.format || 'dropdown';
       return this[format](_props);
@@ -81,139 +69,24 @@ export class FieldTemplates extends FieldTemplateHelpers {
     return this.input(_props);
   }
 
-  dynamicDropdown(props) {
-    const _props = { ...props };
-    const dynamicEnumData = this.mistForm.loadDynamicData(
-      _props['x-mist-enum'],
-      _props.fieldPath
-    );
-    return html` ${until(
-      dynamicEnumData &&
-        dynamicEnumData.then(enumData => {
-          const enumDataIncludesValue = enumData.some(
-            item => item === _props.value || item.id === _props.value
-          );
-          if (!enumDataIncludesValue) {
-            // Clear selected value if it's not included in the new available values
-            _props.value = null;
-          }
+  dropdown = props => html`<mist-form-dropdown .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-dropdown>`;
 
-          return enumData
-            ? html`${this.dropdown({ ..._props, enum: enumData })}`
-            : html`Not found`;
-        }),
-      this.spinner
-    )}`;
-  }
+  radioGroup = props => html`<mist-form-radio-group .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-radio-group>` ;
 
-  dropdown = props => {
-    const _props = { ...props };
-    const value = _props.enum.find(prop => prop.id === props.value);
-    if (value) {
-      _props.value = value.title;
-    }
-    return html`<paper-dropdown-menu
-      ...="${spreadProps(_props)}"
-      .label="${getLabel(_props)}"
-      class="${_props.classes || ''} mist-form-input"
-      ?excludeFromPayload="${_props.excludeFromPayload}"
-      no-animations=""
-      value="${_props.value || ''}"
-    >
-      <paper-listbox
-        selected="${_props.value || ''}"
-        @selected-changed=${_props.valueChangedEvent || this.valueChangedEvent}
-        attr-for-selected="value"
-        class="${_props.classes || ''} dropdown-content"
-        slot="dropdown-content"
-      >
-        ${_props.enum.map(
-          item =>
-            html`<paper-item
-              value="${item.title || item}"
-              item-id="${item.id || item}"
-            >
-              ${item.title || item}
-            </paper-item>`
-        )}
-      </paper-listbox>
-    </paper-dropdown-menu>`;
-  };
+  checkboxGroup = props => html`<mist-form-checkbox-group .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-checkbox-group>`;
 
-  radioGroup = props => html` <paper-radio-group
-    ...="${spreadProps(props)}"
-    .label="${getLabel(props)}"
-    class="${props.classes || ''} mist-form-input"
-    ?excludeFromPayload="${props.excludeFromPayload}"
-    @selected-changed=${props.valueChangedEvent || this.valueChangedEvent}
-  >
-    <label>${getLabel(props)}</label>
-    ${props.enum.map(
-      item =>
-        html`<paper-radio-button .id=${item.split(' ').join('-')}
-          >${item}</paper-radio-button
-        >`
-    )}
-  </paper-radio-group>`;
+  input = props => html `<mist-form-text-field .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-text-field>`;
 
-  checkboxGroup = props => html`
-    <iron-selector
-      ...="${spreadProps(props)}"
-      .label="${getLabel(props)}"
-      ?excludeFromPayload="${props.excludeFromPayload}"
-      @selected-values-changed=${props.valueChangedEvent ||
-      this.valueChangedEvent}
-      class="${props.classes || ''} checkbox-group mist-form-input"
-      attr-for-selected="key"
-      selected-attribute="checked"
-      multi
-    >
-      ${props.enum.map(
-        item =>
-          html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
-            >${item}</paper-checkbox
-          >`
-      )}
-    </iron-selector>
-  `;
+  textArea = props => html `<mist-form-text-area .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-text-area>`;
 
-  input(props) {
-    return html`<paper-input
-      class="${props.classes || ''} mist-form-input"
-      @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
-      always-float-label
-      ...="${spreadProps(getConvertedProps(props))}"
-      .label="${getLabel(props)}"
-      ?excludeFromPayload="${props.excludeFromPayload}"
-    >
-      ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
-      ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
-    </paper-input>`;
-  }
-
-  textArea = props => html`<paper-textarea
-    class="${props.classes || ''} mist-form-input"
-    always-float-label
-    ...="${spreadProps(getConvertedProps(props))}"
-    .label="${getLabel(props)}"
-    ?excludeFromPayload="${props.excludeFromPayload}"
-    @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
-  ></paper-textarea>`;
-
-  boolean = props => html`<paper-checkbox
-    class="${props.classes || ''} mist-form-input"
-    ...="${spreadProps(props)}"
-    @checked-changed=${props.valueChangedEvent || this.valueChangedEvent}
-    ?excludeFromPayload="${props.excludeFromPayload}"
-    value=""
-    >${props.label}</paper-checkbox
-  >`;
+  boolean = props => html `<mist-form-checkbox .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-checkbox>`;
 
   durationField = props =>
     html`<mist-form-duration-field
       class="${props.classes || ''} mist-form-input"
       ...="${spreadProps(props)}"
       @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
+      fieldPath="${props.fieldPath}"
     ></mist-form-duration-field>`;
 
   multiRow = props => html`<multi-row
@@ -223,6 +96,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     .customInputFields=${this.customInputFields}
     @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
     exportparts="row: multirow-row"
+    fieldPath="${props.fieldPath}"
   ></multi-row>`;
 
   object = props => {
@@ -243,6 +117,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       class="${props.classes || ''} subform-container ${showFields
         ? 'open'
         : ''} ${isEvenOrOdd(props.fieldPath)}"
+      fieldPath="${props.fieldPath}"
     >
       <span class="${props.classes || ''} subform-name"
         >${!props.hasToggle ? props.label : ''}</span

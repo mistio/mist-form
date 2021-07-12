@@ -47,12 +47,6 @@
       const submitUrl = 'api/v1/clouds';
       const constraintsData = {
         dynamicData: {
-          getDefaultActions: {
-          func: new Promise((resolve) => {
-              resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
-          }),
-          dependencies: ['expiration.actions.available'],
-        },
         clouds: {
           func: new Promise((resolve) => {
               resolve(() => {
@@ -72,6 +66,10 @@
             return value === 'yes' || value === 'sure';
           },
           dependencies: ['custom.hidePaperSlider1']
+        },
+        getDefaultActions: {
+          func: dependencyValues => dependencyValues['expiration.actions.available'] || [],
+          dependencies: ['expiration.actions.available'],
         },
         }
       };

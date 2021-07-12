@@ -25,3 +25,5 @@ export const getDependencyValues = (formValues, dependencies) => {
   });
   return dependencyValues;
 };
+
+export const getLabel = props => (props.required ? `${props.label} *` : props.label);
