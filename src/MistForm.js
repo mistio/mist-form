@@ -94,12 +94,6 @@ export class MistForm extends LitElement {
       });
   }
 
-  updateState() {
-    this.allFieldsValid =
-      this.fieldTemplates.formFieldsValid(this.shadowRoot, true) ||
-      this.mistFormHelpers.isEmpty();
-  }
-
   updateDynamicData(fieldPath) {
     if (this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData) {
       // Update dynamic data that depends on dependencies
@@ -170,7 +164,7 @@ export class MistForm extends LitElement {
       }
 
       // Check field validity
-      this.updateState();
+      this.MistFormHelpers.updateState();
       // Get the field and update via the field
       //this.updateDynamicData(el.fieldPath);
 
@@ -188,17 +182,6 @@ export class MistForm extends LitElement {
     });
     this.dispatchEvent(event);
   };
-
-  refreshCustomComponents(fieldPath) {
-    const subformOpen = this.getSubformState(fieldPath);
-    if (!subformOpen) {
-      for (const [key] of Object.entries(this.customComponents)) {
-        if (key.startsWith(fieldPath)) {
-          delete this.customComponents[key];
-        }
-      }
-    }
-  }
 
   renderInputs(inputs, subforms, path) {
     // Ignore subform, its data was already passed to subform container

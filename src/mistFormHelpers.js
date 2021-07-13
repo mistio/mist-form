@@ -25,6 +25,13 @@ export class MistFormHelpers {
     const values = this.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
   }
+
+  updateState() {
+    this.allFieldsValid =
+      this.fieldTemplates.formFieldsValid(this.shadowRoot, true) ||
+      this.mistFormHelpers.isEmpty();
+  }
+
   attachInitialValue(properties) {
     if (this.mistForm.initialValues) {
       const initialValue = util.getNestedValueFromPath(
