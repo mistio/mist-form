@@ -7,48 +7,45 @@ class MistFormCheckboxGroup extends LitElement {
   static get properties() {
     return {
       value: { type: String },
-      props: {type: Object},
-      fieldPath: {type: String, reflect: true}
+      props: { type: Object },
+      fieldPath: { type: String, reflect: true },
     };
   }
 
-  constructor() {
-    super();
-  }
-
   static get styles() {
-    return css`
-    `;
+    return css``;
   }
 
   valueChanged(e) {
     this.valueChangedEvent(e);
+    this.value = e.detail.value;
   }
 
   firstUpdated() {
     this.fieldPath = this.props.fieldPath;
+    this.name = this.props.name;
   }
   render() {
     return html`
-    <iron-selector
-      ...="${spreadProps(this.props)}"
-      .label="${util.getLabel(this.props)}"
-      ?excludeFromPayload="${this.props.excludeFromPayload}"
-      @selected-values-changed=${valueChanged}
-      class="${this.props.classes || ''} checkbox-group mist-form-input"
-      attr-for-selected="key"
-      selected-attribute="checked"
-      multi
-      fieldPath="${this.props.fieldPath}"
-    >
-      ${this.props.enum.map(
-        item =>
-          html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
-            >${item}</paper-checkbox
-          >`
-      )}
-    </iron-selector>
-  `
+      <iron-selector
+        ...="${spreadProps(this.props)}"
+        .label="${util.getLabel(this.props)}"
+        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        @selected-values-changed=${this.valueChanged}
+        class="${this.props.classes || ''} checkbox-group mist-form-input"
+        attr-for-selected="key"
+        selected-attribute="checked"
+        multi
+        fieldPath="${this.props.fieldPath}"
+      >
+        ${this.props.enum.map(
+          item =>
+            html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
+              >${item}</paper-checkbox
+            >`
+        )}
+      </iron-selector>
+    `;
   }
 }
 

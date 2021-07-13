@@ -18,12 +18,20 @@ export const getSubformFromRef = (subforms, ref) => {
   return subForm;
 };
 
-export const getDependencyValues = (formValues, dependencies) => {
-  const dependencyValues = {};
-  dependencies.forEach(dep => {
-    dependencyValues[dep] = getNestedValueFromPath(dep, formValues);
-  });
-  return dependencyValues;
-};
+export const getLabel = props =>
+  props.required ? `${props.label} *` : props.label;
 
-export const getLabel = props => (props.required ? `${props.label} *` : props.label);
+export const getConvertedProps = props => {
+  const newProps = {
+    ...props,
+    max: props.maximum,
+    min: props.minimum,
+    type: props.format,
+    multiple: props.multipleOf,
+  };
+  ['maximum', 'minimum', 'format', 'multipleOf'].forEach(
+    e => delete newProps[e]
+  );
+
+  return newProps;
+};

@@ -4,12 +4,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 class MultiRow extends LitElement {
   static get properties() {
     return {
-      value: { type: Array, hasChanged(newVal, oldVal) {
-        console.log("oldVal ", oldVal);
-        console.log("newVal ", newVal)
-        // compare newVal and oldVal
-        // return `true` if an update should proceed
-      }} ,
+      value: { type: Array },
       inputs: { type: Array },
     };
   }
@@ -122,12 +117,15 @@ class MultiRow extends LitElement {
   shouldUpdate(changedProperties) {
     let update = true;
     changedProperties.forEach((oldValue, propName) => {
-      console.log(`${propName} changed. oldValue: ${JSON.stringify(oldValue)}`);
-      if (propName === 'value' && JSON.stringify(oldValue) !== JSON.stringify(this.value) && oldValue != undefined) {
+      if (
+        propName === 'value' &&
+        JSON.stringify(oldValue) !== JSON.stringify(this.value) &&
+        oldValue !== undefined
+      ) {
         update = false;
       }
     });
-    console.log("this.value ", this.value)
+
     return update;
   }
   getValue() {
@@ -157,8 +155,7 @@ class MultiRow extends LitElement {
       // We assume the dependency is in the same row
       const dependencyField = dep.split('.').pop();
       dependencyValues[dependencyField] =
-        this.getValue()[index] &&
-        this.getValue()[index][dependencyField];
+        this.getValue()[index] && this.getValue()[index][dependencyField];
     });
     return dependencyValues;
   }
@@ -195,7 +192,10 @@ class MultiRow extends LitElement {
 
                 // const dependencyValues =
                 // const dependencyValues = util.getDependencyValues(formValues, dependencies);
-                const dependencyValues = this.getDependencyValues(index, dependencies);
+                const dependencyValues = this.getDependencyValues(
+                  index,
+                  dependencies
+                );
                 const newData = this.mistForm.dynamicDataNamespace.conditionals[
                   depVal
                 ].func(dependencyValues);
@@ -208,7 +208,7 @@ class MultiRow extends LitElement {
             return prop.hidden
               ? html`<span></span>
                   <div></div>`
-              : html`${this.mistForm.getTemplate(prop)}`;
+              : html`${this.getTemplate(prop)}`;
           });
           return html`<div class="row" part="row" style=${styleMap(styles.row)}>
             ${row}

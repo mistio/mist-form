@@ -1,48 +1,44 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
-import { until } from 'lit-html/directives/until.js';
 import * as util from '../utilities.js';
 // TODO: Set required property that gives error if element has empty value
 class MistFormTextField extends LitElement {
   static get properties() {
     return {
       value: { type: String },
-      props: {type: Object},
-      fieldPath: {type: String, reflect: true}
+      props: { type: Object },
+      fieldPath: { type: String, reflect: true },
     };
   }
 
-  constructor() {
-    super();
-  }
-
   static get styles() {
-    return css`
-    `;
+    return css``;
   }
 
   valueChanged(e) {
     this.valueChangedEvent(e);
+    this.value = e.detail.value;
   }
 
-firstUpdated() {
-  this.fieldPath = this.props.fieldPath;
-}
+  firstUpdated() {
+    this.fieldPath = this.props.fieldPath;
+    this.name = this.props.name;
+  }
   render() {
-      console.log("render ")
-
-      return html`<paper-input
-      class="${props.classes || ''} mist-form-input"
+    return html`<paper-input
+      class="${this.props.classes || ''} mist-form-input"
       @value-changed=${this.valueChanged}
       always-float-label
-      ...="${spreadProps(getConvertedProps(props))}"
-      .label="${util.getLabel(props)}"
-      ?excludeFromPayload="${props.excludeFromPayload}"
-      fieldPath="${props.fieldPath}"
+      ...="${spreadProps(util.getConvertedProps(this.props))}"
+      .label="${util.getLabel(this.props)}"
+      ?excludeFromPayload="${this.props.excludeFromPayload}"
+      fieldPath="${this.props.fieldPath}"
     >
-      ${props.preffix && html`<span slot="prefix">${props.preffix}</span>`}
-      ${props.suffix && html`<span slot="suffix">${props.suffix}</span>`}
-    </paper-input>`
+      ${this.props.preffix &&
+      html`<span slot="prefix">${this.props.preffix}</span>`}
+      ${this.props.suffix &&
+      html`<span slot="suffix">${this.props.suffix}</span>`}
+    </paper-input>`;
   }
 }
 

@@ -57,19 +57,15 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: dependencyValues=> dependencyValues.cloud === 'cloudId1',
-          dependencies: ['field.cloud'],
+          func: cloud=> dependencyValues.cloud === 'cloudId1',
         },
         hidePaperSlider1: {
-          func: dependencyValues => {
-            const value = dependencyValues['custom.hidePaperSlider1'];
+          func: value => {
             return value === 'yes' || value === 'sure';
           },
-          dependencies: ['custom.hidePaperSlider1']
         },
         getDefaultActions: {
-          func: dependencyValues => dependencyValues['expiration.actions.available'] || [],
-          dependencies: ['expiration.actions.available'],
+          func: defaultActions => defaultActions || []
         },
         }
       };

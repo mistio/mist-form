@@ -1,4 +1,3 @@
-// Get first level input children
 export class FieldTemplateHelpers {
   // Traverse all fields in DOM and validate them
   formFieldsValid(root, isValid) {
@@ -18,7 +17,7 @@ export class FieldTemplateHelpers {
     });
     return formValid;
   }
-
+  // Get first level input children
   getFirstLevelChildren(root) {
     const customComponentTagNames = this.getUniqueTagNames();
     const inputFields = [...this.inputFields, ...customComponentTagNames];
@@ -96,16 +95,18 @@ export class FieldTemplateHelpers {
       return input.format === customInput.name;
     });
 
-    if (
-      input.getAttribute('role') === 'checkbox' ||
-      input.getAttribute('role') === 'button'
-    ) {
-      value = input.checked;
-    } else if (input.tagName === 'IRON-SELECTOR') {
-      value = input.selectedValues;
-    } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
-      value = input.selectedItem && input.selectedItem.getAttribute('item-id');
-    } else if (input.format === 'multiRow') {
+    // if (
+    //   input.getAttribute('role') === 'checkbox' ||
+    //   input.getAttribute('role') === 'button'
+    // ) {
+    //   value = input.checked;
+    // } else if (input.tagName === 'IRON-SELECTOR') {
+    //   value = input.selectedValues;
+    // } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
+    //   value = input.selectedItem && input.selectedItem.getAttribute('item-id');
+    // } else
+
+    if (input.format === 'multiRow') {
       value = input.getValue();
     } else if (customInputFields) {
       const valueProp = customInputFields && customInputFields.valueProp;
@@ -116,5 +117,52 @@ export class FieldTemplateHelpers {
     return {
       [input.name]: value,
     };
+  }
+
+  setupCustomComponents() {
+    // Get custom components from slot
+    const customComponents =
+      this.mistForm.querySelector('#mist-form-custom') &&
+      this.mistForm.querySelector('#mist-form-custom').children;
+    if (!customComponents) {
+      return;
+    }
+    // Setup their properties
+    for (const el of customComponents) {
+      if (el.attributes['mist-form-type']) {
+        const componentName = el.attributes['mist-form-type'].value;
+        this.customInputFields.push({
+          name: componentName,
+          tagName: el.tagName,
+          valueChangedEvent: el.valueChangedEvent,
+          valueProp:
+            (el.attributes['mist-form-value-prop'] &&
+              el.attributes['mist-form-value-prop'].value) ||
+            'value',
+          // Add the value prop here
+        });
+        this[componentName] = props => {
+          if (!this.mistForm.customComponents[props.fieldPath]) {
+            this.mistForm.customComponents[props.fieldPath] = el.cloneNode();
+          }
+
+          const customElement = this.mistForm.customComponents[props.fieldPath];
+
+          for (const [key, val] of Object.entries(props)) {
+            customElement.setAttribute(key, val);
+            customElement[key] = val;
+          }
+
+          return customElement;
+        };
+      }
+    }
+    // Add event listeners for custom components
+    const eventNames = this.getUniqueEventNames();
+    for (const eventName of eventNames) {
+      this.mistForm.addEventListener(eventName, e => {
+        this.mistForm.dispatchValueChangedEvent(e);
+      });
+    }
   }
 }

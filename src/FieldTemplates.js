@@ -1,30 +1,20 @@
 import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
-import { until } from 'lit-html/directives/until.js';
-import { styleMap } from 'lit-html/directives/style-map.js';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './customFields/mist-form-duration-field.js';
 import './customFields/multi-row.js';
+import './basicFields/mist-form-checkbox-group.js';
+import './basicFields/mist-form-checkbox.js';
 import './basicFields/mist-form-dropdown.js';
+import './basicFields/mist-form-radio-group.js';
+import './basicFields/mist-form-text-area.js';
+import './basicFields/mist-form-text-field.js';
 
 // TODO: For now I only spread props, I should spread attributes too
 // TODO: Split up components in separate files. One file per component.
 
 // Some of the props need to be converted from their JSON Schema equivalents
-const getConvertedProps = props => {
-  const newProps = {
-    ...props,
-    max: props.maximum,
-    min: props.minimum,
-    type: props.format,
-    multiple: props.multipleOf,
-  };
-  ['maximum', 'minimum', 'format', 'multipleOf'].forEach(
-    e => delete newProps[e]
-  );
 
-  return newProps;
-};
 const isEvenOrOdd = fieldPath =>
   fieldPath.split('.').length % 2 ? 'odd' : 'even';
 
@@ -34,18 +24,37 @@ export class FieldTemplates extends FieldTemplateHelpers {
     this.mistForm = mistForm;
     this.valueChangedEvent = valueChangedEvent;
     this.inputFields = [
-      'paper-dropdown-menu',
-      'paper-textarea',
-      'paper-input',
-      'paper-toggle-button',
-      'paper-checkbox',
-      'paper-radio-group',
-      'iron-selector.checkbox-group',
+      'mist-form-text-dropdown',
+      'mist-form-text-area',
+      'mist-form-text-field',
+      'mist-form-checkbox',
+      'mist-form-radio-group',
+      'mist-form-checkbox-group',
       'mist-form-duration-field',
+      'paper-toggle-button',
       'div.subform-container',
       'multi-row',
     ];
     this.customInputFields = [];
+  }
+
+  // Combine field and helpText and return template
+  getTemplate(properties) {
+    if (!properties.hidden) {
+      let fieldType;
+      if (properties.format === 'multiRow') {
+        fieldType = 'multiRow';
+      } else {
+        fieldType = properties.type || properties.format;
+      }
+      if (fieldType && this[fieldType]) {
+        const template = this[fieldType](properties);
+        const helpTextTemplate = this.helpText(properties);
+        return html` ${template}${helpTextTemplate}`;
+      }
+      console.error(`Invalid field type: ${fieldType}`);
+    }
+    return '';
   }
 
   string(props) {
@@ -69,17 +78,47 @@ export class FieldTemplates extends FieldTemplateHelpers {
     return this.input(_props);
   }
 
-  dropdown = props => html`<mist-form-dropdown .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-dropdown>`;
+  dropdown = props =>
+    html`<mist-form-dropdown
+      .props="${props}"
+      .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent}
+      .mistForm=${this.mistForm}
+    ></mist-form-dropdown>`;
 
-  radioGroup = props => html`<mist-form-radio-group .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-radio-group>` ;
+  radioGroup = props =>
+    html`<mist-form-radio-group
+      .props="${props}"
+      .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent}
+      .mistForm=${this.mistForm}
+    ></mist-form-radio-group>`;
 
-  checkboxGroup = props => html`<mist-form-checkbox-group .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-checkbox-group>`;
+  checkboxGroup = props =>
+    html`<mist-form-checkbox-group
+      .props="${props}"
+      .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent}
+      .mistForm=${this.mistForm}
+    ></mist-form-checkbox-group>`;
 
-  input = props => html `<mist-form-text-field .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-text-field>`;
+  input = props =>
+    html`<mist-form-text-field
+      .props="${props}"
+      .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent}
+      .mistForm=${this.mistForm}
+    ></mist-form-text-field>`;
 
-  textArea = props => html `<mist-form-text-area .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-text-area>`;
+  textArea = props =>
+    html`<mist-form-text-area
+      .props="${props}"
+      .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent}
+      .mistForm=${this.mistForm}
+    ></mist-form-text-area>`;
 
-  boolean = props => html `<mist-form-checkbox .props="${props}" .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent} .mistForm=${this.mistForm}></mist-form-checkbox>`;
+  boolean = props =>
+    html`<mist-form-checkbox
+      .props="${props}"
+      .valueChangedEvent=${props.valueChangedEvent || this.valueChangedEvent}
+      .mistForm=${this.mistForm}
+    ></mist-form-checkbox>`;
 
   durationField = props =>
     html`<mist-form-duration-field
@@ -97,6 +136,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     @value-changed=${props.valueChangedEvent || this.valueChangedEvent}
     exportparts="row: multirow-row"
     fieldPath="${props.fieldPath}"
+    getTemplate="${this.getTemplate}"
   ></multi-row>`;
 
   object = props => {
