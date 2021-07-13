@@ -164,7 +164,7 @@ export class MistForm extends LitElement {
       }
 
       // Check field validity
-      this.MistFormHelpers.updateState();
+      this.mistFormHelpers.updateState();
       // Get the field and update via the field
       //this.updateDynamicData(el.fieldPath);
 

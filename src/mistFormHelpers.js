@@ -27,7 +27,7 @@ export class MistFormHelpers {
   }
 
   updateState() {
-    this.allFieldsValid =
+    this.mistForm.allFieldsValid =
       this.fieldTemplates.formFieldsValid(this.shadowRoot, true) ||
       this.mistFormHelpers.isEmpty();
   }
