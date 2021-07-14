@@ -1,9 +1,11 @@
 import * as util from './utilities.js';
+
 export class MistFormHelpers {
   constructor(mistForm, fieldTemplates) {
     this.mistForm = mistForm;
     this.fieldTemplates = fieldTemplates;
   }
+
   getInputs(data) {
     const jsonProperties = data.properties;
     const inputs = Object.keys(jsonProperties).map(key => [
@@ -21,8 +23,9 @@ export class MistFormHelpers {
       Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
     return subforms;
   }
+
   isEmpty() {
-    const values = this.getValuesfromDOM(this.shadowRoot);
+    const values = this.mistForm.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
   }
 
@@ -56,13 +59,15 @@ export class MistFormHelpers {
     }
     return properties;
   }
+
   getValuesfromDOM(root) {
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
-      if (node.classList.contains('subform-container') && notExcluded) {
-        const domValues = this.getValuesfromDOM(node);
+      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
+        // const domValues = this.getValuesfromDOM(node);
+        const domValues = node.getValue();
         if (!util.valueNotEmpty(domValues)) {
           return {};
         }
@@ -97,6 +102,7 @@ export class MistFormHelpers {
     if (root.flatten) {
       formValues = Object.values(formValues).flat(1);
     }
+
     return formValues;
   }
 }

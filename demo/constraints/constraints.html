@@ -57,7 +57,7 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: cloud=> dependencyValues.cloud === 'cloudId1',
+          func: cloud=> cloud === 'cloudId1',
         },
         hidePaperSlider1: {
           func: value => {
@@ -72,7 +72,7 @@
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
           <div id="mist-form-custom">
-            <paper-slider mist-form-type="paperSlider" editable></paper-slider>
+            <paper-slider mist-form-type="paperSlider" editable mist-form-value-change="value-change"></paper-slider>
             <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
           </div>
           <iron-ajax

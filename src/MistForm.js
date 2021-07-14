@@ -16,7 +16,6 @@ export class MistForm extends LitElement {
       formError: { type: String },
       allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
       initialValues: { type: Object },
-      subformOpenStates: { type: Object },
     };
   }
 
@@ -31,7 +30,6 @@ export class MistForm extends LitElement {
     this.dynamicFieldData = {};
     this.conditionalData = {};
     this.value = {};
-    this.subformOpenStates = {};
     this.customComponents = {};
     this.firstRender = true;
     this.fieldTemplates = new FieldTemplates(
@@ -49,15 +47,69 @@ export class MistForm extends LitElement {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
 
-    this.fieldTemplates.setupCustomComponents();
+    // this.fieldTemplates.setupCustomComponents();
+  }
+
+  getFieldType(val) {
+    if (!val.format) {
+      return val.type;
+    }
+    if (!this.fieldTemplates[val.format] && val.format !== 'number') {
+      return 'custom';
+      // Create custom field and
+    }
+    if (val.type === 'string') {
+      const hasEnum = Object.prototype.hasOwnProperty.call(val, 'enum');
+      if (hasEnum && !val.format) {
+        return 'dropdown';
+      }
+      if (!val.format || val.format === 'number') {
+        return 'input';
+      }
+      return val.format;
+    }
+    return val.format;
+  }
+
+  setInput(contents) {
+    if (contents.format !== 'subformContainer') {
+      for (const [key, val] of Object.entries(contents.properties)) {
+        if (!val.name) {
+          contents.properties[key].name = key;
+        }
+
+        contents.properties[key].fieldType = this.getFieldType(val);
+
+        if (Array.isArray(val.value)) {
+          contents.properties[key].value = val.value.join(', ');
+        }
+      }
+    } else {
+      contents.fieldType = 'subformContainer';
+    }
+  }
+
+  setupInputs() {
+    this.inputs = this.mistFormHelpers.getInputs(this.data);
+    this.subforms = this.mistFormHelpers.getSubforms(this.data);
+    this.inputs.forEach(input => {
+      let [name, contents] = input;
+      contents = this.setInput(contents);
+    });
+
+    this.subforms.forEach(input => {
+      let [name, contents] = input;
+      contents = this.setInput(contents);
+    });
   }
 
   render() {
     if (this.data) {
+      if (this.firstRender) {
+        this.setupInputs();
+      }
       // The data here will come validated so no checks required
-      const inputs = this.mistFormHelpers.getInputs(this.data);
-      const subforms = this.mistFormHelpers.getSubforms(this.data);
-      const formFields = this.renderInputs(inputs, subforms);
+      const formFields = this.renderInputs(this.inputs);
 
       if (this.firstRender) {
         this.firstRender = false;
@@ -107,12 +159,9 @@ export class MistForm extends LitElement {
     }
   }
 
-  updateCustomValues(fieldPath, value) {
-    this.customValues[fieldPath] = value;
-  }
-
   submitForm() {
     const params = this.getValuesfromDOM(this.shadowRoot);
+    console.log('param ', params);
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
     } else if (this.allFieldsValid) {
@@ -138,14 +187,6 @@ export class MistForm extends LitElement {
 
   // Public methods
 
-  setSubformState(fieldPath, state) {
-    this.subformOpenStates[fieldPath] = state;
-  }
-
-  getSubformState(fieldPath) {
-    return this.subformOpenStates[fieldPath];
-  }
-
   dispatchValueChangedEvent = async e => {
     // Logic:
     // 1. Find fields that depend on the field that just changed
@@ -166,7 +207,7 @@ export class MistForm extends LitElement {
       // Check field validity
       this.mistFormHelpers.updateState();
       // Get the field and update via the field
-      //this.updateDynamicData(el.fieldPath);
+      // this.updateDynamicData(el.fieldPath);
 
       this.dependencyController.updatePropertiesFromConditions(el.fieldPath);
     });
@@ -183,7 +224,7 @@ export class MistForm extends LitElement {
     this.dispatchEvent(event);
   };
 
-  renderInputs(inputs, subforms, path) {
+  renderInputs(inputs, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       let [name, properties] = input;
@@ -195,35 +236,33 @@ export class MistForm extends LitElement {
       properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.format === 'subformContainer') {
-        const subForm = util.getSubformFromRef(
-          subforms,
-          properties.properties.subform.$ref
-        );
-        let parentPath;
-        if (properties.omitTitle) {
-          parentPath = path || '';
-        } else {
-          parentPath = path
-            ? [path, properties.name].join('.')
-            : properties.name;
-        }
-
-        const subFormInputs = Object.keys(subForm.properties).map(key => [
-          key,
-          {
-            ...subForm.properties[key],
-            hidden: properties.hidden || subForm.properties[key].hidden,
-          },
-        ]);
-
-        properties.inputs = this.renderInputs(
-          subFormInputs,
-          subforms,
-          parentPath
-        );
+        // const subForm = util.getSubformFromRef(
+        //   subforms,
+        //   properties.properties.subform.$ref
+        // );
+        // let parentPath;
+        // if (properties.omitTitle) {
+        //   parentPath = path || '';
+        // } else {
+        //   parentPath = path
+        //     ? [path, properties.name].join('.')
+        //     : properties.name;
+        // }
+        // const subFormInputs = Object.keys(subForm.properties).map(key => [
+        //   key,
+        //   {
+        //     ...subForm.properties[key],
+        //     hidden: properties.hidden || subForm.properties[key].hidden,
+        //   },
+        // ]);
+        // properties.inputs = this.renderInputs(
+        //   subFormInputs,
+        //   subforms,
+        //   parentPath
+        // );
       } else if (properties.format === 'multiRow') {
         const subForm = util.getSubformFromRef(
-          subforms,
+          this.subforms,
           properties.properties.subform.$ref
         );
         const rowProps = subForm.properties;
@@ -240,24 +279,6 @@ export class MistForm extends LitElement {
       if (this.firstRender) {
         // for (const [key, val] of Object.entries(properties.deps)) {
         this.dependencyController.updateConditionMap(properties);
-
-        // this.updateConditionMap(key, val, fieldPath);
-
-        // const formValues = this.getValuesfromDOM(this.shadowRoot);
-        // const { dependencies } = this.dynamicDataNamespace.conditionals[val];
-        // const dependencyValues = util.getDependencyValues(
-        //   formValues,
-        //   dependencies
-        // );
-        // const newData = this.dynamicDataNamespace.conditionals[val].func(
-        //   dependencyValues
-        // );
-
-        // if (newData !== undefined) {
-        //   properties[key] = newData;
-        // }
-
-        // }
       }
       return this.fieldTemplates.getTemplate(properties);
     });

@@ -15,6 +15,7 @@ export class DependencyController {
     ) {
       props.deps.forEach(dep => {
         const { prop, func } = dep;
+        // Check for relative path
         const level = dep.dependsOn.search(/[^.]+$/);
         const dependsOn =
           level > 0
@@ -40,12 +41,10 @@ export class DependencyController {
     this.mistForm.updateComplete.then(() => {
       if (conditions.length) {
         conditions.forEach(condition => {
-          console.log('in condition ', condition);
-          console.log('this.mistForm.shadowRoot ', this.mistForm.shadowRoot);
           const element = this.mistForm.shadowRoot.querySelector(
             `[fieldpath="${condition.target}"]`
           );
-          console.log('element ', element);
+
           const dependencyValues = this.getDependencyValues(condition);
           const val = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func

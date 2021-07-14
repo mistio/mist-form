@@ -17,6 +17,7 @@ export class FieldTemplateHelpers {
     });
     return formValid;
   }
+
   // Get first level input children
   getFirstLevelChildren(root) {
     const customComponentTagNames = this.getUniqueTagNames();

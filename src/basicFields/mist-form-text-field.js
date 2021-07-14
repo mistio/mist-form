@@ -15,8 +15,12 @@ class MistFormTextField extends LitElement {
     return css``;
   }
 
+  validate() {
+    return this.shadowRoot.querySelector('paper-input').validate();
+  }
+
   valueChanged(e) {
-    this.valueChangedEvent(e);
+    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
   }
 
@@ -24,21 +28,22 @@ class MistFormTextField extends LitElement {
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
   }
+
   render() {
     return html`<paper-input
-      class="${this.props.classes || ''} mist-form-input"
-      @value-changed=${this.valueChanged}
-      always-float-label
-      ...="${spreadProps(util.getConvertedProps(this.props))}"
-      .label="${util.getLabel(this.props)}"
-      ?excludeFromPayload="${this.props.excludeFromPayload}"
-      fieldPath="${this.props.fieldPath}"
-    >
-      ${this.props.preffix &&
-      html`<span slot="prefix">${this.props.preffix}</span>`}
-      ${this.props.suffix &&
-      html`<span slot="suffix">${this.props.suffix}</span>`}
-    </paper-input>`;
+        class="${this.props.classes || ''} mist-form-input"
+        @value-changed=${this.valueChanged}
+        always-float-label
+        ...="${spreadProps(util.getConvertedProps(this.props))}"
+        .label="${util.getLabel(this.props)}"
+        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        fieldPath="${this.props.fieldPath}"
+      >
+        ${this.props.preffix &&
+        html`<span slot="prefix">${this.props.preffix}</span>`}
+        ${this.props.suffix &&
+        html`<span slot="suffix">${this.props.suffix}</span>`} </paper-input
+      >${this.helpText(this.props)}`;
   }
 }
 

@@ -16,8 +16,12 @@ class MistFormDropdown extends LitElement {
     return css``;
   }
 
+  validate() {
+    return this.shadowRoot.querySelector('paper-dropdown-menu').validate();
+  }
+
   valueChanged(e) {
-    this.valueChangedEvent(e);
+    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
   }
 
@@ -74,38 +78,39 @@ class MistFormDropdown extends LitElement {
       `<paper-spinner active></paper-spinner>`
     )}`;
   }
+
   getDropdown() {
     const value = this.props.enum.find(prop => prop.id === this.props.value);
     if (value) {
       this.props.value = value.title;
     }
     return html`<paper-dropdown-menu
-      ...="${spreadProps(this.props)}"
-      .label="${util.getLabel(this.props)}"
-      class="${this.props.classes || ''} mist-form-input"
-      ?excludeFromPayload="${this.props.excludeFromPayload}"
-      no-animations=""
-      value="${this.props.value || ''}"
-      fieldPath="${this.props.fieldPath}"
-    >
-      <paper-listbox
-        selected="${this.props.value || ''}"
-        @selected-changed=${this.valueChanged}
-        attr-for-selected="value"
-        class="${this.props.classes || ''} dropdown-content"
-        slot="dropdown-content"
+        ...="${spreadProps(this.props)}"
+        .label="${util.getLabel(this.props)}"
+        class="${this.props.classes || ''} mist-form-input"
+        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        no-animations=""
+        value="${this.props.value || ''}"
+        fieldPath="${this.props.fieldPath}"
       >
-        ${this.props.enum.map(
-          item =>
-            html`<paper-item
-              value="${item.title || item}"
-              item-id="${item.id || item}"
-            >
-              ${item.title || item}
-            </paper-item>`
-        )}
-      </paper-listbox>
-    </paper-dropdown-menu>`;
+        <paper-listbox
+          selected="${this.props.value || ''}"
+          @selected-changed=${this.valueChanged}
+          attr-for-selected="value"
+          class="${this.props.classes || ''} dropdown-content"
+          slot="dropdown-content"
+        >
+          ${this.props.enum.map(
+            item =>
+              html`<paper-item
+                value="${item.title || item}"
+                item-id="${item.id || item}"
+              >
+                ${item.title || item}
+              </paper-item>`
+          )}
+        </paper-listbox> </paper-dropdown-menu
+      >${this.helpText(this.props)}`;
   }
 
   firstUpdated() {
@@ -127,7 +132,8 @@ class MistFormDropdown extends LitElement {
 
     if (hasEnum) {
       return this.getDropdown();
-    } else if (isDynamic) {
+    }
+    if (isDynamic) {
       return this.getDynamicDropdown();
     }
     return '';

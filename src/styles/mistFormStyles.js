@@ -9,25 +9,7 @@ export const mistFormStyles = css`
   background-color: var(--mist-form-background-color, white);
   font-family: var(--mist-form-font-family, Roboto);
 }
-.subform-container {
-  border: var(--mist-subform-border, 1px solid white);
-  margin: var(--mist-subform-margin, 10px);
-  padding: var(--mist-subform-padding, 10px);
-  color: var(--mist-subform-text-color, #424242);
-  background-color: var(--mist-subform-background-color, white);
-}
-.subform-container > .subform-container > mist-form-duration-field {
-  padding-left: 0;
-}
-.subform-container.open.odd {
-  background-color: var(--mist-subform-background-color, #ebebeb);
-}
-.subform-container.open.even {
-  background-color: white;
-}
-.subform-name {
-  font-weight: bold;
-}
+
 .paper-toggle-button {
   font-weight: bold;
 }

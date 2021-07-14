@@ -16,8 +16,12 @@ class MistFormCheckboxGroup extends LitElement {
     return css``;
   }
 
+  validate() {
+    return true;
+  }
+
   valueChanged(e) {
-    this.valueChangedEvent(e);
+    this.props.valueChangedEvent(e);
     this.value = this.shadowRoot.querySelector('iron-selector').selectedValues;
   }
 
@@ -42,8 +46,8 @@ class MistFormCheckboxGroup extends LitElement {
         ${this.props.enum.map(
           item =>
             html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
-              >${item}</paper-checkbox
-            >`
+                >${item}</paper-checkbox
+              >${this.helpText(this.props)}`
         )}
       </iron-selector>
     `;

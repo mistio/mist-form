@@ -15,8 +15,12 @@ class MistFormTextArea extends LitElement {
     return css``;
   }
 
+  validate() {
+    return this.shadowRoot.querySelector('paper-textarea').validate();
+  }
+
   valueChanged(e) {
-    this.valueChangedEvent(e);
+    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
   }
 
@@ -24,16 +28,18 @@ class MistFormTextArea extends LitElement {
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
   }
+
   render() {
     return html`<paper-textarea
-      class="${this.props.classes || ''} mist-form-input"
-      always-float-label
-      ...="${spreadProps(util.getConvertedProps(this.props))}"
-      .label="${util.getLabel(this.props)}"
-      ?excludeFromPayload="${this.props.excludeFromPayload}"
-      @value-changed=${this.valueChanged}
-      fieldPath="${this.props.fieldPath}"
-    ></paper-textarea>`;
+        class="${this.props.classes || ''} mist-form-input"
+        always-float-label
+        ...="${spreadProps(util.getConvertedProps(this.props))}"
+        .label="${util.getLabel(this.props)}"
+        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        @value-changed=${this.valueChanged}
+        fieldPath="${this.props.fieldPath}"
+      ></paper-textarea
+      >${this.helpText(this.props)}`;
   }
 }
 

@@ -16,8 +16,12 @@ class MistFormRadioGroup extends LitElement {
     return css``;
   }
 
+  validate() {
+    return this.shadowRoot.querySelector('paper-radio-group').validate();
+  }
+
   valueChanged(e) {
-    this.valueChangedEvent(e);
+    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
   }
 
@@ -28,21 +32,21 @@ class MistFormRadioGroup extends LitElement {
 
   render() {
     return html` <paper-radio-group
-      ...="${spreadProps(this.props)}"
-      .label="${util.getLabel(this.props)}"
-      class="${this.props.classes || ''} mist-form-input"
-      ?excludeFromPayload="${this.props.excludeFromPayload}"
-      @selected-changed=${this.valueChanged}
-      fieldPath="${this.props.fieldPath}"
-    >
-      <label>${util.getLabel(this.props)}</label>
-      ${this.props.enum.map(
-        item =>
-          html`<paper-radio-button .id=${item.split(' ').join('-')}
-            >${item}</paper-radio-button
-          >`
-      )}
-    </paper-radio-group>`;
+        ...="${spreadProps(this.props)}"
+        .label="${util.getLabel(this.props)}"
+        class="${this.props.classes || ''} mist-form-input"
+        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        @selected-changed=${this.valueChanged}
+        fieldPath="${this.props.fieldPath}"
+      >
+        <label>${util.getLabel(this.props)}</label>
+        ${this.props.enum.map(
+          item =>
+            html`<paper-radio-button .id=${item.split(' ').join('-')}
+              >${item}</paper-radio-button
+            >`
+        )} </paper-radio-group
+      >${this.helpText(this.props)}`;
   }
 }
 

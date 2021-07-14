@@ -114,6 +114,7 @@ class MultiRow extends LitElement {
     // return noFieldsEmpty;
     return true;
   }
+
   shouldUpdate(changedProperties) {
     let update = true;
     changedProperties.forEach((oldValue, propName) => {
@@ -128,6 +129,7 @@ class MultiRow extends LitElement {
 
     return update;
   }
+
   getValue() {
     const value = [];
     const rows = this.shadowRoot.querySelectorAll('.row');
@@ -149,18 +151,9 @@ class MultiRow extends LitElement {
     this.dispatchEvent(event);
   }
 
-  getDependencyValues(index, dependencies) {
-    const dependencyValues = {};
-    dependencies.forEach(dep => {
-      // We assume the dependency is in the same row
-      const dependencyField = dep.split('.').pop();
-      dependencyValues[dependencyField] =
-        this.getValue()[index] && this.getValue()[index][dependencyField];
-    });
-    return dependencyValues;
-  }
   render() {
     const styles = {};
+
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
@@ -183,32 +176,12 @@ class MultiRow extends LitElement {
             };
             const valueProperty = this.getValueProperty(prop);
             prop[valueProperty] = field[prop.name];
-
-            if (prop.deps) {
-              for (const [depKey, depVal] of Object.entries(prop.deps)) {
-                const {
-                  dependencies,
-                } = this.mistForm.dynamicDataNamespace.conditionals[depVal];
-
-                // const dependencyValues =
-                // const dependencyValues = util.getDependencyValues(formValues, dependencies);
-                const dependencyValues = this.getDependencyValues(
-                  index,
-                  dependencies
-                );
-                const newData = this.mistForm.dynamicDataNamespace.conditionals[
-                  depVal
-                ].func(dependencyValues);
-
-                if (newData !== undefined) {
-                  prop[depKey] = newData;
-                }
-              }
-            }
+            // I should update for dependencies here?
+            // Or should I let it be handled by mistform?
             return prop.hidden
               ? html`<span></span>
                   <div></div>`
-              : html`${this.getTemplate(prop)}`;
+              : html`${this.fieldTemplates.getTemplate(prop)}`;
           });
           return html`<div class="row" part="row" style=${styleMap(styles.row)}>
             ${row}

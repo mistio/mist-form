@@ -15,8 +15,12 @@ class MistDropdown extends LitElement {
     return css``;
   }
 
+  validate() {
+    return true;
+  }
+
   valueChanged(e) {
-    this.valueChangedEvent(e);
+    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
   }
 
@@ -24,16 +28,17 @@ class MistDropdown extends LitElement {
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
   }
+
   render() {
     return html`<paper-checkbox
-      class="${this.props.classes || ''} mist-form-input"
-      ...="${spreadProps(this.props)}"
-      @checked-changed=${this.valueChanged}
-      ?excludeFromPayload="${this.props.excludeFromPayload}"
-      value=""
-      fieldPath="${this.props.fieldPath}"
-      >${this.props.label}</paper-checkbox
-    >`;
+        class="${this.props.classes || ''} mist-form-input"
+        ...="${spreadProps(this.props)}"
+        @checked-changed=${this.valueChanged}
+        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        value=""
+        fieldPath="${this.props.fieldPath}"
+        >${this.props.label}</paper-checkbox
+      >${this.helpText(this.props)}`;
   }
 }
 
