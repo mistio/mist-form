@@ -5,6 +5,7 @@ export class DependencyController {
     this.conditionMap = [];
     this.mistForm = mistForm;
   }
+
   // Differentiate if dependsOn is string or array
   updateConditionMap(props) {
     if (
@@ -36,19 +37,24 @@ export class DependencyController {
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
+    this.mistForm.updateComplete.then(() => {
+      if (conditions.length) {
+        conditions.forEach(condition => {
+          console.log('in condition ', condition);
+          console.log('this.mistForm.shadowRoot ', this.mistForm.shadowRoot);
+          const element = this.mistForm.shadowRoot.querySelector(
+            `[fieldpath="${condition.target}"]`
+          );
+          console.log('element ', element);
+          const dependencyValues = this.getDependencyValues(condition);
+          const val = this.mistForm.dynamicDataNamespace.conditionals[
+            condition.func
+          ].func(dependencyValues);
 
-    if (conditions.length) {
-      conditions.forEach(condition => {
-        const element = this.mistForm.shadowRoot.querySelector(
-          `[fieldpath="${condition.target}"]`
-        );
-        const dependencyValues = this.getDependencyValues(condition);
-        const val = this.mistForm.dynamicDataNamespace.conditionals[
-          condition.func
-        ].func(dependencyValues);
-        element.props = { ...element.props, [condition.prop]: val };
-      });
-    }
+          element.props = { ...element.props, [condition.prop]: val };
+        });
+      }
+    });
   }
 
   getDependencyValues = dependency => {

@@ -18,13 +18,14 @@ class MistFormCheckboxGroup extends LitElement {
 
   valueChanged(e) {
     this.valueChangedEvent(e);
-    this.value = e.detail.value;
+    this.value = this.shadowRoot.querySelector('iron-selector').selectedValues;
   }
 
   firstUpdated() {
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
   }
+
   render() {
     return html`
       <iron-selector
