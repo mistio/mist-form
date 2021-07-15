@@ -1,6 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
-
-// TODO: Set required property that gives error if element has empty value
+// We can set these fields when passing web components to the form
+// 1. mist-form-type:  Necessary to define component name from json
+// 2. mist-form-value-change: The name of the value change event. Default is value-change
+// 3. mist-form-validate: The name of the validate function. Default is validate
+// 4.  mist-form-value-prop: The name of the property that returns the value. Default is value
 class MistFormCustomField extends LitElement {
   static get properties() {
     return {
@@ -14,42 +17,67 @@ class MistFormCustomField extends LitElement {
     return css``;
   }
 
+  constructor() {
+    super();
+    this.valueChangeName = 'value-change';
+    this.validateName = 'validate';
+    this.valueProp = 'value';
+  }
+
   validate() {
     // Maybe allow a validate property?
-    return true;
+    const validateFunction = this.customElement[this.validateName];
+    return validateFunction ? this.customElement.validateFunction() : true;
   }
 
   valueChanged(e) {
     this.props.valueChangedEvent(e);
-    this.value = e.detail.value;
+    this.value = e.detail[this.valueProp];
   }
 
-  firstUpdated() {
-    this.fieldPath = this.props.fieldPath;
-    this.name = this.props.name;
-
-    this.addEventListener(this.eventName, e => {
-      this.valueChanged(e);
-    });
-  }
-
-  render() {
+  setupComponent() {
     const prototype = this.mistForm.querySelector(
       `#mist-form-custom > [mist-form-type="${this.props.format}"]`
     );
-    this.eventName =
-      prototype.attributes['mist-form-value-change'].value || 'value-change';
-    const valueProp =
-      prototype.attributes['mist-form-value-prop'] &&
-      prototype.attributes['mist-form-value-prop'].value;
 
-    const customElement = prototype.cloneNode();
+    const valueChangeName =
+      prototype.attributes['mist-form-value-change'] &&
+      prototype.attributes['mist-form-value-change'].value;
+    const validateName =
+      prototype.attributes['mist-form-validate'] &&
+      prototype.attributes['mist-form-validate'].value;
+    const valueProp =
+      prototype.attributes['mist-form-value-change'] &&
+      prototype.attributes['mist-form-value-change'].value;
+
+    this.valueChangeName = valueChangeName || this.valueChangeName;
+    this.validateName = validateName || this.validateName;
+    this.valueProp = valueProp || this.valueProp;
+
+    this.customElement = prototype.cloneNode();
+
+    this.addEventListener(this.valueChangeName, e => {
+      this.valueChanged(e);
+      this.value = this.customElement[this.valueProp];
+    });
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.fieldPath = this.props.fieldPath;
+    this.name = this.props.name;
+
+    this.setupComponent();
+  }
+
+  render() {
     for (const [key, val] of Object.entries(this.props)) {
-      customElement.setAttribute(key, val);
-      customElement[key] = val;
+      // this.customElement.setAttribute(key, val);
+      this.customElement[key] = val;
     }
-    // Add value-changed-event-listeners
-    return html`${customElement}`;
+
+    return html`${this.customElement}`;
   }
 }
 
