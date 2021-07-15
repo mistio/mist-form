@@ -6,24 +6,6 @@ export class MistFormHelpers {
     this.fieldTemplates = fieldTemplates;
   }
 
-  getInputs(data) {
-    const jsonProperties = data.properties;
-    const inputs = Object.keys(jsonProperties).map(key => [
-      key,
-      jsonProperties[key],
-    ]);
-
-    return inputs;
-  }
-
-  getSubforms(data) {
-    const jsonDefinitions = data.definitions;
-    const subforms =
-      jsonDefinitions &&
-      Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
-    return subforms;
-  }
-
   isEmpty() {
     const values = this.mistForm.getValuesfromDOM(this.shadowRoot);
     return Object.keys(values).length === 0;
@@ -35,29 +17,27 @@ export class MistFormHelpers {
       this.mistFormHelpers.isEmpty();
   }
 
-  attachInitialValue(properties) {
+  attachInitialValue(props) {
+    const _props = {...props};
     if (this.mistForm.initialValues) {
       const initialValue = util.getNestedValueFromPath(
-        properties.fieldPath,
+        _props.fieldPath,
         this.mistForm.initialValues
       );
       if (initialValue !== undefined) {
-        if (properties.format === 'subformContainer') {
+        if (_props.format === 'subformContainer') {
           if (this.mistForm.firstRender) {
-            properties.fieldsVisible = true;
+            _props.fieldsVisible = true;
           }
         } else {
-          const valueProperty = this.fieldTemplates.getValueProperty(
-            properties
-          );
-          properties[valueProperty] = initialValue;
-          if (properties.format === 'multiRow') {
-            properties.initialValue = initialValue;
+          _props.value = initialValue;
+          if (_props.format === 'multiRow') {
+            _props.initialValue = initialValue;
           }
         }
       }
     }
-    return properties;
+    return _props;
   }
 
   getValuesfromDOM(root) {
@@ -77,7 +57,10 @@ export class MistFormHelpers {
           formValues[node.name] = domValues;
         }
       } else if (notExcluded) {
-        const input = this.fieldTemplates.getFieldValue(node);
+        // const input = this.fieldTemplates.getFieldValue(node);
+        const input = {
+          [node.name]: node.value,
+        };
         const inputValue = Object.values(input)[0];
 
         if (node.type === 'number') {

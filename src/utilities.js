@@ -35,3 +35,21 @@ export const getConvertedProps = props => {
 
   return newProps;
 };
+
+export const getInputs = data => {
+  const jsonProperties = data.properties;
+  const inputs = Object.keys(jsonProperties).map(key => [
+    key,
+    jsonProperties[key],
+  ]);
+
+  return inputs;
+};
+
+export const getSubforms = data => {
+  const jsonDefinitions = data.definitions;
+  const subforms =
+    jsonDefinitions &&
+    Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
+  return subforms;
+};

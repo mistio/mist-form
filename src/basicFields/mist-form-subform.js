@@ -44,7 +44,8 @@ class MistFormSubform extends LitElement {
     this.value = e.detail.value;
   }
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
@@ -61,18 +62,12 @@ class MistFormSubform extends LitElement {
       this.mistForm.subforms,
       this.props.properties.subform.$ref
     );
-    // let parentPath;
-    // if (this.props.omitTitle) {
-    //   parentPath = path || '';
-    // } else {
-    //   parentPath = path
-    //     ? [path, this.props.name].join('.')
-    //     : this.props.name;
-    // }
-    let parentPath;
-    if (this.props.omitTitle) {
-      parentPath = this.props.fieldPath.split('.').slice(0, -1).join('.');
-    }
+
+    const path = this.props.fieldPath;
+    const parentPath = this.props.omitTitle
+      ? path.split('.').slice(0, -1).join('.')
+      : path;
+
     const subFormInputs = Object.keys(subForm.properties).map(key => [
       key,
       {

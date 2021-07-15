@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import './row.js';
 
 class MultiRow extends LitElement {
   static get properties() {
@@ -24,17 +25,6 @@ class MultiRow extends LitElement {
         font-family: var(--mist-form-field-element-font-family, Roboto);
       }
 
-      paper-input {
-        width: 80%;
-        display: inline-block;
-        margin-right: 20px;
-        margin-top: -20px;
-      }
-      paper-dropdown-menu {
-        width: 100%;
-        display: inline-block;
-      }
-
       :host .label {
         margin-top: auto;
         margin-bottom: 15px;
@@ -48,36 +38,17 @@ class MultiRow extends LitElement {
         color: #424242;
       }
 
-      paper-input,
-      paper-dropdown-menu {
-        width: 90%;
-        display: inline-block;
-        margin-right: 20px;
-        margin-top: -20px;
-      }
-
       .show-header,
       .label {
         margin-top: auto;
         margin-bottom: 15px;
-      }
-      paper-icon-button {
-        color: #adadad;
-      }
-      .add {
-        color: #424242;
-      }
-      paper-checkbox {
-        --paper-checkbox-checked-color: #2196f3;
-        --paper-checkbox-checked-ink-color: #2196f3;
-        --paper-checkbox-unchecked-color: #424242;
       }
 
       .container {
         display: grid;
         grid-row-gap: 5px;
       }
-      :host .row,
+
       :host .row-header {
         display: grid;
         grid-auto-columns: 1fr;
@@ -90,22 +61,6 @@ class MultiRow extends LitElement {
   addRow() {
     this.value.push({});
     this.requestUpdate();
-    this.valueChanged();
-  }
-
-  updateFieldValue(e, name, index) {
-    this.value[index][name] = e.detail.value;
-    this.mistForm.dispatchValueChangedEvent(e);
-    this.valueChanged();
-  }
-
-  removeRow(indexToRemove) {
-    this.value = [
-      ...this.value.slice(0, indexToRemove),
-      ...this.value.slice(indexToRemove + 1),
-    ];
-    this.requestUpdate();
-    this.valueChanged();
   }
 
   validate() {
@@ -113,6 +68,24 @@ class MultiRow extends LitElement {
     // const noFieldsEmpty = this.value.every(field => field.name);
     // return noFieldsEmpty;
     return true;
+  }
+
+  createRow(index, field) {
+    return html`<mist-form-row
+      .field=${field}
+      .index=${index}
+      .parent=${this}
+      .rowProps=${this.props.rowProps}
+    ></mist-form-row>`;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.fieldPath = this.props.fieldPath;
+    this.name = this.props.name;
+
+    console.log('callback ');
   }
 
   shouldUpdate(changedProperties) {
@@ -132,17 +105,16 @@ class MultiRow extends LitElement {
 
   getValue() {
     const value = [];
-    const rows = this.shadowRoot.querySelectorAll('.row');
-
-    for (const row of rows) {
-      const rowValue = this.mistForm.getValuesfromDOM(row);
-      value.push(rowValue);
-    }
+    const rows = this.shadowRoot.querySelectorAll('mist-form-row');
+    rows.forEach(row => {
+      value.push(row.value);
+    });
     return value;
   }
 
   // TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged() {
+    this.value = this.getValue();
     const event = new CustomEvent('value-changed', {
       detail: {
         value: this.value,
@@ -159,44 +131,17 @@ class MultiRow extends LitElement {
     return html` <span class="label">${this.label}</span>
       <div class="container" style="width:100%">
         <div class="row-header">
-          ${Object.keys(this.rowProps).map(key =>
-            !this.rowProps[key].hidden
-              ? html`<span class="row-item">${this.rowProps[key].label}</span>`
+          ${Object.keys(this.props.rowProps).map(key =>
+            !this.props.rowProps[key].hidden
+              ? html`<span class="row-item"
+                  >${this.props.rowProps[key].label}</span
+                >`
               : ''
           )}
           <span></span>
         </div>
 
-        ${this.value.map((field, index) => {
-          const row = Object.keys(this.rowProps).map(key => {
-            const prop = { ...this.rowProps[key] };
-
-            prop.valueChangedEvent = e => {
-              this.updateFieldValue(e, prop.name, index);
-            };
-            const valueProperty = this.getValueProperty(prop);
-            prop[valueProperty] = field[prop.name];
-            // I should update for dependencies here?
-            // Or should I let it be handled by mistform?
-            return prop.hidden
-              ? html`<span></span>
-                  <div></div>`
-              : html`${this.fieldTemplates.getTemplate(prop)}`;
-          });
-          return html`<div class="row" part="row" style=${styleMap(styles.row)}>
-            ${row}
-            <paper-icon-button
-              icon="icons:delete"
-              alt="Remove row"
-              title="Remove row"
-              class="remove"
-              @tap=${() => {
-                this.removeRow(index);
-              }}
-            >
-            </paper-icon-button>
-          </div>`;
-        })}
+        ${this.value.map((index, field) => this.createRow(index, field))}
 
         <div>
           <span class="addrule">

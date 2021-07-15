@@ -51,55 +51,54 @@ export class MistForm extends LitElement {
   }
 
   getFieldType(val) {
-    if (!val.format) {
-      return val.type;
-    }
-    if (!this.fieldTemplates[val.format] && val.format !== 'number') {
-      return 'custom';
-      // Create custom field and
+    if (this.fieldTemplates.defaultFieldTypes.includes(val.format)) {
+      return val.format;
     }
     if (val.type === 'string') {
-      const hasEnum = Object.prototype.hasOwnProperty.call(val, 'enum');
-      if (hasEnum && !val.format) {
-        return 'dropdown';
-      }
       if (!val.format || val.format === 'number') {
         return 'input';
       }
-      return val.format;
+      return 'custom';
     }
-    return val.format;
+    if (!val.format) {
+      return val.type;
+    }
+    return 'custom';
   }
 
   setInput(contents) {
-    if (contents.format !== 'subformContainer') {
-      for (const [key, val] of Object.entries(contents.properties)) {
+    const _contents = { ...contents };
+    if (_contents.format !== 'subformContainer') {
+      for (const [key, val] of Object.entries(_contents.properties)) {
         if (!val.name) {
-          contents.properties[key].name = key;
+          _contents.properties[key].name = key;
         }
 
-        contents.properties[key].fieldType = this.getFieldType(val);
+        _contents.properties[key].fieldType = this.getFieldType(val);
 
         if (Array.isArray(val.value)) {
-          contents.properties[key].value = val.value.join(', ');
+          _contents.properties[key].value = val.value.join(', ');
         }
       }
     } else {
-      contents.fieldType = 'subformContainer';
+      _contents.fieldType = 'subformContainer';
     }
+
+    return _contents;
   }
 
   setupInputs() {
-    this.inputs = this.mistFormHelpers.getInputs(this.data);
-    this.subforms = this.mistFormHelpers.getSubforms(this.data);
-    this.inputs.forEach(input => {
-      let [name, contents] = input;
-      contents = this.setInput(contents);
+    this.inputs = util.getInputs(this.data);
+    this.subforms = util.getSubforms(this.data);
+
+    this.inputs.forEach((input, index) => {
+      const contents = input[1];
+      this.inputs[index][1] = this.setInput(contents);
     });
 
-    this.subforms.forEach(input => {
-      let [name, contents] = input;
-      contents = this.setInput(contents);
+    this.subforms.forEach((input, index) => {
+      const contents = input[1];
+      this.subforms[index][1] = this.setInput(contents);
     });
   }
 
@@ -109,6 +108,7 @@ export class MistForm extends LitElement {
         this.setupInputs();
       }
       // The data here will come validated so no checks required
+
       const formFields = this.renderInputs(this.inputs);
 
       if (this.firstRender) {
@@ -161,7 +161,6 @@ export class MistForm extends LitElement {
 
   submitForm() {
     const params = this.getValuesfromDOM(this.shadowRoot);
-    console.log('param ', params);
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
     } else if (this.allFieldsValid) {
@@ -227,7 +226,9 @@ export class MistForm extends LitElement {
   renderInputs(inputs, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
-      let [name, properties] = input;
+      const name = input[0];
+      let properties = input[1];
+
       // Subforms just contain data, they shouldn't be rendered by themselves.
       // They should be rendered in subform containers
       const fieldName =

@@ -22,6 +22,7 @@ class MistFormDropdown extends LitElement {
 
   valueChanged(e) {
     this.props.valueChangedEvent(e);
+    // I might have a problem here when trying to initialize values. I should check what I did with the item-id property
     this.value = e.detail.value;
   }
 
@@ -60,9 +61,13 @@ class MistFormDropdown extends LitElement {
 
   getDynamicDropdown() {
     const dynamicEnumData = this.loadDynamicData();
+
     return html` ${until(
       dynamicEnumData &&
         dynamicEnumData.then(enumData => {
+          if (!enumData) {
+            return;
+          }
           const enumDataIncludesValue = enumData.some(
             item => item === this.props.value || item.id === this.props.value
           );
@@ -71,9 +76,7 @@ class MistFormDropdown extends LitElement {
             this.props.value = null;
           }
           this.props.enum = enumData;
-          return enumData
-            ? html`${this.dropdown(this.props)}`
-            : html`Not found`;
+          return enumData ? html`${this.getDropdown()}` : html`Not found`;
         }),
       `<paper-spinner active></paper-spinner>`
     )}`;
@@ -96,7 +99,7 @@ class MistFormDropdown extends LitElement {
         <paper-listbox
           selected="${this.props.value || ''}"
           @selected-changed=${this.valueChanged}
-          attr-for-selected="value"
+          attr-for-selected="item-id"
           class="${this.props.classes || ''} dropdown-content"
           slot="dropdown-content"
         >
@@ -113,7 +116,8 @@ class MistFormDropdown extends LitElement {
       >${this.helpText(this.props)}`;
   }
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
   }

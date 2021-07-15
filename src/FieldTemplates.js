@@ -28,8 +28,20 @@ export class FieldTemplates extends FieldTemplateHelpers {
       'paper-toggle-button',
       'mist-form-subform',
       'multi-row',
+      'mist-form-custom-field',
     ];
-    this.customInputFields = [];
+
+    this.defaultFieldTypes = [
+      'dropdown',
+      'textArea',
+      'input',
+      'checkbox',
+      'radioGroup',
+      'checkboxGroup',
+      'durationField',
+      'subformContainer',
+      'multiRow',
+    ];
   }
 
   // Combine field and helpText and return template
@@ -42,6 +54,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
         const template = this[fieldType](_props);
         return html` ${template}`;
       }
+
       console.error(`Invalid field type: ${fieldType}`);
     }
     return '';
@@ -120,13 +133,10 @@ export class FieldTemplates extends FieldTemplateHelpers {
     ></mist-form-duration-field>`;
 
   multiRow = props => html`<multi-row
-    ...="${spreadProps(props)}"
     .mistForm=${this.mistForm}
-    .getValueProperty=${this.getValueProperty}
-    .customInputFields=${this.customInputFields}
+    .props="${props}"
     @value-changed=${props.valueChangedEvent}
     exportparts="row: multirow-row"
-    fieldPath="${props.fieldPath}"
     .fieldTemplates="${this}"
     .helpText=${this.helpText}
   ></multi-row>`;

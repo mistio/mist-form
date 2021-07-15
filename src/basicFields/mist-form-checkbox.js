@@ -24,7 +24,8 @@ class MistDropdown extends LitElement {
     this.value = e.detail.value;
   }
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
   }
