@@ -84,8 +84,6 @@ class MultiRow extends LitElement {
 
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
-
-    console.log('callback ');
   }
 
   shouldUpdate(changedProperties) {

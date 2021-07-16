@@ -4,14 +4,17 @@ describe('Cost constraints', () => {
   });
 
   it('Cost constraints subform should be hidden', () => {
-    cy.get('mist-form')
-      .find('#cost_constraint_container')
+    cy.get('mist-form > #cost_constraint_container')
+      // .find('#cost_constraint_container')
+      .find('.subform-container')
       .should('not.have.class', 'open');
     cy.get('mist-form')
-      .find('#cost_constraint_container paper-toggle-button')
+      .find('#cost_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .should('not.have.attr', 'active');
     cy.get('mist-form')
-      .find('#cost_constraint_container paper-toggle-button')
+      .find('#cost_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .should('contain', 'Cost constraints');
     cy.get('mist-form')
       .find('#cost_constraint_container > paper-input')
@@ -19,39 +22,47 @@ describe('Cost constraints', () => {
   });
   it('Clicking on cost toggle shows cost subform', () => {
     cy.get('mist-form')
-      .find('#cost_constraint_container paper-toggle-button')
+      .find('#cost_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#cost_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_team_run_rate')
+      .find('#cost_constraint_container')
+      .find('#cost_max_team_run_rate')
       .should('be.visible');
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_total_run_rate')
+      .find('#cost_constraint_container')
+      .find('#cost_max_total_run_rate')
       .should('be.visible');
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
   it('Typing invalid fields in cost constraints should disable submit button', () => {
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_team_run_rate')
+      .find('#cost_constraint_container')
+      .find('#cost_max_team_run_rate')
       .find('input')
       .clear({ force: true })
       .type('0', { force: true });
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_total_run_rate')
+      .find('#cost_constraint_container')
+      .find('#cost_max_total_run_rate')
       .find('input')
       .clear({ force: true })
       .type('0', { force: true });
     cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_team_run_rate')
+      .find('#cost_constraint_container')
+      .find('#cost_max_team_run_rate')
       .find('input')
       .clear({ force: true })
       .type('100', { force: true });
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_total_run_rate')
+      .find('#cost_constraint_container')
+      .find('#cost_max_total_run_rate')
       .find('input')
       .clear({ force: true })
       .type('100', { force: true });

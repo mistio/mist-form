@@ -7,18 +7,18 @@ export class MistFormHelpers {
   }
 
   isEmpty() {
-    const values = this.mistForm.getValuesfromDOM(this.shadowRoot);
+    const values = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     return Object.keys(values).length === 0;
   }
 
   updateState() {
     this.mistForm.allFieldsValid =
-      this.fieldTemplates.formFieldsValid(this.mistForm.shadowRoot, true) ||
-      this.mistFormHelpers.isEmpty();
+      this.fieldTemplates.formFieldsValid(this.mistForm.shadowRoot) ||
+      this.isEmpty();
   }
 
   attachInitialValue(props) {
-    const _props = {...props};
+    const _props = { ...props };
     if (this.mistForm.initialValues) {
       const initialValue = util.getNestedValueFromPath(
         _props.fieldPath,
@@ -57,26 +57,19 @@ export class MistFormHelpers {
           formValues[node.name] = domValues;
         }
       } else if (notExcluded) {
-        // const input = this.fieldTemplates.getFieldValue(node);
-        const input = {
-          [node.name]: node.value,
-        };
-        const inputValue = Object.values(input)[0];
+        const isInvalid = util.isInvalid(node);
+        const notEmpty = util.valueNotEmpty(node.value);
 
-        if (node.type === 'number') {
-          input[Object.keys(input)[0]] = parseInt(inputValue, 10);
-        }
-        if (node.saveAsArray && inputValue) {
-          input[Object.keys(input)[0]] = inputValue
-            .split(',')
-            .map(val => val.trim());
-        }
-        const isInvalid = node && node.validate ? !node.validate() : false;
-        const notEmpty = util.valueNotEmpty(inputValue);
         if (isInvalid) {
           this.mistForm.allFieldsValid = false;
         } else if (notEmpty) {
           // If the input has a value of undefined and wasn't required, don't add it
+          const inputValue = util.formatInputValue(node);
+          const inputName = node.name;
+
+          const input = {
+            [inputName]: inputValue,
+          };
           formValues = { ...formValues, ...input };
         }
       }

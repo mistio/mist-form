@@ -1,12 +1,13 @@
 export class FieldTemplateHelpers {
   // Traverse all fields in DOM and validate them
-  formFieldsValid(root, isValid) {
+  formFieldsValid(root) {
     const nodeList = this.getFirstLevelChildren(root);
-    let formValid = isValid;
+    let formValid = true;
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
-      if (node.classList.contains('subform-container') && notExcluded) {
-        formValid = this.formFieldsValid(node, formValid);
+      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
+        // formValid = this.formFieldsValid(node, formValid);
+        formValid = node.getFieldsValid();
       } else if (notExcluded) {
         const isInvalid =
           node.validate && node.validate ? !node.validate() : false;
@@ -19,19 +20,9 @@ export class FieldTemplateHelpers {
   }
 
   // Get first level input children
-  getFirstLevelChildren = root =>
-    [...root.children].filter(child => child.matches(this.inputFields));
-
-  getUniqueEventNames() {
-    const eventNames = this.customInputFields.map(input => {
-      // If no event was set return the default 'value-change' event
-      if (input.valueChangedEvent) {
-        return input.valueChangedEvent.toLowerCase();
-      }
-      return 'value-change';
-    });
-    return [...new Set(eventNames)];
-  }
+  getFirstLevelChildren = root => {
+    return [...root.children].filter(child => child.matches(this.inputFields));
+  };
 
   displaySubmitButton() {
     return this.button(

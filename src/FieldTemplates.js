@@ -83,6 +83,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   dropdown = props =>
     html`<mist-form-dropdown
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -90,6 +91,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   radioGroup = props =>
     html`<mist-form-radio-group
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -97,6 +99,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   checkboxGroup = props =>
     html`<mist-form-checkbox-group
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -104,6 +107,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   input = props =>
     html`<mist-form-text-field
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -111,6 +115,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   textArea = props =>
     html`<mist-form-text-area
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -118,6 +123,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   boolean = props =>
     html`<mist-form-checkbox
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -125,6 +131,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   durationField = props =>
     html`<mist-form-duration-field
+      id="${props.id}"
       class="${props.classes || ''} mist-form-input"
       ...="${spreadProps(props)}"
       @value-changed=${props.valueChangedEvent}
@@ -133,6 +140,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     ></mist-form-duration-field>`;
 
   multiRow = props => html`<multi-row
+    id="${props.id}"
     .mistForm=${this.mistForm}
     .props="${props}"
     @value-changed=${props.valueChangedEvent}
@@ -143,6 +151,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   custom = props =>
     html`<mist-form-custom-field
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
@@ -151,8 +160,10 @@ export class FieldTemplates extends FieldTemplateHelpers {
 
   subformContainer = props =>
     html`<mist-form-subform
+      id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
+      .fieldTemplates=${this}
       .helpText=${this.helpText}
     ></mist-form-subform>`;
 

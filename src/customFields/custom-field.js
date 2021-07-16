@@ -4,6 +4,18 @@ import { LitElement, html, css } from 'lit-element';
 // 2. mist-form-value-change: The name of the value change event. Default is value-change
 // 3. mist-form-validate: The name of the validate function. Default is validate
 // 4.  mist-form-value-prop: The name of the property that returns the value. Default is value
+const getValueChangeName = el =>
+  el.attributes['mist-form-value-change'] &&
+  el.attributes['mist-form-value-change'].value;
+
+const getValidateName = el =>
+  el.attributes['mist-form-validate'] &&
+  el.attributes['mist-form-validate'].value;
+
+const getValueProp = el =>
+  el.attributes['mist-form-value-change'] &&
+  el.attributes['mist-form-value-change'].value;
+
 class MistFormCustomField extends LitElement {
   static get properties() {
     return {
@@ -40,19 +52,10 @@ class MistFormCustomField extends LitElement {
       `#mist-form-custom > [mist-form-type="${this.props.format}"]`
     );
 
-    const valueChangeName =
-      prototype.attributes['mist-form-value-change'] &&
-      prototype.attributes['mist-form-value-change'].value;
-    const validateName =
-      prototype.attributes['mist-form-validate'] &&
-      prototype.attributes['mist-form-validate'].value;
-    const valueProp =
-      prototype.attributes['mist-form-value-change'] &&
-      prototype.attributes['mist-form-value-change'].value;
-
-    this.valueChangeName = valueChangeName || this.valueChangeName;
-    this.validateName = validateName || this.validateName;
-    this.valueProp = valueProp || this.valueProp;
+    this.valueChangeName =
+      getValueChangeName(prototype) || this.valueChangeName;
+    this.validateName = getValidateName(prototype) || this.validateName;
+    this.valueProp = getValueProp(prototype) || this.valueProp;
 
     this.customElement = prototype.cloneNode();
 

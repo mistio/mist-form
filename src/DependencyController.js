@@ -3,7 +3,13 @@ import * as util from './utilities.js';
 export class DependencyController {
   constructor(mistForm) {
     this.conditionMap = [];
+    this.elementReferencesByFieldPath = {};
     this.mistForm = mistForm;
+  }
+
+  addElementReference(element) {
+    this.elementReferencesByFieldPath[element.fieldPath] = element;
+    this.updateConditionMap(element.props);
   }
 
   // Differentiate if dependsOn is string or array
@@ -24,12 +30,18 @@ export class DependencyController {
                 .slice(0, -1 * level)
                 .join('.')}.${dep.dependsOn.slice(level)}`
             : dep.dependsOn;
-        this.conditionMap.push({
+        const condition = {
           dependsOn,
           target: props.fieldPath,
           prop,
           func,
-        });
+        };
+        if (
+          !this.conditionMap.find(
+            x => JSON.stringify(x) === JSON.stringify(condition)
+          )
+        )
+          this.conditionMap.push(condition);
       });
     }
   }
@@ -41,15 +53,11 @@ export class DependencyController {
     this.mistForm.updateComplete.then(() => {
       if (conditions.length) {
         conditions.forEach(condition => {
-          const element = this.mistForm.shadowRoot.querySelector(
-            `[fieldpath="${condition.target}"]`
-          );
-
+          const element = this.elementReferencesByFieldPath[condition.target];
           const dependencyValues = this.getDependencyValues(condition);
           const val = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues);
-
           element.props = { ...element.props, [condition.prop]: val };
         });
       }

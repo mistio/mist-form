@@ -39,6 +39,12 @@ class MistFormSubform extends LitElement {
     `;
   }
 
+  getFieldsValid() {
+    return this.fieldTemplates.formFieldsValid(
+      this.shadowRoot.querySelector('.subform-container')
+    );
+  }
+
   valueChanged(e) {
     this.props.valueChangedEvent(e);
     this.value = e.detail.value;
@@ -49,6 +55,8 @@ class MistFormSubform extends LitElement {
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
+    this.setupInputs();
+    this.mistForm.dependencyController.addElementReference(this);
   }
 
   getValue() {
@@ -80,7 +88,6 @@ class MistFormSubform extends LitElement {
   }
 
   render() {
-    this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen

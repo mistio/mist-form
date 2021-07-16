@@ -20,14 +20,15 @@ class MistFormTextField extends LitElement {
   }
 
   valueChanged(e) {
-    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
+    this.props.valueChangedEvent({ element: this });
   }
 
   connectedCallback() {
     super.connectedCallback();
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {

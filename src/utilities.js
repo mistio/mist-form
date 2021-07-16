@@ -53,3 +53,26 @@ export const getSubforms = data => {
     Object.keys(jsonDefinitions).map(key => [key, jsonDefinitions[key]]);
   return subforms;
 };
+
+export const formatInputValue = node => {
+  let {value} = node;
+  if (node.props && node.props.format === 'number') {
+    value = parseInt(value, 10);
+  }
+  if (node.saveAsArray) {
+    value = value.split(',').map(val => val.trim());
+  }
+
+  return value;
+};
+
+export const isInvalid = node =>
+  node && node.validate ? !node.validate() : false;
+
+export const getFieldPath = (input, path) => {
+  const [name, properties] = input;
+  const fieldName =
+    properties.format === 'subformContainer' ? properties.name : name;
+  properties.name = fieldName;
+  return path ? [path, name].join('.') : fieldName;
+};

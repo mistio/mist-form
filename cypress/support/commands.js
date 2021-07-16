@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('paperTextAreaType', (locator, text) => {
+  console.log('locator ', locator);
   cy.get(locator, {
     includeShadowDom: true,
   })

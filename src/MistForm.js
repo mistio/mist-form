@@ -9,8 +9,6 @@ export class MistForm extends LitElement {
   static get properties() {
     return {
       src: { type: String },
-      dynamicFieldData: { type: Object },
-      conditionalData: { type: Object },
       data: { type: Object },
       dataError: { type: Object },
       formError: { type: String },
@@ -27,10 +25,7 @@ export class MistForm extends LitElement {
   constructor() {
     super();
     this.allFieldsValid = true;
-    this.dynamicFieldData = {};
-    this.conditionalData = {};
     this.value = {};
-    this.customComponents = {};
     this.firstRender = true;
     this.fieldTemplates = new FieldTemplates(
       this,
@@ -38,7 +33,9 @@ export class MistForm extends LitElement {
     );
     this.dependencyController = new DependencyController(this);
     this.mistFormHelpers = new MistFormHelpers(this, this.fieldTemplates);
-    this.getValuesfromDOM = this.mistFormHelpers.getValuesfromDOM;
+    this.getValuesfromDOM = this.mistFormHelpers.getValuesfromDOM.bind(
+      this.mistFormHelpers
+    );
   }
 
   firstUpdated() {
@@ -146,21 +143,22 @@ export class MistForm extends LitElement {
       });
   }
 
-  updateDynamicData(fieldPath) {
-    if (this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData) {
-      // Update dynamic data that depends on dependencies
-      for (const [key, val] of Object.entries(
-        this.dynamicDataNamespace.dynamicData
-      )) {
-        if (val.dependencies && val.dependencies.includes(fieldPath)) {
-          this.loadDynamicData(key, val.target);
-        }
-      }
-    }
-  }
+  // updateDynamicData(fieldPath) {
+  //   if (this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData) {
+  //     // Update dynamic data that depends on dependencies
+  //     for (const [key, val] of Object.entries(
+  //       this.dynamicDataNamespace.dynamicData
+  //     )) {
+  //       if (val.dependencies && val.dependencies.includes(fieldPath)) {
+  //         this.loadDynamicData(key, val.target);
+  //       }
+  //     }
+  //   }
+  // }
 
   submitForm() {
     const params = this.getValuesfromDOM(this.shadowRoot);
+
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
     } else if (this.allFieldsValid) {
@@ -184,9 +182,19 @@ export class MistForm extends LitElement {
     }
   }
 
+  updateMistFormValue() {
+    this.value = this.getValuesfromDOM(this.shadowRoot);
+
+    const event = new CustomEvent('mist-form-value-changed', {
+      detail: {
+        value: this.value,
+      },
+    });
+    this.dispatchEvent(event);
+  }
   // Public methods
 
-  dispatchValueChangedEvent = async e => {
+  dispatchValueChangedEvent = async element => {
     // Logic:
     // 1. Find fields that depend on the field that just changed
     // 2. Change props for the dependant fields
@@ -197,9 +205,7 @@ export class MistForm extends LitElement {
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
-      const el = e.path[0];
-
-      if (el.getRootNode().host.tagName === 'MULTI-ROW') {
+      if (element.tagName === 'MULTI-ROW') {
         // el.getRootNode().host.requestUpdate();
       }
 
@@ -208,33 +214,22 @@ export class MistForm extends LitElement {
       // Get the field and update via the field
       // this.updateDynamicData(el.fieldPath);
 
-      this.dependencyController.updatePropertiesFromConditions(el.fieldPath);
+      this.dependencyController.updatePropertiesFromConditions(
+        element.fieldPath
+      );
     });
 
     const children = this.shadowRoot.querySelectorAll('*');
     await Promise.all(Array.from(children).map(c => c.updateComplete));
-    this.value = this.getValuesfromDOM(this.shadowRoot);
-
-    const event = new CustomEvent('mist-form-value-changed', {
-      detail: {
-        value: this.value,
-      },
-    });
-    this.dispatchEvent(event);
+    this.updateMistFormValue();
   };
 
   renderInputs(inputs, path) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
-      const name = input[0];
-      let properties = input[1];
+      const properties = input[1];
+      properties.fieldPath = util.getFieldPath(input, path);
 
-      // Subforms just contain data, they shouldn't be rendered by themselves.
-      // They should be rendered in subform containers
-      const fieldName =
-        properties.format === 'subformContainer' ? properties.name : name;
-      properties.name = fieldName;
-      properties.fieldPath = path ? [path, name].join('.') : fieldName;
       // If the field is a subform container, render its respective template, and hide/show fields
       if (properties.format === 'subformContainer') {
         // const subForm = util.getSubformFromRef(
@@ -276,12 +271,10 @@ export class MistForm extends LitElement {
           };
         }
       }
-      properties = this.mistFormHelpers.attachInitialValue(properties);
-      if (this.firstRender) {
-        // for (const [key, val] of Object.entries(properties.deps)) {
-        this.dependencyController.updateConditionMap(properties);
-      }
-      return this.fieldTemplates.getTemplate(properties);
+      const propertiesWithInitialValues = this.mistFormHelpers.attachInitialValue(
+        properties
+      );
+      return this.fieldTemplates.getTemplate(propertiesWithInitialValues);
     });
   }
 }
