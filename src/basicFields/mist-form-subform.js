@@ -55,7 +55,7 @@ class MistFormSubform extends LitElement {
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
-    this.setupInputs();
+
     this.mistForm.dependencyController.addElementReference(this);
   }
 
@@ -88,6 +88,7 @@ class MistFormSubform extends LitElement {
   }
 
   render() {
+    this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen

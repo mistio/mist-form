@@ -143,19 +143,6 @@ export class MistForm extends LitElement {
       });
   }
 
-  // updateDynamicData(fieldPath) {
-  //   if (this.dynamicDataNamespace && this.dynamicDataNamespace.dynamicData) {
-  //     // Update dynamic data that depends on dependencies
-  //     for (const [key, val] of Object.entries(
-  //       this.dynamicDataNamespace.dynamicData
-  //     )) {
-  //       if (val.dependencies && val.dependencies.includes(fieldPath)) {
-  //         this.loadDynamicData(key, val.target);
-  //       }
-  //     }
-  //   }
-  // }
-
   submitForm() {
     const params = this.getValuesfromDOM(this.shadowRoot);
 
@@ -194,7 +181,7 @@ export class MistForm extends LitElement {
   }
   // Public methods
 
-  dispatchValueChangedEvent = async element => {
+  dispatchValueChangedEvent = async ({ fieldPath, value, type }) => {
     // Logic:
     // 1. Find fields that depend on the field that just changed
     // 2. Change props for the dependant fields
@@ -205,18 +192,16 @@ export class MistForm extends LitElement {
     // TODO: Debounce the event, especially when it comes from text input fields
     // TODO: I should check if this works for subform fields
     this.updateComplete.then(() => {
-      if (element.tagName === 'MULTI-ROW') {
-        // el.getRootNode().host.requestUpdate();
-      }
+      // if (element.tagName === 'MULTI-ROW') {
+      //   // el.getRootNode().host.requestUpdate();
+      // }
 
       // Check field validity
       this.mistFormHelpers.updateState();
       // Get the field and update via the field
       // this.updateDynamicData(el.fieldPath);
-
-      this.dependencyController.updatePropertiesFromConditions(
-        element.fieldPath
-      );
+      console.log('fieldPath ', fieldPath);
+      this.dependencyController.updatePropertiesFromConditions(fieldPath);
     });
 
     const children = this.shadowRoot.querySelectorAll('*');

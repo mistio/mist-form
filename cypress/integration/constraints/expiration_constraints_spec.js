@@ -3,62 +3,39 @@ describe('Expiration constraints', () => {
     cy.visit('http://localhost:8000/demo/constraints/constraints.html');
   });
 
-  it('expiration constraints subform should be hidden', () => {
+  it('Expiration constraints subform should be hidden', () => {
     cy.get('mist-form')
       .find('#expiration_constraint_container')
       .find('.subform-container')
       .should('not.have.class', 'open');
+
     cy.get('mist-form')
       .find('#expiration_constraint_container')
-      .find('.subform-container > paper-toggle-button')
-      .should('not.have.attr', 'active');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container')
-      .find('.subform-container > paper-toggle-button')
-      .should('contain', 'Expiration constraints');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('paper-input')
-      .should('not.exist');
+      .find('.subform-container')
+      .within(() => {
+        cy.get(' paper-toggle-button').should('not.have.attr', 'active');
+        cy.get(' paper-toggle-button').should('contain', 'Expiration constraints');
+        cy.get('paper-input').should('not.exist');
+      });
   });
 
   it('Clicking on expiration toggle shows expiration subform', () => {
     cy.get('mist-form')
       .find('#expiration_constraint_container')
-      .find('.subform-container > paper-toggle-button')
-      .click();
-    cy.get('mist-form')
-      .find('#expiration_constraint_container')
-      .find('.subform-container')
-      .should('have.class', 'open');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#max')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#default')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_actions > #available')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_actions > #default_action')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #default')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #require')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #message')
-      .should('be.visible');
+      .within(() => {
+        cy.get('.subform-container > paper-toggle-button').click();
+        cy.get('.subform-container').should('have.class', 'open');
+        cy.get('#max').should('be.visible');
+        cy.get('#default').should('be.visible');
+        cy.get('#available').should('be.visible');
+        cy.get('#expiration_actions ')
+          .find('#default_action')
+          .should('be.visible');
+        cy.get('#expiration_notify').find('#default').should('be.visible');
+        cy.get('#expiration_notify').find('#require').should('be.visible');
+        cy.get('#expiration_notify').find('#message').should('be.visible');
+      });
+
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
@@ -105,7 +82,8 @@ describe('Expiration constraints', () => {
       .clear({ force: true });
     cy.get('mist-form')
       .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #default')
+      .find('#expiration_notify')
+      .find('#default')
       .find('input')
       .first()
       .clear({ force: true })
@@ -113,7 +91,8 @@ describe('Expiration constraints', () => {
     cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
     cy.get('mist-form')
       .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #default')
+      .find('#expiration_notify')
+      .find('#default')
       .find('input')
       .first()
       .clear({ force: true });
@@ -122,81 +101,55 @@ describe('Expiration constraints', () => {
 
   it('Clicking submit button should give object', () => {
     cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#max')
-      .find('input')
-      .first()
-      .clear({ force: true })
-      .type('100', { force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#max')
-      .find('paper-dropdown-menu')
-      .click();
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#max')
-      .find('paper-dropdown-menu')
-      .find('paper-item')
-      .eq(1)
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#default')
-      .find('input')
-      .first()
-      .clear({ force: true })
-      .type('20', { force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#default')
-      .find('paper-dropdown-menu')
-      .find('paper-item')
-      .eq(2)
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_actions > #available')
-      .find('#checkbox')
-      .first()
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_actions > #available')
-      .find('#checkbox')
-      .eq(2)
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_actions')
-      .find('paper-dropdown-menu')
-      .click();
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_actions')
-      .find('paper-dropdown-menu')
-      .find('paper-item')
-      .eq(1)
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #default')
-      .find('input')
-      .first()
-      .clear({ force: true })
-      .type('100', { force: true });
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #default')
-      .find('paper-dropdown-menu')
-      .click();
-    cy.get('mist-form')
-      .find('#expiration_constraint_container ')
-      .find('#expiration_notify > #default')
-      .find('paper-dropdown-menu')
-      .find('paper-item')
-      .eq(2)
-      .click({ force: true });
+      .find('#expiration_constraint_container')
+      .within(() => {
+        cy.get('#max').within(() => {
+          cy.get('input')
+            .first()
+            .clear({ force: true })
+            .type('100', { force: true });
+          cy.get('paper-dropdown-menu').click();
+          cy.get('paper-dropdown-menu')
+            .find('paper-item')
+            .eq(1)
+            .click({ force: true });
+        });
+
+        cy.get('#default').within(() => {
+          cy.get('input')
+            .first()
+            .clear({ force: true })
+            .type('20', { force: true });
+          cy.get('paper-dropdown-menu')
+            .find('paper-item')
+            .eq(2)
+            .click({ force: true });
+        });
+
+        cy.get('#expiration_actions').within(() => {
+          cy.get('#available').find('#checkbox').first().click({ force: true });
+          cy.get('#available').find('#checkbox').eq(2).click({ force: true });
+          cy.get('paper-dropdown-menu').click();
+          cy.get('paper-dropdown-menu')
+            .find('paper-item')
+            .eq(1)
+            .click({ force: true });
+        });
+
+        cy.get('#expiration_notify').within(() => {
+          cy.get('#default')
+            .find('input')
+            .first()
+            .clear({ force: true })
+            .type('100', { force: true });
+          cy.get('#default').find('paper-dropdown-menu').click();
+          cy.get('#default')
+            .find('paper-dropdown-menu')
+            .find('paper-item')
+            .eq(2)
+            .click({ force: true });
+        });
+      });
     cy.paperTextAreaType('#expiration_constraint_container ').find(
       '#expiration_notify > #message',
       'Test'

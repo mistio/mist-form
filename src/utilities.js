@@ -55,11 +55,11 @@ export const getSubforms = data => {
 };
 
 export const formatInputValue = node => {
-  let {value} = node;
+  let { value } = node;
   if (node.props && node.props.format === 'number') {
     value = parseInt(value, 10);
   }
-  if (node.saveAsArray) {
+  if (node.props && node.props.saveAsArray) {
     value = value.split(',').map(val => val.trim());
   }
 

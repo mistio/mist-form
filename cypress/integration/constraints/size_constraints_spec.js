@@ -8,19 +8,15 @@ describe('Size constraints', () => {
       .find('#size_constraint_container')
       .find('.subform-container')
       .should('not.have.class', 'open');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container > paper-toggle-button')
-      .should('not.have.attr', 'active');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container > paper-toggle-button')
-      .should('contain', 'Size constraints');
+
     cy.get('mist-form')
       .find('#size_constraint_container')
       .find('.subform-container')
-      .find('paper-input')
-      .should('not.exist');
+      .within(() => {
+        cy.get(' paper-toggle-button').should('not.have.attr', 'active');
+        cy.get(' paper-toggle-button').should('contain', 'Size constraints');
+        cy.get('paper-input').should('not.exist');
+      });
   });
 
   it('Clicking on size toggle shows size subform', () => {
@@ -32,108 +28,43 @@ describe('Size constraints', () => {
       .find('#size_constraint_container')
       .find('.subform-container')
       .should('have.class', 'open');
+
     cy.get('mist-form')
       .find('#size_constraint_container')
       .find('.subform-container')
-      .find('#allowed')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#not_allowed')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .should('exist');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#min')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#max')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#show')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .should('exist');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#min')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#max')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#show')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .should('exist');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#min')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#max')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#show')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .should('exist');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#min')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#max')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#show')
-      .should('be.visible');
+      .within(() => {
+        cy.get('#allowed').should('be.visible');
+        cy.get('#not_allowed').should('be.visible');
+
+        cy.get('#cpu_constraint').should('exist');
+        cy.get('#cpu_constraint').within(() => {
+          cy.get('#min').should('be.visible');
+          cy.get('#max').should('be.visible');
+          cy.get('#show').should('be.visible');
+        });
+
+        cy.get('#ram_constraint').should('exist');
+        cy.get('#ram_constraint').within(() => {
+          cy.get('#min').should('be.visible');
+          cy.get('#max').should('be.visible');
+          cy.get('#show').should('be.visible');
+        });
+
+        cy.get('#primary_disk_constraint').should('exist');
+        cy.get('#primary_disk_constraint').within(() => {
+          cy.get('#min').should('be.visible');
+          cy.get('#max').should('be.visible');
+          cy.get('#show').should('be.visible');
+        });
+
+        cy.get('#swap_disk_constraint').should('exist');
+        cy.get('#swap_disk_constraint').within(() => {
+          cy.get('#min').should('be.visible');
+          cy.get('#max').should('be.visible');
+          cy.get('#show').should('be.visible');
+        });
+      });
+
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
@@ -166,169 +97,111 @@ describe('Size constraints', () => {
     cy.get('mist-form')
       .find('#size_constraint_container')
       .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#show')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type('0', { force: true });
+      .within(() => {
+        cy.get('#cpu_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+          cy.get('#show').should('be.visible');
+        });
+
+        cy.get('#ram_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+        });
+
+        cy.get('#primary_disk_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+        });
+
+        cy.get('#swap_disk_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('0', { force: true });
+        });
+      });
+
     cy.get('mist-form').find('.submit-btn').should('have.attr', 'disabled');
   });
 
   it('Clicking submit button should give object', () => {
-    // cy.paperTextAreaType(
-    //   '#size_constraint_container > .subform-container > #allowed',
-    //   'test1, test2, test3'
-    // );
-    cy.get('#size_constraint_container')
-      .find('.subform-container')
-      .find('#allowed')
-      .invoke('value', 'test1, test2, test3');
-    cy.paperTextAreaType('#size_constraint_container')
-      .find('.subform-container')
-      .find('paper-text-area', 'test4');
+    cy.paperTextAreaType('mist-form-text-area#allowed', 'test1, test2, test3');
+    cy.paperTextAreaType('mist-form-text-area#not_allowed', 'test4');
     cy.get('mist-form')
       .find('#size_constraint_container')
       .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type(100, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type(200, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#cpu_constraint')
-      .find('#show')
-      .click();
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .click();
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type(100, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#ram_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type(200, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type(100, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type(200, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#primary_disk_constraint')
-      .find('#show')
-      .click();
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#min')
-      .find('input')
-      .clear({ force: true })
-      .type(100, { force: true });
-    cy.get('mist-form')
-      .find('#size_constraint_container')
-      .find('.subform-container')
-      .find('#swap_disk_constraint')
-      .find('#max')
-      .find('input')
-      .clear({ force: true })
-      .type(200, { force: true });
+      .within(() => {
+        cy.get('#cpu_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('100', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('200', { force: true });
+          cy.get('mist-form-checkbox#show').should('be.visible');
+          cy.get('mist-form-checkbox#show').click();
+        });
+
+        cy.get('#ram_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('100', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('200', { force: true });
+        });
+
+        cy.get('#primary_disk_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('100', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('200', { force: true });
+          cy.get('mist-form-checkbox#show').should('be.visible');
+          cy.get('mist-form-checkbox#show').click();
+        });
+
+        cy.get('#swap_disk_constraint').within(() => {
+          cy.get('#min')
+            .find('input')
+            .clear({ force: true })
+            .type('100', { force: true });
+          cy.get('#max')
+            .find('input')
+            .clear({ force: true })
+            .type('200', { force: true });
+        });
+      });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
     cy.get('mist-form').find('.submit-btn').click();
 

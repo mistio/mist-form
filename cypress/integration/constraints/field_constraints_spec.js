@@ -3,19 +3,20 @@ describe('Field constraints', () => {
     cy.visit('http://localhost:8000/demo/constraints/constraints.html');
   });
 
-  it('field constraints subform should be hidden', () => {
+  it('Field constraints subform should be hidden', () => {
     cy.get('mist-form')
       .find('#field_constraint_container')
+      .find('.subform-container')
       .should('not.have.class', 'open');
+
     cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
-      .should('not.have.attr', 'active');
-    cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
-      .should('contain', 'Field constraints');
-    cy.get('mist-form')
-      .find('#field_constraint_container > paper-input')
-      .should('not.exist');
+      .find('#field_constraint_container')
+      .find('.subform-container')
+      .within(() => {
+        cy.get(' paper-toggle-button').should('not.have.attr', 'active');
+        cy.get(' paper-toggle-button').should('contain', 'Size constraints');
+        cy.get('paper-input').should('not.exist');
+      });
   });
 
   it('Clicking on field toggle shows field subform', () => {
