@@ -8,12 +8,12 @@ export class DependencyController {
   }
 
   addElementReference(element) {
-    this.elementReferencesByFieldPath[element.fieldPath] = element;
-    this.updateConditionMap(element.props);
+    this.updateConditionMap(element);
   }
 
   // Differentiate if dependsOn is string or array
-  updateConditionMap(props) {
+  updateConditionMap(element) {
+    const { props } = element;
     if (
       props.deps &&
       this.mistForm.dynamicDataNamespace &&
@@ -41,7 +41,8 @@ export class DependencyController {
             x => JSON.stringify(x) === JSON.stringify(condition)
           )
         )
-          this.conditionMap.push(condition);
+          this.elementReferencesByFieldPath[element.fieldPath] = element;
+        this.conditionMap.push(condition);
       });
     }
   }
@@ -54,11 +55,15 @@ export class DependencyController {
       if (conditions.length) {
         conditions.forEach(condition => {
           const element = this.elementReferencesByFieldPath[condition.target];
+          const currentValue = element.props[condition.prop];
           const dependencyValues = this.getDependencyValues(condition);
-          const val = this.mistForm.dynamicDataNamespace.conditionals[
+          const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues);
-          element.props = { ...element.props, [condition.prop]: val };
+          // What happens if newValue is object or Array?
+          if (currentValue !== newValue) {
+            element.props = { ...element.props, [condition.prop]: newValue };
+          }
         });
       }
     });

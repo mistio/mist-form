@@ -22,7 +22,7 @@ class MistFormRadioGroup extends LitElement {
 
   valueChanged(e) {
     this.value = e.detail.value;
-    this.props.valueChangedEvent({ element: this });
+    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
   }
 
   connectedCallback() {
@@ -33,6 +33,7 @@ class MistFormRadioGroup extends LitElement {
   }
 
   render() {
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     return html` <paper-radio-group
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"

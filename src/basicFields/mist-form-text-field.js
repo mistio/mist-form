@@ -34,6 +34,7 @@ class MistFormTextField extends LitElement {
   }
 
   render() {
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     return html`<paper-input
         class="${this.props.classes || ''} mist-form-input"
         @value-changed=${this.valueChanged}

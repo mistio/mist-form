@@ -46,8 +46,8 @@ class MistFormSubform extends LitElement {
   }
 
   valueChanged(e) {
-    this.props.valueChangedEvent(e);
     this.value = e.detail.value;
+    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
   }
 
   connectedCallback() {
@@ -83,13 +83,13 @@ class MistFormSubform extends LitElement {
         hidden: this.props.hidden || subForm.properties[key].hidden,
       },
     ]);
-
     this.props.inputs = this.mistForm.renderInputs(subFormInputs, parentPath);
   }
 
   render() {
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen
         ? 'open'

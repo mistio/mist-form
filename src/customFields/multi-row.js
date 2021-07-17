@@ -81,9 +81,9 @@ class MultiRow extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.mistForm.dependencyController.addElementReference(this);
   }
 
   shouldUpdate(changedProperties) {
@@ -123,7 +123,7 @@ class MultiRow extends LitElement {
 
   render() {
     const styles = {};
-
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>

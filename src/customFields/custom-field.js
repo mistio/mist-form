@@ -13,8 +13,8 @@ const getValidateName = el =>
   el.attributes['mist-form-validate'].value;
 
 const getValueProp = el =>
-  el.attributes['mist-form-value-change'] &&
-  el.attributes['mist-form-value-change'].value;
+  el.attributes['mist-form-value-prop'] &&
+  el.attributes['mist-form-value-prop'].value;
 
 class MistFormCustomField extends LitElement {
   static get properties() {
@@ -67,16 +67,15 @@ class MistFormCustomField extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
-
+    this.mistForm.dependencyController.addElementReference(this);
     this.setupComponent();
   }
 
   render() {
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     for (const [key, val] of Object.entries(this.props)) {
-      // this.customElement.setAttribute(key, val);
       this.customElement[key] = val;
     }
 

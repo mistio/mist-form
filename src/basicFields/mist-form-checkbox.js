@@ -21,7 +21,7 @@ class MistDropdown extends LitElement {
 
   valueChanged(e) {
     this.value = e.detail.value;
-    this.props.valueChangedEvent({ element: this });
+    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
   }
 
   connectedCallback() {
@@ -32,6 +32,7 @@ class MistDropdown extends LitElement {
   }
 
   render() {
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     return html`<paper-checkbox
         class="${this.props.classes || ''} mist-form-input"
         ...="${spreadProps(this.props)}"

@@ -1,7 +1,10 @@
 export class FieldTemplateHelpers {
   // Traverse all fields in DOM and validate them
   formFieldsValid(root) {
-    const nodeList = this.getFirstLevelChildren(root);
+    // Only get visible first children
+    const nodeList = this.getFirstLevelChildren(root).filter(
+      node => !node.hidden
+    );
     let formValid = true;
     nodeList.forEach(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
@@ -48,45 +51,4 @@ export class FieldTemplateHelpers {
         )
       : '';
   }
-
-  // getValueProperty(props) {
-  //   const customInputFields = this.customInputFields.find(customInput => {
-  //     return props.type === customInput.name;
-  //   });
-
-  //   if (props.format === 'checkboxGroup') {
-  //     return 'selectedValues';
-  //   }
-  //   if (props.type === 'boolean') {
-  //     return 'checked';
-  //   }
-  //   if (customInputFields) {
-  //     return customInputFields && customInputFields.valueProp;
-  //   }
-  //   return 'value';
-  // }
-
-  // getFieldValue(input) {
-  //   let value;
-
-  //   if (
-  //     input.getAttribute('role') === 'checkbox' ||
-  //     input.getAttribute('role') === 'button'
-  //   ) {
-  //     value = input.checked;
-  //   } else if (input.tagName === 'IRON-SELECTOR') {
-  //     value = input.selectedValues;
-  //   } else if (input.tagName === 'PAPER-DROPDOWN-MENU') {
-  //     value = input.selectedItem && input.selectedItem.getAttribute('item-id');
-  //   } else
-
-  //   if (input.format === 'multiRow') {
-  //     value = input.getValue();
-  //   } else {
-  //     value = input.value;
-  //   }
-  //   return {
-  //     [input.name]: value,
-  //   };
-  // }
 }

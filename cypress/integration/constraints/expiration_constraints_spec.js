@@ -14,7 +14,10 @@ describe('Expiration constraints', () => {
       .find('.subform-container')
       .within(() => {
         cy.get(' paper-toggle-button').should('not.have.attr', 'active');
-        cy.get(' paper-toggle-button').should('contain', 'Expiration constraints');
+        cy.get(' paper-toggle-button').should(
+          'contain',
+          'Expiration constraints'
+        );
         cy.get('paper-input').should('not.exist');
       });
   });

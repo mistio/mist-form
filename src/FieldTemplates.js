@@ -47,39 +47,18 @@ export class FieldTemplates extends FieldTemplateHelpers {
   // Combine field and helpText and return template
   getTemplate(props) {
     const _props = { ...props };
-    if (!_props.hidden) {
-      const { fieldType, valueChangedEvent } = _props;
-      _props.valueChangedEvent = valueChangedEvent || this.valueChangedEvent;
-      if (this[fieldType]) {
-        const template = this[fieldType](_props);
-        return html` ${template}`;
-      }
-
-      console.error(`Invalid field type: ${fieldType}`);
+    //  if (!_props.hidden) {
+    const { fieldType, valueChangedEvent } = _props;
+    _props.valueChangedEvent = valueChangedEvent || this.valueChangedEvent;
+    if (this[fieldType]) {
+      const template = this[fieldType](_props);
+      return html` ${template}`;
     }
+
+    console.error(`Invalid field type: ${fieldType}`);
+    //  }
     return '';
   }
-
-  // string(props) {
-  //   const _props = { ...props };
-  //   const hasEnum = Object.prototype.hasOwnProperty.call(_props, 'enum');
-
-  //   // If value is array convert to string
-  //   if (Array.isArray(_props.value)) {
-  //     _props.value = _props.value.join(', ');
-  //   }
-
-  //   if (hasEnum) {
-  //     const format = _props.format || 'dropdown';
-  //     return this[format](_props);
-  //     // Text area
-  //   }
-  //   if (_props.format !== 'number') {
-  //     return this[_props.format || 'input'](_props);
-  //     // Input field
-  //   }
-  //   return this.input(_props);
-  // }
 
   dropdown = props =>
     html`<mist-form-dropdown
@@ -132,10 +111,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
   durationField = props =>
     html`<mist-form-duration-field
       id="${props.id}"
-      class="${props.classes || ''} mist-form-input"
-      ...="${spreadProps(props)}"
-      @value-changed=${props.valueChangedEvent}
-      fieldPath="${props.fieldPath}"
+      .props="${props}"
+      .mistForm=${this.mistForm}
       .helpText=${this.helpText}
     ></mist-form-duration-field>`;
 

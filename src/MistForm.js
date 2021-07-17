@@ -43,8 +43,6 @@ export class MistForm extends LitElement {
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
-
-    // this.fieldTemplates.setupCustomComponents();
   }
 
   getFieldType(val) {
@@ -200,7 +198,6 @@ export class MistForm extends LitElement {
       this.mistFormHelpers.updateState();
       // Get the field and update via the field
       // this.updateDynamicData(el.fieldPath);
-      console.log('fieldPath ', fieldPath);
       this.dependencyController.updatePropertiesFromConditions(fieldPath);
     });
 
@@ -215,33 +212,7 @@ export class MistForm extends LitElement {
       const properties = input[1];
       properties.fieldPath = util.getFieldPath(input, path);
 
-      // If the field is a subform container, render its respective template, and hide/show fields
-      if (properties.format === 'subformContainer') {
-        // const subForm = util.getSubformFromRef(
-        //   subforms,
-        //   properties.properties.subform.$ref
-        // );
-        // let parentPath;
-        // if (properties.omitTitle) {
-        //   parentPath = path || '';
-        // } else {
-        //   parentPath = path
-        //     ? [path, properties.name].join('.')
-        //     : properties.name;
-        // }
-        // const subFormInputs = Object.keys(subForm.properties).map(key => [
-        //   key,
-        //   {
-        //     ...subForm.properties[key],
-        //     hidden: properties.hidden || subForm.properties[key].hidden,
-        //   },
-        // ]);
-        // properties.inputs = this.renderInputs(
-        //   subFormInputs,
-        //   subforms,
-        //   parentPath
-        // );
-      } else if (properties.format === 'multiRow') {
+      if (properties.format === 'multiRow') {
         const subForm = util.getSubformFromRef(
           this.subforms,
           properties.properties.subform.$ref

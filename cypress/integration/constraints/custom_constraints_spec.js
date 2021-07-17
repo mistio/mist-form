@@ -20,23 +20,17 @@ describe('Custom field constraints', () => {
   });
   it('Clicking on custom toggle shows custom subform', () => {
     cy.get('mist-form')
-      .find('#custom_constraint_container paper-toggle-button')
-      .click();
-    cy.get('mist-form')
       .find('#custom_constraint_container')
-      .should('have.class', 'open');
-    cy.get('mist-form')
-      .find('#custom_constraint_container > #paper_slider1')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#custom_constraint_container > #paper_slider2')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#custom_constraint_container > #hide_paper_slider1')
-      .should('be.visible');
-    cy.get('mist-form')
-      .find('#custom_constraint_container > #color_swatch')
-      .should('be.visible');
+      .within(() => {
+        cy.get('.subform-container > paper-toggle-button').click();
+        cy.get('.subform-container').should('have.class', 'open');
+
+        cy.get('#paper_slider1').should('be.visible');
+        cy.get('#paper_slider2').should('be.visible');
+        cy.get('#hide_paper_slider1').should('be.visible');
+        cy.get('#color_swatch').should('be.visible');
+      });
+
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
@@ -49,7 +43,7 @@ describe('Custom field constraints', () => {
           .clear({ force: true })
           .type('yes', { force: true });
 
-        cy.get('#paper_slider1').should('not.exist');
+        cy.get('#paper_slider1').should('not.be.visible');
 
         cy.get('#hide_paper_slider1')
           .find('input')
@@ -62,13 +56,13 @@ describe('Custom field constraints', () => {
           .find('input')
           .clear({ force: true })
           .type('sure', { force: true });
-        cy.get('mist-form').find('#paper_slider1').should('not.exist');
+        cy.get('#paper_slider1').should('not.be.visible');
 
         cy.get('#hide_paper_slider1')
           .find('input')
           .clear({ force: true })
           .type('Test', { force: true });
-        cy.get('mist-form').find('#paper_slider1').should('be.visible');
+        cy.get('#paper_slider1').should('be.visible');
       });
   });
 
@@ -84,8 +78,11 @@ describe('Custom field constraints', () => {
           .find('input')
           .clear({ force: true })
           .type('50', { force: true });
-        cy.get('#color_swatch').click();
-        cy.get('#color_swatch').find('paper-item').first().click();
+        cy.get('mist-form-custom-field#color_swatch').click();
+        cy.get('mist-form-custom-field#color_swatch')
+          .find('paper-item')
+          .first()
+          .click();
         cy.get('#hide_paper_slider1')
           .find('input')
           .clear({ force: true })

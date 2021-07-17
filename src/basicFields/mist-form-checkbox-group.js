@@ -22,7 +22,7 @@ class MistFormCheckboxGroup extends LitElement {
 
   valueChanged() {
     this.value = this.shadowRoot.querySelector('iron-selector').selectedValues;
-    this.props.valueChangedEvent({ element: this });
+    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
   }
 
   connectedCallback() {
@@ -33,6 +33,7 @@ class MistFormCheckboxGroup extends LitElement {
   }
 
   render() {
+    this.style.display = this.props.hidden ? 'none' : 'initial';
     return html`
       <iron-selector
         ...="${spreadProps(this.props)}"

@@ -85,6 +85,7 @@ class DurationField extends LitElement {
       },
     });
 
+    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
     this.dispatchEvent(event);
   }
 
@@ -98,25 +99,33 @@ class DurationField extends LitElement {
     );
   }
 
+  getFieldPath() {
+    return this.fieldPath;
+  }
+
   connectedCallback() {
     super.connectedCallback();
     if (this.value) {
       this.textValue = this.value.replace(/[^0-9]/g, '');
       this.unitValue = this.value.match(/\D/g).join('');
     }
+    this.fieldPath = this.props.fieldPath;
+    this.name = this.props.name;
+    this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
     // TODO: Style this like the other element labels
-    return html` <span class="label">${this.label}</span>
+    this.style.display = this.props.hidden ? 'none' : 'initial';
+    return html` <span class="label">${this.props.label}</span>
       <paper-input
         .step="1"
-        .min=${this.min}
-        .max=${this.max}
+        .min=${this.props.min}
+        .max=${this.props.max}
         type="number"
         autovalidate="true"
         excludeFromPayload
-        .value="${this.textValue}"
+        .value="${this.props.textValue}"
         @value-changed=${this.updateTextValue}
       ></paper-input>
       <paper-dropdown-menu no-animations="" excludeFromPayload>
