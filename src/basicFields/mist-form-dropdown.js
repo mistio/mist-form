@@ -17,7 +17,11 @@ class MistFormDropdown extends LitElement {
   }
 
   validate() {
-    return this.shadowRoot.querySelector('paper-dropdown-menu').validate();
+    return (
+      (this.shadowRoot.querySelector('paper-dropdown-menu') &&
+        this.shadowRoot.querySelector('paper-dropdown-menu').validate()) ||
+      true
+    );
   }
 
   valueChanged(e) {
@@ -76,7 +80,7 @@ class MistFormDropdown extends LitElement {
             this.props.value = null;
           }
           this.props.enum = enumData;
-          return enumData ? html`${this.getDropdown()}` : html`Not found`;
+          return html`${enumData ? this.getDropdown() : 'Not found'}`;
         }),
       `<paper-spinner active></paper-spinner>`
     )}`;
@@ -87,6 +91,7 @@ class MistFormDropdown extends LitElement {
     if (value) {
       this.props.value = value.title;
     }
+
     return html`<paper-dropdown-menu
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"

@@ -48,6 +48,7 @@ export class DependencyController {
   }
 
   updatePropertiesFromConditions(fieldPath) {
+    // Debounce this function
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
@@ -55,15 +56,12 @@ export class DependencyController {
       if (conditions.length) {
         conditions.forEach(condition => {
           const element = this.elementReferencesByFieldPath[condition.target];
-          const currentValue = element.props[condition.prop];
           const dependencyValues = this.getDependencyValues(condition);
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues);
           // What happens if newValue is object or Array?
-          if (currentValue !== newValue) {
-            element.props = { ...element.props, [condition.prop]: newValue };
-          }
+          element.props = { ...element.props, [condition.prop]: newValue };
         });
       }
     });

@@ -4,19 +4,13 @@ class DurationField extends LitElement {
   static get properties() {
     return {
       value: { type: String },
-      name: { type: String },
-      label: { type: String },
-      units: { type: Array },
-      max: { type: Number },
-      min: { type: Number },
-      textValue: { type: Number },
-      unitValue: { type: String },
+      props: { type: Object },
+      fieldPath: { type: String, reflect: true },
     };
   }
 
   constructor() {
     super();
-    this.min = 1;
     this.units = this.enum || [
       { name: '', value: '' },
       { name: 'months', value: 'mo' },
@@ -60,43 +54,32 @@ class DurationField extends LitElement {
   }
 
   updateTextValue(e) {
-    if (!e.detail.value) {
-      this.shadowRoot.querySelector('paper-listbox').selectIndex(0);
-    }
-
     this.textValue = e.detail.value;
-    this.updateValue();
+    this.valueChanged();
   }
 
   updateUnitValue(e) {
     this.unitValue = e.detail.value;
-    this.updateValue();
+    this.valueChanged();
   }
 
-  updateValue() {
-    // if values valid, set value to new value, or else set to undefined
+  valueChanged() {
     this.value =
       this.textValue && this.unitValue
         ? `${this.textValue}${this.unitValue}`
         : undefined;
-    const event = new CustomEvent('value-changed', {
-      detail: {
-        value: this.value,
-      },
-    });
-
     this.props.valueChangedEvent({ fieldPath: this.fieldPath });
-    this.dispatchEvent(event);
   }
 
   validate() {
+    const numberValid =
+      this.shadowRoot.querySelector('paper-input') &&
+      this.shadowRoot.querySelector('paper-input').validate();
+
     if (!this.textValue) {
       return true;
     }
-    return (
-      (parseInt(this.textValue, 10) && !!(this.textValue && this.unitValue)) ||
-      !!(!this.textValue && !this.unitValue)
-    );
+    return !!this.unitValue && numberValid;
   }
 
   getFieldPath() {
@@ -105,10 +88,11 @@ class DurationField extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    if (this.value) {
+    if (this.props.value) {
       this.textValue = this.value.replace(/[^0-9]/g, '');
       this.unitValue = this.value.match(/\D/g).join('');
     }
+
     this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
     this.mistForm.dependencyController.addElementReference(this);
@@ -120,13 +104,13 @@ class DurationField extends LitElement {
     return html` <span class="label">${this.props.label}</span>
       <paper-input
         .step="1"
-        .min=${this.props.min}
+        .min=${this.props.min || 1}
         .max=${this.props.max}
         type="number"
         autovalidate="true"
         excludeFromPayload
         .value="${this.props.textValue}"
-        @value-changed=${this.updateTextValue}
+        @value-changed="${this.updateTextValue}"
       ></paper-input>
       <paper-dropdown-menu no-animations="" excludeFromPayload>
         <paper-listbox
@@ -134,7 +118,7 @@ class DurationField extends LitElement {
           class="dropdown-content"
           slot="dropdown-content"
           attr-for-selected="value"
-          selected="${this.unitValue}"
+          selected="${this.unitValue || ''}"
         >
           ${this.units.map(
             unit =>

@@ -76,3 +76,13 @@ export const getFieldPath = (input, path) => {
   properties.name = fieldName;
   return path ? [path, name].join('.') : fieldName;
 };
+
+export const debounce = function (callback, wait) {
+  let timeout = 1000;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(function () {
+      callback.apply(this, args);
+    }, wait);
+  };
+};

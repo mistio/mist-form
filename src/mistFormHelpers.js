@@ -15,6 +15,10 @@ export class MistFormHelpers {
     this.mistForm.allFieldsValid =
       this.fieldTemplates.formFieldsValid(this.mistForm.shadowRoot) ||
       this.isEmpty();
+
+    this.mistForm.shadowRoot
+      .querySelector('#submit-btn')
+      .setDisabled(!this.mistForm.allFieldsValid);
   }
 
   attachInitialValue(props) {
@@ -57,12 +61,9 @@ export class MistFormHelpers {
           formValues[node.name] = domValues;
         }
       } else if (notExcluded) {
-        const isInvalid = util.isInvalid(node);
         const notEmpty = util.valueNotEmpty(node.value);
 
-        if (isInvalid) {
-          this.mistForm.allFieldsValid = false;
-        } else if (notEmpty) {
+        if (notEmpty) {
           // If the input has a value of undefined and wasn't required, don't add it
           const inputValue = util.formatInputValue(node);
           const inputName = node.name;
@@ -81,4 +82,48 @@ export class MistFormHelpers {
 
     return formValues;
   }
+
+  setInput(contents) {
+    const _contents = { ...contents };
+    if (_contents.format !== 'subformContainer') {
+      for (const [key, val] of Object.entries(_contents.properties)) {
+        if (!val.name) {
+          _contents.properties[key].name = key;
+        }
+
+        _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(val);
+
+        if (Array.isArray(val.value)) {
+          _contents.properties[key].value = val.value.join(', ');
+        }
+      }
+    } else {
+      _contents.fieldType = 'subformContainer';
+    }
+
+    return _contents;
+  }
+
+  displaySubmitButton = () =>
+  this.fieldTemplates.button({
+    label: this.mistForm.data.submitButtonLabel || 'Submit',
+    disabled: !this.mistForm.allFieldsValid,
+    classes: 'submit-btn',
+    id: 'submit-btn',
+    valueChangedEvent: () => {
+      this.mistForm.submitForm();
+    },
+  });
+
+displayCancelButton = (canClose = true) =>
+  canClose
+    ? this.fieldTemplates.button({
+        label: 'Cancel',
+        classes: 'cancel-btn',
+        id: 'cancel-btn',
+        valueChangedEvent: () => {
+          this.mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'));
+        },
+      })
+    : '';
 }

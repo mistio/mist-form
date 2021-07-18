@@ -12,7 +12,6 @@ export class MistForm extends LitElement {
       data: { type: Object },
       dataError: { type: Object },
       formError: { type: String },
-      allFieldsValid: { type: Boolean }, // Used to enable/disable the submit button,
       initialValues: { type: Object },
     };
   }
@@ -45,58 +44,6 @@ export class MistForm extends LitElement {
     }
   }
 
-  getFieldType(val) {
-    if (this.fieldTemplates.defaultFieldTypes.includes(val.format)) {
-      return val.format;
-    }
-    if (val.type === 'string') {
-      if (!val.format || val.format === 'number') {
-        return 'input';
-      }
-      return 'custom';
-    }
-    if (!val.format) {
-      return val.type;
-    }
-    return 'custom';
-  }
-
-  setInput(contents) {
-    const _contents = { ...contents };
-    if (_contents.format !== 'subformContainer') {
-      for (const [key, val] of Object.entries(_contents.properties)) {
-        if (!val.name) {
-          _contents.properties[key].name = key;
-        }
-
-        _contents.properties[key].fieldType = this.getFieldType(val);
-
-        if (Array.isArray(val.value)) {
-          _contents.properties[key].value = val.value.join(', ');
-        }
-      }
-    } else {
-      _contents.fieldType = 'subformContainer';
-    }
-
-    return _contents;
-  }
-
-  setupInputs() {
-    this.inputs = util.getInputs(this.data);
-    this.subforms = util.getSubforms(this.data);
-
-    this.inputs.forEach((input, index) => {
-      const contents = input[1];
-      this.inputs[index][1] = this.setInput(contents);
-    });
-
-    this.subforms.forEach((input, index) => {
-      const contents = input[1];
-      this.subforms[index][1] = this.setInput(contents);
-    });
-  }
-
   render() {
     if (this.data) {
       if (this.firstRender) {
@@ -115,8 +62,8 @@ export class MistForm extends LitElement {
         ${formFields}
 
         <div class="buttons">
-          ${this.fieldTemplates.displayCancelButton(this.data.canClose, this)}
-          ${this.fieldTemplates.displaySubmitButton(this)}
+          ${this.mistFormHelpers.displayCancelButton(this.data.canClose, this)}
+          ${this.mistFormHelpers.displaySubmitButton(this)}
         </div>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
@@ -139,6 +86,21 @@ export class MistForm extends LitElement {
         this.dataError = error;
         console.error('Error loading data:', error);
       });
+  }
+
+  setupInputs() {
+    this.inputs = util.getInputs(this.data);
+    this.subforms = util.getSubforms(this.data);
+
+    this.inputs.forEach((input, index) => {
+      const contents = input[1];
+      this.inputs[index][1] = this.mistFormHelpers.setInput(contents);
+    });
+
+    this.subforms.forEach((subform, index) => {
+      const contents = subform[1];
+      this.subforms[index][1] = this.mistFormHelpers.setInput(contents);
+    });
   }
 
   submitForm() {
@@ -169,7 +131,6 @@ export class MistForm extends LitElement {
 
   updateMistFormValue() {
     this.value = this.getValuesfromDOM(this.shadowRoot);
-
     const event = new CustomEvent('mist-form-value-changed', {
       detail: {
         value: this.value,
@@ -179,7 +140,7 @@ export class MistForm extends LitElement {
   }
   // Public methods
 
-  dispatchValueChangedEvent = async ({ fieldPath, value, type }) => {
+  dispatchValueChangedEvent = async ({ fieldPath }) => {
     // Logic:
     // 1. Find fields that depend on the field that just changed
     // 2. Change props for the dependant fields

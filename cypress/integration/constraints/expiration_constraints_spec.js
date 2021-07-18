@@ -151,12 +151,10 @@ describe('Expiration constraints', () => {
             .find('paper-item')
             .eq(2)
             .click({ force: true });
+          cy.paperTextAreaType('#message', 'Test');
         });
       });
-    cy.paperTextAreaType('#expiration_constraint_container ').find(
-      '#expiration_notify > #message',
-      'Test'
-    );
+
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {

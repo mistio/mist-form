@@ -1,9 +1,6 @@
-import { spreadProps } from '@open-wc/lit-helpers';
 import { html } from 'lit-element';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
-import './customFields/mist-form-duration-field.js';
-import './customFields/multi-row.js';
-import './customFields/custom-field.js';
+import './basicFields/mist-form-button.js';
 import './basicFields/mist-form-checkbox-group.js';
 import './basicFields/mist-form-checkbox.js';
 import './basicFields/mist-form-dropdown.js';
@@ -11,6 +8,9 @@ import './basicFields/mist-form-radio-group.js';
 import './basicFields/mist-form-text-area.js';
 import './basicFields/mist-form-text-field.js';
 import './basicFields/mist-form-subform.js';
+import './customFields/mist-form-duration-field.js';
+import './customFields/multi-row.js';
+import './customFields/custom-field.js';
 
 export class FieldTemplates extends FieldTemplateHelpers {
   constructor(mistForm, valueChangedEvent) {
@@ -18,7 +18,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     this.mistForm = mistForm;
     this.valueChangedEvent = valueChangedEvent;
     this.inputFields = [
-      'mist-form-text-dropdown',
+      'mist-form-dropdown',
       'mist-form-text-area',
       'mist-form-text-field',
       'mist-form-checkbox',
@@ -120,7 +120,6 @@ export class FieldTemplates extends FieldTemplateHelpers {
     id="${props.id}"
     .mistForm=${this.mistForm}
     .props="${props}"
-    @value-changed=${props.valueChangedEvent}
     exportparts="row: multirow-row"
     .fieldTemplates="${this}"
     .helpText=${this.helpText}
@@ -147,18 +146,13 @@ export class FieldTemplates extends FieldTemplateHelpers {
   spinner = html`<paper-spinner active></paper-spinner>`;
 
   // Submit button should be disabled until all required fields are filled
-  button = (
-    title = 'Submit',
-    tapFunc,
-    isDisabled = false,
-    className = ''
-  ) => html` <paper-button
-    class="${className} btn-block"
-    raised
-    @tap="${tapFunc}"
-    ?disabled=${isDisabled}
-    >${title}</paper-button
-  >`;
+  button = props =>
+    html`<mist-form-button
+      id="${props.id}"
+      .props="${props}"
+      .mistForm=${this.mistForm}
+    >
+    </mist-form-button>`;
 
   helpText = ({ helpUrl, helpText }) => {
     if (helpUrl) {

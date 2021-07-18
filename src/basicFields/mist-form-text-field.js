@@ -23,9 +23,11 @@ class MistFormTextField extends LitElement {
     this.value = e.detail.value;
     this.props.valueChangedEvent({ fieldPath: this.fieldPath });
   }
+
   getFieldPath() {
     return this.fieldPath;
   }
+
   connectedCallback() {
     super.connectedCallback();
     this.fieldPath = this.props.fieldPath;
