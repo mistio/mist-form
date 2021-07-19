@@ -163,7 +163,7 @@ describe('Size constraints', () => {
             .find('input')
             .clear({ force: true })
             .type('200', { force: true });
-          cy.get('mist-form-checkbox#show').should('be.visible');
+          cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
           cy.get('mist-form-checkbox#show').click();
         });
 
@@ -188,7 +188,7 @@ describe('Size constraints', () => {
             .clear({ force: true })
             .type('200', { force: true });
           cy.get('mist-form-checkbox#show').should('be.visible');
-          cy.get('mist-form-checkbox#show').click();
+          cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
         });
 
         cy.get('#swap_disk_constraint').within(() => {

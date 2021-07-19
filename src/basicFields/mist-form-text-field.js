@@ -21,7 +21,10 @@ class MistFormTextField extends LitElement {
 
   valueChanged(e) {
     this.value = e.detail.value;
-    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   getFieldPath() {
@@ -30,13 +33,14 @@ class MistFormTextField extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.fieldPath = this.props.fieldPath;
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
     return html`<paper-input
         class="${this.props.classes || ''} mist-form-input"
         @value-changed=${this.valueChanged}

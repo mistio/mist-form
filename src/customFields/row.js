@@ -7,6 +7,7 @@ class MistFormRow extends LitElement {
       value: { type: Object },
       props: { type: Object },
       fieldPath: { type: String, reflect: true },
+      // index: {type: Number}
     };
   }
 
@@ -55,16 +56,27 @@ class MistFormRow extends LitElement {
   }
 
   valueChanged(e, name) {
+    this.value[name] = e.value;
     this.parent.valueChanged(e);
-    this.value[name] = e.detail.value;
+  }
+
+  updateIndexAndFieldPath(index) {
+    this.index = index;
+    this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
+    console.log('this.shadowRoot.children ', this.shadowRoot.children);
+    // this.requestUpdate();
+    // this.shadowRoot.children.forEach(child => {
+    //   child.fieldPath = `${this.fieldPath}.${child.prop.name}`;
+    // })
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = `${this.parent.fieldPath}.${this.index}`;
+    this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
   }
 
   render() {
+    this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };
 
@@ -74,9 +86,11 @@ class MistFormRow extends LitElement {
       if (this.field) {
         prop.value = this.field[prop.name];
       }
-      prop.fieldPath = `${this.fieldPath}.${prop.name || key}`;
+      prop.fieldPath = `${this.fieldPath}.${prop.name}`;
       // I should update for dependencies here?
       // Or should I let it be handled by mistform?
+      console.log('fieldPath ', this.fieldPath);
+      console.log('prop.hidden ', prop.hidden);
       return prop.hidden
         ? html`<span></span>
             <div></div>`
@@ -90,8 +104,10 @@ class MistFormRow extends LitElement {
         title="Remove row"
         class="remove"
         @tap=${() => {
+          console.log('in remove');
           this.remove();
-          this.parent.valueChanged();
+          this.parent.updateRowIndexes();
+          // this.parent.valueChanged();
         }}
       >
       </paper-icon-button>

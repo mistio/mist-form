@@ -22,7 +22,10 @@ class MistFormButton extends LitElement {
   }
 
   valueChanged() {
-    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   setDisabled(disabled) {
@@ -31,7 +34,6 @@ class MistFormButton extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
     this.disabled = !!this.props.disabled;
 
@@ -39,8 +41,8 @@ class MistFormButton extends LitElement {
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'initial';
-
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     return html` <paper-button
       class="${this.props.classes || ''} btn-block"
       raised

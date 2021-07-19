@@ -226,6 +226,7 @@
 		  },
 		  "fieldName":{
 			"label":"Field name",
+			"id": "name",
 			"name":"name",
 			"type":"string",
 			"classes": "field-name",
@@ -233,6 +234,7 @@
 		  },
 		  "fieldValue":{
 			"label":"Field value",
+			"id": "value",
 			"name":"value",
 			"type":"string"
 		  },

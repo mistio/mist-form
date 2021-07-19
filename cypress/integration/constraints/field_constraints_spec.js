@@ -14,109 +14,89 @@ describe('Field constraints', () => {
       .find('.subform-container')
       .within(() => {
         cy.get(' paper-toggle-button').should('not.have.attr', 'active');
-        cy.get(' paper-toggle-button').should('contain', 'Size constraints');
+        cy.get(' paper-toggle-button').should('contain', 'Field constraints');
         cy.get('paper-input').should('not.exist');
       });
   });
 
   it('Clicking on field toggle shows field subform', () => {
     cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
-      .click();
-    cy.get('mist-form')
       .find('#field_constraint_container')
-      .should('have.class', 'open');
-    cy.get('mist-form')
-      .find('#field_constraint_container > multi-row')
-      .should('be.visible');
+      .find('.subform-container')
+      .within(() => {
+        cy.get('paper-toggle-button').click();
+        cy.get('mist-form-multi-row#field').should('be.visible');
+      });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 
   it('Add two fields, give values and delete one', () => {
     // Reset field subform
     cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
-      .click();
-    cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
-      .click();
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-button.add')
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('input')
-      .first()
-      .clear({ force: true })
-      .type('Field1', { force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('input')
-      .eq(1)
-      .clear({ force: true })
-      .type('Value1', { force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-button.add')
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('input')
-      .eq(2)
-      .clear({ force: true })
-      .type('Field2', { force: true });
+      .find('#field_constraint_container')
+      .find('.subform-container')
+      .find('mist-form-multi-row')
+      .within(() => {
+        cy.get('paper-button.add').click({ force: true });
+
+        cy.get('mist-form-row')
+          .first()
+          .within(() => {
+            cy.get('#name')
+              .find('input')
+              .clear({ force: true })
+              .type('Field1', { force: true });
+            cy.get('#value')
+              .find('input')
+              .clear({ force: true })
+              .type('Value1', { force: true });
+          });
+
+        cy.get('paper-button.add').click({ force: true });
+
+        cy.get('mist-form-row')
+          .eq(1)
+          .within(() => {
+            cy.get('#name')
+              .find('input')
+              .clear({ force: true })
+              .type('Field2', { force: true });
+          });
+      });
+
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
+
     cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-icon-button.remove')
-      .first()
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('input')
-      .first()
-      .invoke('val')
-      .should('contain', 'Field2');
+      .find('#field_constraint_container')
+      .find('.subform-container')
+      .find('mist-form-multi-row')
+      .within(() => {
+        cy.get('paper-icon-button.remove').first().click({ force: true });
+        cy.get('#name').find('input').invoke('val').should('contain', 'Field2');
+      });
   });
 
   it('Selecting Cloud1 should hide field name', () => {
     cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-dropdown-menu')
-      .eq(0)
-      .click();
+      .find('#field_constraint_container')
+      .find('.subform-container')
+      .find('mist-form-multi-row')
+      .find('mist-form-row')
+      .first()
+      .within(() => {
+        cy.get('paper-dropdown-menu').click();
+        cy.get('paper-dropdown-menu').find('paper-item').eq(1).click();
+        cy.get('.field-name').should('not.exist');
 
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-dropdown-menu')
-      .eq(0)
-      .find('paper-item')
-      .eq(1)
-      .click({ force: true });
+        cy.get('paper-dropdown-menu').eq(0).click();
+        cy.get('paper-dropdown-menu')
+          .eq(0)
+          .find('paper-item')
+          .eq(3)
+          .click({ force: true });
 
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('.field-name')
-      .should('not.exist');
-
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-dropdown-menu')
-      .eq(0)
-      .click();
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-dropdown-menu')
-      .eq(0)
-      .find('paper-item')
-      .eq(3)
-      .click({ force: true });
-
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('.field-name')
-      .should('be.visible');
+        cy.get('.field-name').should('be.visible');
+      });
   });
 
   it('Add another field and click submit button to get object', () => {

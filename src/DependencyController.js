@@ -52,11 +52,15 @@ export class DependencyController {
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
+
     this.mistForm.updateComplete.then(() => {
       if (conditions.length) {
         conditions.forEach(condition => {
+          console.log('condition.target ', condition.target);
           const element = this.elementReferencesByFieldPath[condition.target];
+
           const dependencyValues = this.getDependencyValues(condition);
+          console.log('dependencyValues ', dependencyValues);
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues);
@@ -70,7 +74,8 @@ export class DependencyController {
   getDependencyValues = dependency => {
     const source = dependency.dependsOn;
     const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
-
+    console.log('source ', source);
+    console.log('formValues ', formValues);
     return util.getNestedValueFromPath(source, formValues);
   };
 }

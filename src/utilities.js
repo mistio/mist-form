@@ -1,5 +1,8 @@
-export const getNestedValueFromPath = (path, obj) =>
-  path.split('.').reduce((p, c) => p && p[c], obj);
+export const getNestedValueFromPath = (path, object, defaultValue) =>
+  path
+    .split(/[\.\[\]\'\"]/)
+    .filter(p => p)
+    .reduce((o, p) => (o ? o[p] : defaultValue), object);
 
 export const valueNotEmpty = value => {
   if (

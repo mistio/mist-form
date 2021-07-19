@@ -55,7 +55,7 @@ export class MistFormHelpers {
         if (!util.valueNotEmpty(domValues)) {
           return {};
         }
-        if (node.omitTitle) {
+        if (node.props.omitTitle) {
           formValues = { ...formValues, ...domValues };
         } else {
           formValues[node.name] = domValues;
@@ -91,7 +91,9 @@ export class MistFormHelpers {
           _contents.properties[key].name = key;
         }
 
-        _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(val);
+        _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(
+          val
+        );
 
         if (Array.isArray(val.value)) {
           _contents.properties[key].value = val.value.join(', ');
@@ -105,25 +107,25 @@ export class MistFormHelpers {
   }
 
   displaySubmitButton = () =>
-  this.fieldTemplates.button({
-    label: this.mistForm.data.submitButtonLabel || 'Submit',
-    disabled: !this.mistForm.allFieldsValid,
-    classes: 'submit-btn',
-    id: 'submit-btn',
-    valueChangedEvent: () => {
-      this.mistForm.submitForm();
-    },
-  });
+    this.fieldTemplates.button({
+      label: this.mistForm.data.submitButtonLabel || 'Submit',
+      disabled: !this.mistForm.allFieldsValid,
+      classes: 'submit-btn',
+      id: 'submit-btn',
+      valueChangedEvent: () => {
+        this.mistForm.submitForm();
+      },
+    });
 
-displayCancelButton = (canClose = true) =>
-  canClose
-    ? this.fieldTemplates.button({
-        label: 'Cancel',
-        classes: 'cancel-btn',
-        id: 'cancel-btn',
-        valueChangedEvent: () => {
-          this.mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'));
-        },
-      })
-    : '';
+  displayCancelButton = (canClose = true) =>
+    canClose
+      ? this.fieldTemplates.button({
+          label: 'Cancel',
+          classes: 'cancel-btn',
+          id: 'cancel-btn',
+          valueChangedEvent: () => {
+            this.mistForm.dispatchEvent(new CustomEvent('mist-form-cancel'));
+          },
+        })
+      : '';
 }

@@ -27,7 +27,10 @@ class MistFormDropdown extends LitElement {
   valueChanged(e) {
     // I might have a problem here when trying to initialize values. I should check what I did with the item-id property
     this.value = e.detail.value;
-    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   loadDynamicData() {
@@ -123,13 +126,14 @@ class MistFormDropdown extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     const isDynamic = Object.prototype.hasOwnProperty.call(
       this.props,
       'x-mist-enum'

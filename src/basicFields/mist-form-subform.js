@@ -47,15 +47,17 @@ class MistFormSubform extends LitElement {
 
   valueChanged(e) {
     this.value = e.detail.value;
-    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
-
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
   }
 
@@ -89,7 +91,8 @@ class MistFormSubform extends LitElement {
   render() {
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen
         ? 'open'

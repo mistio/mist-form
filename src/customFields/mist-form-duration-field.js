@@ -68,7 +68,10 @@ class DurationField extends LitElement {
       this.textValue && this.unitValue
         ? `${this.textValue}${this.unitValue}`
         : undefined;
-    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   validate() {
@@ -93,14 +96,15 @@ class DurationField extends LitElement {
       this.unitValue = this.value.match(/\D/g).join('');
     }
 
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
     // TODO: Style this like the other element labels
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     return html` <span class="label">${this.props.label}</span>
       <paper-input
         .step="1"

@@ -71,6 +71,8 @@ class MultiRow extends LitElement {
   }
 
   createRow(index, field) {
+    console.log('index ', index);
+    console.log('field ', field);
     return html`<mist-form-row
       .field=${field}
       .index=${index}
@@ -81,49 +83,66 @@ class MultiRow extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
   }
 
-  shouldUpdate(changedProperties) {
-    let update = true;
-    changedProperties.forEach((oldValue, propName) => {
-      if (
-        propName === 'value' &&
-        JSON.stringify(oldValue) !== JSON.stringify(this.value) &&
-        oldValue !== undefined
-      ) {
-        update = false;
-      }
-    });
+  // shouldUpdate(changedProperties) {
+  //   let update = true;
+  //   changedProperties.forEach((oldValue, propName) => {
+  //     if (
+  //       propName === 'value' &&
+  //       JSON.stringify(oldValue) !== JSON.stringify(this.value) &&
+  //       oldValue !== undefined
+  //     ) {
+  //       update = false;
+  //     }
+  //   });
 
-    return update;
-  }
+  //   return update;
+  // }
 
   getValue() {
     const value = [];
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
+    console.log('rows ', rows);
     rows.forEach(row => {
       value.push(row.value);
     });
     return value;
   }
 
-  // TODO: Trigger this. Or maybe not. It's triggered in mistForm
-  valueChanged() {
-    this.value = this.getValue();
-    const event = new CustomEvent('value-changed', {
-      detail: {
-        value: this.value,
-      },
+  updateRowIndexes() {
+    const rows = this.shadowRoot.querySelectorAll('mist-form-row');
+    console.log('rows after remove ', rows);
+    rows.forEach((row, index) => {
+      //   row.updateIndexAndFieldPath(index);
+      console.log('row ', row);
     });
-    this.dispatchEvent(event);
+    //  this.valueChanged();
+  }
+
+  // TODO: Trigger this. Or maybe not. It's triggered in mistForm
+  valueChanged(e) {
+    // Detect value changes of children
+
+    // e Is undefined when removing a row
+    if (e) {
+      this.props.valueChangedEvent({
+        fieldPath: e.fieldPath,
+        value: e.value,
+      });
+    }
+
+    this.value = this.getValue();
   }
 
   render() {
+    console.log('multirow render ', this.value);
     const styles = {};
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
@@ -139,7 +158,7 @@ class MultiRow extends LitElement {
           <span></span>
         </div>
 
-        ${this.value.map((index, field) => this.createRow(index, field))}
+        ${this.value.map((field, index) => this.createRow(index, field))}
 
         <div>
           <span class="addrule">
@@ -152,4 +171,4 @@ class MultiRow extends LitElement {
   }
 }
 
-customElements.define('multi-row', MultiRow);
+customElements.define('mist-form-multi-row', MultiRow);

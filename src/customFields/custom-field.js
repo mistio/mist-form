@@ -67,14 +67,15 @@ class MistFormCustomField extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
     this.setupComponent();
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     for (const [key, val] of Object.entries(this.props)) {
       this.customElement[key] = val;
     }

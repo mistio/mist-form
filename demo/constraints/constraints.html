@@ -57,7 +57,7 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: cloud=> cloud === 'cloudId1',
+          func: cloud=>{console.log("cloud ", cloud); return cloud === 'cloudId1'} ,
         },
         hidePaperSlider1: {
           func: value => {

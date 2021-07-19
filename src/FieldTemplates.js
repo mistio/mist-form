@@ -9,7 +9,7 @@ import './basicFields/mist-form-text-area.js';
 import './basicFields/mist-form-text-field.js';
 import './basicFields/mist-form-subform.js';
 import './customFields/mist-form-duration-field.js';
-import './customFields/multi-row.js';
+import './customFields/mist-form-multi-row.js';
 import './customFields/custom-field.js';
 
 export class FieldTemplates extends FieldTemplateHelpers {
@@ -27,7 +27,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       'mist-form-duration-field',
       'paper-toggle-button',
       'mist-form-subform',
-      'multi-row',
+      'mist-form-multi-row',
       'mist-form-custom-field',
     ];
 
@@ -116,14 +116,14 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .helpText=${this.helpText}
     ></mist-form-duration-field>`;
 
-  multiRow = props => html`<multi-row
+  multiRow = props => html`<mist-form-multi-row
     id="${props.id}"
     .mistForm=${this.mistForm}
     .props="${props}"
     exportparts="row: multirow-row"
     .fieldTemplates="${this}"
     .helpText=${this.helpText}
-  ></multi-row>`;
+  ></mist-form-multi-row>`;
 
   custom = props =>
     html`<mist-form-custom-field

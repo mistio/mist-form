@@ -14,6 +14,7 @@ export class FieldTemplateHelpers {
     }
     return 'custom';
   }
+
   // Traverse all fields in DOM and validate them
   formFieldsValid(root) {
     // Only get visible first children

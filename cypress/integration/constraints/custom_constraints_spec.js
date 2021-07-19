@@ -61,7 +61,7 @@ describe('Custom field constraints', () => {
         cy.get('#hide_paper_slider1')
           .find('input')
           .clear({ force: true })
-          .type('Test', { force: true });
+          .type('Text', { force: true });
         cy.get('#paper_slider1').should('be.visible');
       });
   });
@@ -78,7 +78,9 @@ describe('Custom field constraints', () => {
           .find('input')
           .clear({ force: true })
           .type('50', { force: true });
-        cy.get('mist-form-custom-field#color_swatch').click();
+        cy.get('mist-form-custom-field#color_swatch')
+          .find('paper-swatch-picker')
+          .click();
         cy.get('mist-form-custom-field#color_swatch')
           .find('paper-item')
           .first()

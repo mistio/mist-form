@@ -22,18 +22,22 @@ class MistFormRadioGroup extends LitElement {
 
   valueChanged(e) {
     this.value = e.detail.value;
-    this.props.valueChangedEvent({ fieldPath: this.fieldPath });
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.fieldPath = this.props.fieldPath;
     this.name = this.props.name;
+    this.fieldPath = this.props.fieldPath;
     this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'initial';
+    this.style.display = this.props.hidden ? 'none' : 'inherit';
+    this.fieldPath = this.props.fieldPath;
     return html` <paper-radio-group
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
