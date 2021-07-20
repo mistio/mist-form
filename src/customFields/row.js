@@ -88,7 +88,7 @@ class MistFormRow extends LitElement {
 
   render() {
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
-
+console.log("this.value ", this.value)
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };
 
@@ -99,6 +99,7 @@ class MistFormRow extends LitElement {
         prop.value = this.value[prop.name];
       }
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
+      console.log("prop ", prop)
       // I should update for dependencies here?
       // Or should I let it be handled by mistform?
       return prop.hidden

@@ -21,8 +21,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     return html`
       <iron-selector
         ...="${spreadProps(this.props)}"
@@ -37,7 +36,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
       >
         ${this.props.enum.map(
           item =>
-            html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}"
+            html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}" .checked="${this.props.value.includes(item)}"
                 >${item}</paper-checkbox
               >${this.helpText(this.props)}`
         )}

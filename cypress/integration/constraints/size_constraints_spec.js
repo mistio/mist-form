@@ -72,24 +72,7 @@ describe('Size constraints', () => {
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          size: {
-            cpu: {
-              show: true,
-            },
-            ram: {
-              show: true,
-            },
-            disk: {
-              show: true,
-            },
-            swap_disk: {
-              show: true,
-            },
-          },
-        })
-      );
+      expect(JSON.stringify(el.value)).to.equal(JSON.stringify({}));
     });
   });
 
@@ -212,26 +195,10 @@ describe('Size constraints', () => {
           size: {
             allowed: ['test1', 'test2', 'test3'],
             not_allowed: ['test4'],
-            cpu: {
-              min: 100,
-              max: 200,
-              show: false,
-            },
-            ram: {
-              min: 100,
-              max: 200,
-              show: true,
-            },
-            disk: {
-              min: 100,
-              max: 200,
-              show: false,
-            },
-            swap_disk: {
-              min: 100,
-              max: 200,
-              show: true,
-            },
+            cpu: { min: 100, max: 200, show: true },
+            ram: { min: 100, max: 200 },
+            disk: { min: 100, max: 200, show: true },
+            swap_disk: { min: 100, max: 0 },
           },
         })
       );

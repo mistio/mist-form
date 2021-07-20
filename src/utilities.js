@@ -63,7 +63,10 @@ export const formatInputValue = node => {
     value = parseInt(value, 10);
   }
   if (node.props && node.props.saveAsArray) {
-    value = value && value.split(',').map(val => val.trim());
+    if (typeof value === 'string') {
+      value = value && value.split(',').map(val => val.trim());
+    }
+
 
   }
 
@@ -74,14 +77,12 @@ export const isInvalid = node =>
   node && node.validate ? !node.validate() : false;
 
 export const getFieldPath = (input, path) => {
-  const [name, properties] = input;
-  const fieldName =
-    properties.format === 'subformContainer' ? properties.name : name;
-  properties.name = fieldName;
-  return path ? [path, name].join('.') : fieldName;
+  const [key, properties] = input;
+  const fieldName = properties.name || key;
+  return path ? [path, fieldName].join('.') : fieldName;
 };
 
-export const debounce = function (callback, wait) {
+export const debouncer = function (callback, wait) {
   let timeout = 1000;
   return (...args) => {
     clearTimeout(timeout);

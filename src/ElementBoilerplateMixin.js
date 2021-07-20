@@ -1,3 +1,4 @@
+import { debouncer } from './utilities.js';
 export const elementBoilerplateMixin = superClass =>
   class extends superClass {
     static get properties() {
@@ -13,6 +14,7 @@ export const elementBoilerplateMixin = superClass =>
       this.name = this.props.name;
       this.fieldPath = this.props.fieldPath;
       this.mistForm.dependencyController.addElementReference(this);
+      this.debouncedEventChange = debouncer(e => this.valueChanged(e), 400);
     }
 
     render() {

@@ -57,6 +57,7 @@ export class DependencyController {
 
   updatePropertiesFromConditions(fieldPath) {
     // Debounce this function
+    const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
@@ -67,7 +68,10 @@ export class DependencyController {
           // Here is the bug. This element Reference should be update or I should find by fieldPath
           const element = this.elementReferencesByFieldPath[condition.target];
 
-          const dependencyValues = this.getDependencyValues(condition);
+          const dependencyValues = this.getDependencyValues(
+            condition,
+            formValues
+          );
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues);
@@ -84,9 +88,8 @@ export class DependencyController {
     });
   }
 
-  getDependencyValues = dependency => {
+  getDependencyValues = (dependency, formValues) => {
     const source = dependency.dependsOn;
-    const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     return util.getNestedValueFromPath(source, formValues);
   };
 }

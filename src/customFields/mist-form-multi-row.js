@@ -82,21 +82,6 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     ></mist-form-row>`;
   }
 
-  // shouldUpdate(changedProperties) {
-  //   let update = true;
-  //   changedProperties.forEach((oldValue, propName) => {
-  //     if (
-  //       propName === 'value' &&
-  //       JSON.stringify(oldValue) !== JSON.stringify(this.value) &&
-  //       oldValue !== undefined
-  //     ) {
-  //       update = false;
-  //     }
-  //   });
-
-  //   return update;
-  // }
-
   getValue() {
     const value = [];
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
@@ -117,10 +102,6 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       //   this.mistForm.dependencyController.removeElementReference(`${this.fieldPath}[${indexToRemove}].${this.props.rowProps[key].name}`)
       // this.misftForm.dependencyController.elementReferencesByFieldPath(`${this.fieldPath}[${indexToRemove}].${this.rowProps[key].name}`);
     });
-
-    // this.value = [...this.getValue()];
-    // this.value.splice(index, 1);
-    // this.requestUpdate();
 
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
 
@@ -149,6 +130,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
 
   render() {
     super.render();
+    console.log("This.rowPrps ", this.props.rowProps)
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>

@@ -47,9 +47,7 @@ describe('Expiration constraints', () => {
 
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({ expiration: { notify: { require: false } } })
-      );
+      expect(JSON.stringify(el.value)).to.equal(JSON.stringify({}));
     });
   });
 

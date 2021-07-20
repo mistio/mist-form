@@ -111,7 +111,6 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         </paper-listbox> </paper-dropdown-menu
       >${this.helpText(this.props)}`;
   }
-
   render() {
     super.render();
     const isDynamic = Object.prototype.hasOwnProperty.call(

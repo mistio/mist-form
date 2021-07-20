@@ -59,7 +59,8 @@ describe('Cost constraints', () => {
           .clear({ force: true })
           .type('100', { force: true });
       });
-
+    // We need to wait because value change event is debounced
+    cy.wait(500);
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
   });
 

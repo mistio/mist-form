@@ -80,6 +80,7 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
+    this.value = this.props.value;
     if (this.props.value) {
       this.textValue = this.value && this.value.replace(/[^0-9]/g, '');
       this.unitValue = this.value && this.value.match(/\D/g).join('');
@@ -97,7 +98,7 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
         type="number"
         autovalidate="true"
         excludeFromPayload
-        .value="${this.props.textValue}"
+        .value="${this.textValue}"
         @value-changed="${this.updateTextValue}"
       ></paper-input>
       <paper-dropdown-menu no-animations="" excludeFromPayload>

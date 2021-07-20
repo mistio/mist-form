@@ -12,11 +12,13 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
   }
 
   render() {
+    this.props.checked = this.props.value;
     super.render();
     return html`<paper-checkbox
         class="${this.props.classes || ''} mist-form-input"
         ...="${spreadProps(this.props)}"
         @checked-changed=${this.valueChanged}
+        .checked="${this.props.value}"
         ?excludeFromPayload="${this.props.excludeFromPayload}"
         value=""
         fieldPath="${this.props.fieldPath}"

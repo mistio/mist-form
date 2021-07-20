@@ -136,7 +136,7 @@ describe('Field constraints', () => {
             cy.get('paper-checkbox').last().click({ force: true });
           });
       });
-
+    cy.wait(500);
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {
@@ -144,8 +144,8 @@ describe('Field constraints', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           field: [
-            { show: true, name: 'Field2', value: '', cloud: 'cloudId3' },
-            { show: false, name: 'Field3', value: 'Value3', cloud: 'cloudId2' },
+            { value: '', name: 'Field2', cloud: 'cloudId3' },
+            { show: true, name: 'Field3', value: 'Value3', cloud: 'cloudId2' },
           ],
         })
       );
