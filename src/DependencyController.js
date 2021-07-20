@@ -11,15 +11,23 @@ export class DependencyController {
     this.updateConditionMap(element);
   }
 
+  removeElementReference(target) {
+    delete this.elementReferencesByFieldPath[target];
+  }
+
   // Differentiate if dependsOn is string or array
   updateConditionMap(element) {
     const { props } = element;
+    if (!props) {
+      return;
+    }
     if (
       props.deps &&
       this.mistForm.dynamicDataNamespace &&
       this.mistForm.dynamicDataNamespace.conditionals
     ) {
       props.deps.forEach(dep => {
+        this.elementReferencesByFieldPath[element.fieldPath] = element;
         const { prop, func } = dep;
         // Check for relative path
         const level = dep.dependsOn.search(/[^.]+$/);
@@ -41,8 +49,8 @@ export class DependencyController {
             x => JSON.stringify(x) === JSON.stringify(condition)
           )
         )
-          this.elementReferencesByFieldPath[element.fieldPath] = element;
-        this.conditionMap.push(condition);
+          // this.elementReferencesByFieldPath[element.fieldPath] = element;
+          this.conditionMap.push(condition);
       });
     }
   }
@@ -56,16 +64,21 @@ export class DependencyController {
     this.mistForm.updateComplete.then(() => {
       if (conditions.length) {
         conditions.forEach(condition => {
-          console.log('condition.target ', condition.target);
+          // Here is the bug. This element Reference should be update or I should find by fieldPath
           const element = this.elementReferencesByFieldPath[condition.target];
 
           const dependencyValues = this.getDependencyValues(condition);
-          console.log('dependencyValues ', dependencyValues);
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues);
           // What happens if newValue is object or Array?
+          // if (element[condition.prop] !== newValue) {
+
+          if (!element) {
+            return;
+          }
           element.props = { ...element.props, [condition.prop]: newValue };
+          //  }
         });
       }
     });
@@ -74,8 +87,6 @@ export class DependencyController {
   getDependencyValues = dependency => {
     const source = dependency.dependsOn;
     const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
-    console.log('source ', source);
-    console.log('formValues ', formValues);
     return util.getNestedValueFromPath(source, formValues);
   };
 }

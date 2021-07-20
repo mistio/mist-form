@@ -2,36 +2,21 @@ import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { until } from 'lit-html/directives/until.js';
 import * as util from '../utilities.js';
-// TODO: Set required property that gives error if element has empty value
-class MistFormDropdown extends LitElement {
-  static get properties() {
-    return {
-      value: { type: String },
-      props: { type: Object },
-      fieldPath: { type: String, reflect: true },
-    };
-  }
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
+class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
 
-  validate() {
-    return (
-      (this.shadowRoot.querySelector('paper-dropdown-menu') &&
-        this.shadowRoot.querySelector('paper-dropdown-menu').validate()) ||
-      true
-    );
-  }
-
-  valueChanged(e) {
-    // I might have a problem here when trying to initialize values. I should check what I did with the item-id property
-    this.value = e.detail.value;
-    this.props.valueChangedEvent({
-      fieldPath: this.fieldPath,
-      value: this.value,
-    });
-  }
+  // valueChanged(e) {
+  //   // I might have a problem here when trying to initialize values. I should check what I did with the item-id property
+  //   this.value = e.detail.value;
+  //   this.props.valueChangedEvent({
+  //     fieldPath: this.fieldPath,
+  //     value: this.value,
+  //   });
+  // }
 
   loadDynamicData() {
     if (
@@ -85,12 +70,15 @@ class MistFormDropdown extends LitElement {
           this.props.enum = enumData;
           return html`${enumData ? this.getDropdown() : 'Not found'}`;
         }),
-      `<paper-spinner active></paper-spinner>`
+      html`<paper-spinner active></paper-spinner>`
     )}`;
   }
 
   getDropdown() {
-    const value = this.props.enum.find(prop => prop.id === this.props.value);
+    const value =
+      this.props &&
+      this.props.enum &&
+      this.props.enum.find(prop => prop.id === this.props.value);
     if (value) {
       this.props.value = value.title;
     }
@@ -124,16 +112,8 @@ class MistFormDropdown extends LitElement {
       >${this.helpText(this.props)}`;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.name = this.props.name;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
-  }
-
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     const isDynamic = Object.prototype.hasOwnProperty.call(
       this.props,
       'x-mist-enum'

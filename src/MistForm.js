@@ -182,7 +182,7 @@ export class MistForm extends LitElement {
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
           properties.rowProps[key] = {
-            name: key,
+            //  name: key,
             ...val, // If user gave a separate name it will be overwritten here
             fieldPath: `${properties.fieldPath}.${val.name || key}`,
           };

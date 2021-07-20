@@ -1,8 +1,10 @@
 import { LitElement, html, css } from 'lit-element';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 
-class MultiRow extends LitElement {
+class MultiRow extends elementBoilerplateMixin(LitElement) {
   static get properties() {
     return {
       value: { type: Array },
@@ -59,8 +61,9 @@ class MultiRow extends LitElement {
   }
 
   addRow() {
-    this.value.push({});
-    this.requestUpdate();
+    // this.value.push({});
+    this.value = [...this.value, {}];
+    // this.requestUpdate();
   }
 
   validate() {
@@ -71,21 +74,12 @@ class MultiRow extends LitElement {
   }
 
   createRow(index, field) {
-    console.log('index ', index);
-    console.log('field ', field);
     return html`<mist-form-row
-      .field=${field}
+      .value=${field}
       .index=${index}
       .parent=${this}
       .rowProps=${this.props.rowProps}
     ></mist-form-row>`;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.name = this.props.name;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
   }
 
   // shouldUpdate(changedProperties) {
@@ -106,20 +100,35 @@ class MultiRow extends LitElement {
   getValue() {
     const value = [];
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
-    console.log('rows ', rows);
+
     rows.forEach(row => {
       value.push(row.value);
     });
     return value;
   }
 
-  updateRowIndexes() {
-    const rows = this.shadowRoot.querySelectorAll('mist-form-row');
-    console.log('rows after remove ', rows);
-    rows.forEach((row, index) => {
-      //   row.updateIndexAndFieldPath(index);
-      console.log('row ', row);
+  updateRowIndexes(indexToRemove) {
+    // this.value = [
+    //   ...this.value.slice(0, indexToRemove),
+    //   ...this.value.slice(indexToRemove + 1),
+    // ];
+    this.value.splice(indexToRemove, 1);
+    Object.keys(this.props.rowProps).forEach(key => {
+      //   this.mistForm.dependencyController.removeElementReference(`${this.fieldPath}[${indexToRemove}].${this.props.rowProps[key].name}`)
+      // this.misftForm.dependencyController.elementReferencesByFieldPath(`${this.fieldPath}[${indexToRemove}].${this.rowProps[key].name}`);
     });
+
+    // this.value = [...this.getValue()];
+    // this.value.splice(index, 1);
+    // this.requestUpdate();
+
+    const rows = this.shadowRoot.querySelectorAll('mist-form-row');
+
+    rows.forEach((row, index) => {
+      row.updateIndexAndFieldPath(index);
+      // this.mistForm.dependencyController.addElementReference(row);
+    });
+    this.requestUpdate();
     //  this.valueChanged();
   }
 
@@ -139,10 +148,7 @@ class MultiRow extends LitElement {
   }
 
   render() {
-    console.log('multirow render ', this.value);
-    const styles = {};
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
@@ -157,8 +163,11 @@ class MultiRow extends LitElement {
           )}
           <span></span>
         </div>
-
-        ${this.value.map((field, index) => this.createRow(index, field))}
+        ${repeat(
+          this.value,
+          value => value,
+          (value, index) => this.createRow(index, value)
+        )}
 
         <div>
           <span class="addrule">

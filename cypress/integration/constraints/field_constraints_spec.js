@@ -86,7 +86,7 @@ describe('Field constraints', () => {
       .within(() => {
         cy.get('paper-dropdown-menu').click();
         cy.get('paper-dropdown-menu').find('paper-item').eq(1).click();
-        cy.get('.field-name').should('not.exist');
+        cy.get('.field-name').should('not.be.visible');
 
         cy.get('paper-dropdown-menu').eq(0).click();
         cy.get('paper-dropdown-menu')
@@ -101,38 +101,42 @@ describe('Field constraints', () => {
 
   it('Add another field and click submit button to get object', () => {
     cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-button.add')
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-dropdown-menu')
-      .eq(1)
-      .click();
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-dropdown-menu')
-      .eq(1)
-      .find('paper-item')
-      .eq(3)
-      .click({ force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('input')
-      .eq(2)
-      .clear({ force: true })
-      .type('Field3', { force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('input')
-      .eq(3)
-      .clear({ force: true })
-      .type('Value3', { force: true });
-    cy.get('mist-form')
-      .find('#field_constraint_container multi-row')
-      .find('paper-checkbox')
-      .last()
-      .click({ force: true });
+      .find('#field_constraint_container')
+      .find('.subform-container')
+      .find('mist-form-multi-row')
+      .within(() => {
+        cy.get('paper-button.add').click({ force: true });
+
+        cy.get('mist-form-row')
+          .first()
+          .within(() => {
+            cy.get('paper-dropdown-menu').click();
+            cy.get('paper-dropdown-menu')
+              .find('paper-item')
+              .eq(3)
+              .click({ force: true });
+          });
+
+        cy.get('mist-form-row')
+          .eq(1)
+          .within(() => {
+            cy.get('paper-dropdown-menu').click();
+            cy.get('paper-dropdown-menu')
+              .find('paper-item')
+              .eq(2)
+              .click({ force: true });
+            cy.get('#name')
+              .find('input')
+              .clear({ force: true })
+              .type('Field3', { force: true });
+            cy.get('#value')
+              .find('input')
+              .clear({ force: true })
+              .type('Value3', { force: true });
+            cy.get('paper-checkbox').last().click({ force: true });
+          });
+      });
+
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {
@@ -140,16 +144,8 @@ describe('Field constraints', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           field: [
-            {
-              cloud: 'cloudId3',
-              name: 'Field2',
-            },
-            {
-              cloud: 'cloudId3',
-              name: 'Field3',
-              value: 'Value3',
-              show: true,
-            },
+            { show: true, name: 'Field2', value: '', cloud: 'cloudId3' },
+            { show: false, name: 'Field3', value: 'Value3', cloud: 'cloudId2' },
           ],
         })
       );

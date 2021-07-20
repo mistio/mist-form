@@ -1,10 +1,11 @@
 import { LitElement, html, css } from 'lit-element';
 import * as util from '../utilities.js';
-// TODO: Set required property that gives error if element has empty value
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
+
 const isEvenOrOdd = fieldPath =>
   fieldPath.split('.').length % 2 ? 'odd' : 'even';
 
-class MistFormSubform extends LitElement {
+class MistFormSubform extends elementBoilerplateMixin(LitElement) {
   static get properties() {
     return {
       value: { type: String },
@@ -45,20 +46,9 @@ class MistFormSubform extends LitElement {
     );
   }
 
-  valueChanged(e) {
-    this.value = e.detail.value;
-    this.props.valueChangedEvent({
-      fieldPath: this.fieldPath,
-      value: this.value,
-    });
-  }
-
   connectedCallback() {
     super.connectedCallback();
-    this.name = this.props.name;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
   }
 
   getValue() {
@@ -91,8 +81,7 @@ class MistFormSubform extends LitElement {
   render() {
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen
         ? 'open'

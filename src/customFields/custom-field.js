@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 // We can set these fields when passing web components to the form
 // 1. mist-form-type:  Necessary to define component name from json
 // 2. mist-form-value-change: The name of the value change event. Default is value-change
@@ -16,15 +17,7 @@ const getValueProp = el =>
   el.attributes['mist-form-value-prop'] &&
   el.attributes['mist-form-value-prop'].value;
 
-class MistFormCustomField extends LitElement {
-  static get properties() {
-    return {
-      value: { type: String },
-      props: { type: Object },
-      fieldPath: { type: String, reflect: true },
-    };
-  }
-
+class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
@@ -67,15 +60,11 @@ class MistFormCustomField extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.name = this.props.name;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
     this.setupComponent();
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     for (const [key, val] of Object.entries(this.props)) {
       this.customElement[key] = val;
     }

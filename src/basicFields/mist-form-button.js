@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
-
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import * as util from '../utilities.js';
-// TODO: Set required property that gives error if element has empty value
-class MistFormButton extends LitElement {
+
+class MistFormButton extends elementBoilerplateMixin(LitElement) {
   static get properties() {
     return {
       value: { type: String },
@@ -21,28 +21,17 @@ class MistFormButton extends LitElement {
     return true;
   }
 
-  valueChanged() {
-    this.props.valueChangedEvent({
-      fieldPath: this.fieldPath,
-      value: this.value,
-    });
-  }
-
   setDisabled(disabled) {
     this.disabled = disabled;
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.name = this.props.name;
     this.disabled = !!this.props.disabled;
-
-    this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     return html` <paper-button
       class="${this.props.classes || ''} btn-block"
       raised

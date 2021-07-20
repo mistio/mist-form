@@ -1,45 +1,15 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import * as util from '../utilities.js';
-// TODO: Set required property that gives error if element has empty value
-class MistFormTextArea extends LitElement {
-  static get properties() {
-    return {
-      value: { type: String },
-      props: { type: Object },
-      fieldPath: { type: String, reflect: true },
-    };
-  }
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
+class MistFormTextArea extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
 
-  validate() {
-    return (
-      this.shadowRoot.querySelector('paper-textarea') &&
-      this.shadowRoot.querySelector('paper-textarea').validate()
-    );
-  }
-
-  valueChanged(e) {
-    this.value = e.detail.value;
-    this.props.valueChangedEvent({
-      fieldPath: this.fieldPath,
-      value: this.value,
-    });
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.name = this.props.name;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
-  }
-
   render() {
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     return html`<paper-textarea
         class="${this.props.classes || ''} mist-form-input"
         always-float-label

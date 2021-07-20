@@ -1,17 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
-
 import * as util from '../utilities.js';
-// TODO: Set required property that gives error if element has empty value
-class MistFormCheckboxGroup extends LitElement {
-  static get properties() {
-    return {
-      value: { type: String },
-      props: { type: Object },
-      fieldPath: { type: String, reflect: true },
-    };
-  }
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
+class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
@@ -26,13 +18,6 @@ class MistFormCheckboxGroup extends LitElement {
       fieldPath: this.fieldPath,
       value: this.value,
     });
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.name = this.props.name;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {

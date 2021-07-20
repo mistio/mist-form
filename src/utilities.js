@@ -63,7 +63,8 @@ export const formatInputValue = node => {
     value = parseInt(value, 10);
   }
   if (node.props && node.props.saveAsArray) {
-    value = value.split(',').map(val => val.trim());
+    value = value && value.split(',').map(val => val.trim());
+
   }
 
   return value;

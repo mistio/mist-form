@@ -13,125 +13,126 @@ describe('Constraints form with data', () => {
   it('Check that all subforms are open', () => {
     cy.get('mist-form')
       .find('#cost_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
     cy.get('mist-form')
       .find('#size_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
     cy.get('mist-form')
       .find('#expiration_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
     cy.get('mist-form')
       .find('#field_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
   });
   it('Check that subforms toggle correctly', () => {
     cy.get('mist-form')
-      .find('#cost_constraint_container paper-toggle-button')
+      .find('#cost_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#cost_constraint_container')
+      .find('.subform-container')
       .should('not.have.class', 'open');
     cy.get('mist-form')
-      .find('#cost_constraint_container paper-toggle-button')
+      .find('#cost_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#cost_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
 
     cy.get('mist-form')
-      .find('#size_constraint_container paper-toggle-button')
+      .find('#size_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#size_constraint_container')
+      .find('.subform-container')
       .should('not.have.class', 'open');
     cy.get('mist-form')
-      .find('#size_constraint_container paper-toggle-button')
+      .find('#size_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#size_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
 
     cy.get('mist-form')
-      .find('#expiration_constraint_container paper-toggle-button')
+      .find('#expiration_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#expiration_constraint_container')
+      .find('.subform-container')
       .should('not.have.class', 'open');
     cy.get('mist-form')
-      .find('#expiration_constraint_container paper-toggle-button')
+      .find('#expiration_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#expiration_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
 
     cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
+      .find('#field_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#field_constraint_container')
+      .find('.subform-container')
       .should('not.have.class', 'open');
     cy.get('mist-form')
-      .find('#field_constraint_container paper-toggle-button')
+      .find('#field_constraint_container')
+      .find('.subform-container > paper-toggle-button')
       .click();
     cy.get('mist-form')
       .find('#field_constraint_container')
+      .find('.subform-container')
       .should('have.class', 'open');
   });
   it('Check that data appears correctly for cost subform', () => {
     cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_team_run_rate')
-      .find('input')
-      .should('have.value', 100);
-    cy.get('mist-form')
-      .find('#cost_constraint_container > #cost_max_total_run_rate')
-      .find('input')
-      .should('have.value', 200);
+      .find('#cost_constraint_container')
+      .within(() => {
+        cy.get('#cost_max_team_run_rate')
+          .find('input')
+          .should('have.value', 100);
+        cy.get('#cost_max_total_run_rate')
+          .find('input')
+          .should('have.value', 200);
+      });
   });
   it('Check that data appears correctly for size subform', () => {
-    cy.get('mist-form')
-      .find('#size_constraint_container > #cpu_constraint > #min')
-      .find('input')
-      .should('have.value', 100);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #cpu_constraint > #max')
-      .find('input')
-      .should('have.value', 200);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #cpu_constraint > #show')
-      .should('not.have.attr', 'checked');
-    cy.get('mist-form')
-      .find('#size_constraint_container > #ram_constraint > #min')
-      .find('input')
-      .should('have.value', 200);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #ram_constraint > #max')
-      .find('input')
-      .should('have.value', 300);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #ram_constraint > #show')
-      .should('not.have.attr', 'checked');
-    cy.get('mist-form')
-      .find('#size_constraint_container > #primary_disk_constraint > #min')
-      .find('input')
-      .should('have.value', 400);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #primary_disk_constraint > #max')
-      .find('input')
-      .should('have.value', 500);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #primary_disk_constraint > #show')
-      .should('have.attr', 'checked');
-    cy.get('mist-form')
-      .find('#size_constraint_container > #swap_disk_constraint > #min')
-      .find('input')
-      .should('have.value', 600);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #swap_disk_constraint > #max')
-      .find('input')
-      .should('have.value', 700);
-    cy.get('mist-form')
-      .find('#size_constraint_container > #swap_disk_constraint > #show')
-      .should('have.attr', 'checked');
+    cy.get('#cpu_constraint').within(() => {
+      cy.get('#min').find('input').should('have.value', 100);
+      cy.get('#max').find('input').should('have.value', 200);
+      cy.get('#show').should('not.have.attr', 'checked');
+    });
+
+    cy.get('#ram_constraint').within(() => {
+      cy.get('#min').find('input').should('have.value', 200);
+      cy.get('#max').find('input').should('have.value', 300);
+      cy.get('#show').should('not.have.attr', 'checked');
+    });
+
+    cy.get('#primary_disk_constraint').within(() => {
+      cy.get('#min').find('input').should('have.value', 400);
+      cy.get('#max').find('input').should('have.value', 500);
+      cy.get('#show').should('have.attr', 'checked');
+    });
+
+    cy.get('#swap_disk_constraint').within(() => {
+      cy.get('#min').find('input').should('have.value', 600);
+      cy.get('#max').find('input').should('have.value', 700);
+      cy.get('#show').should('have.attr', 'checked');
+    });
   });
   it('Check that data appears correctly for expiration subform', () => {
     cy.get('mist-form')

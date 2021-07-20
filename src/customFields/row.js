@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
 
-// TODO: Set required property that gives error if element has empty value
 class MistFormRow extends LitElement {
   static get properties() {
     return {
@@ -63,11 +62,23 @@ class MistFormRow extends LitElement {
   updateIndexAndFieldPath(index) {
     this.index = index;
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
-    console.log('this.shadowRoot.children ', this.shadowRoot.children);
-    // this.requestUpdate();
-    // this.shadowRoot.children.forEach(child => {
-    //   child.fieldPath = `${this.fieldPath}.${child.prop.name}`;
-    // })
+    for (const child of this.shadowRoot.children) {
+      if (child.props) {
+        child.props = {
+          ...child.props,
+          fieldPath: `${this.fieldpath}.${child.name}`,
+        };
+        child.fieldPath = `${this.fieldPath}.${child.name}`;
+      }
+    }
+    this.updateComplete.then(() => {
+      for (const child of this.shadowRoot.children) {
+        if (child.props) {
+          this.parent.mistForm.dependencyController.addElementReference(child);
+        }
+      }
+    });
+    this.requestUpdate();
   }
 
   connectedCallback() {
@@ -77,6 +88,7 @@ class MistFormRow extends LitElement {
 
   render() {
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
+
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };
 
@@ -84,13 +96,11 @@ class MistFormRow extends LitElement {
         this.valueChanged(e, prop.name, this.index);
       };
       if (this.field) {
-        prop.value = this.field[prop.name];
+        prop.value = this.value[prop.name];
       }
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
       // I should update for dependencies here?
       // Or should I let it be handled by mistform?
-      console.log('fieldPath ', this.fieldPath);
-      console.log('prop.hidden ', prop.hidden);
       return prop.hidden
         ? html`<span></span>
             <div></div>`
@@ -104,9 +114,8 @@ class MistFormRow extends LitElement {
         title="Remove row"
         class="remove"
         @tap=${() => {
-          console.log('in remove');
           this.remove();
-          this.parent.updateRowIndexes();
+          this.parent.updateRowIndexes(this.index);
           // this.parent.valueChanged();
         }}
       >

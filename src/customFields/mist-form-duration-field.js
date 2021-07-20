@@ -1,14 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
-// TODO: Set required property that gives error if element has empty value
-class DurationField extends LitElement {
-  static get properties() {
-    return {
-      value: { type: String },
-      props: { type: Object },
-      fieldPath: { type: String, reflect: true },
-    };
-  }
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
+class DurationField extends elementBoilerplateMixin(LitElement) {
   constructor() {
     super();
     this.units = this.enum || [
@@ -85,26 +78,17 @@ class DurationField extends LitElement {
     return !!this.unitValue && numberValid;
   }
 
-  getFieldPath() {
-    return this.fieldPath;
-  }
-
   connectedCallback() {
     super.connectedCallback();
     if (this.props.value) {
-      this.textValue = this.value.replace(/[^0-9]/g, '');
-      this.unitValue = this.value.match(/\D/g).join('');
+      this.textValue = this.value && this.value.replace(/[^0-9]/g, '');
+      this.unitValue = this.value && this.value.match(/\D/g).join('');
     }
-
-    this.name = this.props.name;
-    this.fieldPath = this.props.fieldPath;
-    this.mistForm.dependencyController.addElementReference(this);
   }
 
   render() {
     // TODO: Style this like the other element labels
-    this.style.display = this.props.hidden ? 'none' : 'inherit';
-    this.fieldPath = this.props.fieldPath;
+    super.render();
     return html` <span class="label">${this.props.label}</span>
       <paper-input
         .step="1"

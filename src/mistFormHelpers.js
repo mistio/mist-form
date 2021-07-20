@@ -48,6 +48,7 @@ export class MistFormHelpers {
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
+      const inputName = node.name;
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
         // const domValues = this.getValuesfromDOM(node);
@@ -58,20 +59,19 @@ export class MistFormHelpers {
         if (node.props.omitTitle) {
           formValues = { ...formValues, ...domValues };
         } else {
-          formValues[node.name] = domValues;
+          formValues[inputName] = domValues;
         }
       } else if (notExcluded) {
-        const notEmpty = util.valueNotEmpty(node.value);
+        // const notEmpty = util.valueNotEmpty(node.value);
 
-        if (notEmpty) {
+        if (util.valueNotEmpty(node.value)) {
           // If the input has a value of undefined and wasn't required, don't add it
           const inputValue = util.formatInputValue(node);
-          const inputName = node.name;
 
-          const input = {
-            [inputName]: inputValue,
-          };
-          formValues = { ...formValues, ...input };
+          // const input = {
+          //   [inputName]: inputValue,
+          // };
+          formValues = { ...formValues, [inputName]: inputValue };
         }
       }
       return false;
@@ -87,10 +87,10 @@ export class MistFormHelpers {
     const _contents = { ...contents };
     if (_contents.format !== 'subformContainer') {
       for (const [key, val] of Object.entries(_contents.properties)) {
-        if (!val.name) {
-          _contents.properties[key].name = key;
-        }
-
+        // if (!val.name) {
+        //   _contents.properties[key].name = key;
+        // }
+        _contents.properties[key].name = val.name || key;
         _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(
           val
         );
