@@ -142,12 +142,7 @@ describe('Field constraints', () => {
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
       expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          field: [
-            { name: 'Field2', cloud: 'cloudId3' },
-            { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3' },
-          ],
-        })
+        JSON.stringify({"field":[{"name":"Field2","cloud":"cloudId3"},{"cloud":"cloudId2","name":"Field3","show":true,"value":"Value3"}]})
       );
     });
   });
