@@ -182,7 +182,7 @@ describe('Size constraints', () => {
           cy.get('#max')
             .find('input')
             .clear({ force: true })
-            .type('200', { force: true });
+            .type('50', { force: true });
         });
       });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
@@ -197,7 +197,7 @@ describe('Size constraints', () => {
           cpu: { min: 100, max: 200, show: true },
           ram: { min: 100, max: 200 },
           disk: { min: 100, max: 200, show: true },
-          swap_disk: { min: 100, max: 0 },
+          swap_disk: { min: 100, max: 50 },
         },
       });
     });
