@@ -40,7 +40,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     `;
   }
 
-  getFieldsValid() {
+  validate() {
     return this.fieldTemplates.formFieldsValid(
       this.shadowRoot.querySelector('.subform-container')
     );

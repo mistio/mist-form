@@ -49,7 +49,6 @@ export class DependencyController {
             x => JSON.stringify(x) === JSON.stringify(condition)
           )
         )
-          // this.elementReferencesByFieldPath[element.fieldPath] = element;
           this.conditionMap.push(condition);
       });
     }
@@ -65,9 +64,7 @@ export class DependencyController {
     this.mistForm.updateComplete.then(() => {
       if (conditions.length) {
         conditions.forEach(condition => {
-          // Here is the bug. This element Reference should be update or I should find by fieldPath
           const element = this.elementReferencesByFieldPath[condition.target];
-
           const dependencyValues = this.getDependencyValues(
             condition,
             formValues
@@ -76,13 +73,10 @@ export class DependencyController {
             condition.func
           ].func(dependencyValues);
           // What happens if newValue is object or Array?
-          // if (element[condition.prop] !== newValue) {
-
           if (!element) {
             return;
           }
           element.props = { ...element.props, [condition.prop]: newValue };
-          //  }
         });
       }
     });

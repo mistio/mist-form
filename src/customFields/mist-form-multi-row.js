@@ -61,9 +61,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
   }
 
   addRow() {
-    // this.value.push({});
     this.value = [...this.value, {}];
-    // this.requestUpdate();
   }
 
   validate() {
@@ -73,9 +71,9 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     return true;
   }
 
-  createRow(index, field) {
+  createRow(index, value) {
     return html`<mist-form-row
-      .value=${field}
+      .value=${value}
       .index=${index}
       .parent=${this}
       .rowProps=${this.props.rowProps}
@@ -89,34 +87,27 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     rows.forEach(row => {
       value.push(row.value);
     });
+
     return value;
   }
 
   updateRowIndexes(indexToRemove) {
-    // this.value = [
-    //   ...this.value.slice(0, indexToRemove),
-    //   ...this.value.slice(indexToRemove + 1),
-    // ];
-    this.value.splice(indexToRemove, 1);
-    Object.keys(this.props.rowProps).forEach(key => {
-      //   this.mistForm.dependencyController.removeElementReference(`${this.fieldPath}[${indexToRemove}].${this.props.rowProps[key].name}`)
-      // this.misftForm.dependencyController.elementReferencesByFieldPath(`${this.fieldPath}[${indexToRemove}].${this.rowProps[key].name}`);
-    });
+    this.value = [
+      ...this.value.slice(0, indexToRemove),
+      ...this.value.slice(indexToRemove + 1),
+    ];
 
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
 
     rows.forEach((row, index) => {
       row.updateIndexAndFieldPath(index);
-      // this.mistForm.dependencyController.addElementReference(row);
     });
     this.requestUpdate();
-    //  this.valueChanged();
   }
 
   // TODO: Trigger this. Or maybe not. It's triggered in mistForm
   valueChanged(e) {
     // Detect value changes of children
-
     // e Is undefined when removing a row
     if (e) {
       this.props.valueChangedEvent({
@@ -128,9 +119,13 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = this.getValue();
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.value = this.props.value || [];
+  }
+
   render() {
     super.render();
-    console.log("This.rowPrps ", this.props.rowProps)
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.label}</span>
@@ -145,11 +140,13 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
           )}
           <span></span>
         </div>
-        ${repeat(
-          this.value,
-          value => value,
-          (value, index) => this.createRow(index, value)
-        )}
+        ${this.value
+          ? repeat(
+              this.value,
+              value => value,
+              (value, index) => this.createRow(index, value)
+            )
+          : ''}
 
         <div>
           <span class="addrule">

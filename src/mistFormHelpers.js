@@ -12,10 +12,9 @@ export class MistFormHelpers {
   }
 
   updateState() {
-    this.mistForm.allFieldsValid =
-      this.fieldTemplates.formFieldsValid(this.mistForm.shadowRoot) ||
-      this.isEmpty();
-
+    this.mistForm.allFieldsValid = this.fieldTemplates.formFieldsValid(
+      this.mistForm.shadowRoot
+    );
     this.mistForm.shadowRoot
       .querySelector('#submit-btn')
       .setDisabled(!this.mistForm.allFieldsValid);
@@ -35,9 +34,6 @@ export class MistFormHelpers {
           }
         } else {
           _props.value = initialValue;
-          if (_props.format === 'multiRow') {
-            _props.initialValue = initialValue;
-          }
         }
       }
     }
@@ -51,7 +47,6 @@ export class MistFormHelpers {
       const inputName = node.name;
       const notExcluded = !node.hasAttribute('excludeFromPayload');
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
-        // const domValues = this.getValuesfromDOM(node);
         const domValues = node.getValue();
         if (!util.valueNotEmpty(domValues)) {
           return {};
@@ -62,15 +57,9 @@ export class MistFormHelpers {
           formValues[inputName] = domValues;
         }
       } else if (notExcluded) {
-        // const notEmpty = util.valueNotEmpty(node.value);
-
         if (util.valueNotEmpty(node.value)) {
           // If the input has a value of undefined and wasn't required, don't add it
           const inputValue = util.formatInputValue(node);
-
-          // const input = {
-          //   [inputName]: inputValue,
-          // };
           formValues = { ...formValues, [inputName]: inputValue };
         }
       }
@@ -87,9 +76,6 @@ export class MistFormHelpers {
     const _contents = { ...contents };
     if (_contents.format !== 'subformContainer') {
       for (const [key, val] of Object.entries(_contents.properties)) {
-        // if (!val.name) {
-        //   _contents.properties[key].name = key;
-        // }
         _contents.properties[key].name = val.name || key;
         _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(
           val

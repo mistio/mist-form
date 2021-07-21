@@ -1,4 +1,5 @@
 import { debouncer } from './utilities.js';
+
 export const elementBoilerplateMixin = superClass =>
   class extends superClass {
     static get properties() {

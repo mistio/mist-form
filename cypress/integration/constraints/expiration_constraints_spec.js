@@ -66,7 +66,6 @@ describe('Expiration constraints', () => {
       .find('input')
       .first()
       .clear({ force: true });
-    cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
     cy.get('mist-form')
       .find('#expiration_constraint_container ')
       .find('#default')
@@ -152,7 +151,7 @@ describe('Expiration constraints', () => {
           cy.paperTextAreaType('#message', 'Test');
         });
       });
-
+    cy.wait(500);
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {
@@ -168,7 +167,6 @@ describe('Expiration constraints', () => {
             },
             notify: {
               default: '100d',
-              require: false,
               msg: 'Test',
             },
           },

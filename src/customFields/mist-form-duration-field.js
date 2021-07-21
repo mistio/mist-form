@@ -69,13 +69,16 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
 
   validate() {
     const numberValid =
-      this.shadowRoot.querySelector('paper-input') &&
-      this.shadowRoot.querySelector('paper-input').validate();
+      this.shadowRoot.querySelector('#text') &&
+      this.shadowRoot.querySelector('#text').validate();
 
-    if (!this.textValue) {
+    if (!this.textValue && !this.unitValue) {
       return true;
     }
-    return !!this.unitValue && numberValid;
+    if (!this.textValue || !this.unitValue) {
+      return false;
+    }
+    return numberValid;
   }
 
   connectedCallback() {
@@ -88,10 +91,10 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
   }
 
   render() {
-    // TODO: Style this like the other element labels
     super.render();
     return html` <span class="label">${this.props.label}</span>
       <paper-input
+        id="text"
         .step="1"
         .min=${this.props.min || 1}
         .max=${this.props.max}
@@ -101,7 +104,7 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
         .value="${this.textValue}"
         @value-changed="${this.updateTextValue}"
       ></paper-input>
-      <paper-dropdown-menu no-animations="" excludeFromPayload>
+      <paper-dropdown-menu no-animations="" excludeFromPayload id="unit">
         <paper-listbox
           @selected-changed=${this.updateUnitValue}
           class="dropdown-content"

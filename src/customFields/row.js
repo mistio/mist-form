@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import * as util from '../utilities.js';
 
 class MistFormRow extends LitElement {
   static get properties() {
@@ -6,7 +7,6 @@ class MistFormRow extends LitElement {
       value: { type: Object },
       props: { type: Object },
       fieldPath: { type: String, reflect: true },
-      // index: {type: Number}
     };
   }
 
@@ -55,7 +55,12 @@ class MistFormRow extends LitElement {
   }
 
   valueChanged(e, name) {
-    this.value[name] = e.value;
+    if (util.valueNotEmpty(e.value)) {
+      this.value[name] = e.value;
+    } else {
+      delete this.value[name];
+    }
+
     this.parent.valueChanged(e);
   }
 
@@ -88,20 +93,17 @@ class MistFormRow extends LitElement {
 
   render() {
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
-console.log("this.value ", this.value)
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };
 
       prop.valueChangedEvent = e => {
         this.valueChanged(e, prop.name, this.index);
       };
-      if (this.field) {
+      if (this.value) {
         prop.value = this.value[prop.name];
       }
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
-      console.log("prop ", prop)
-      // I should update for dependencies here?
-      // Or should I let it be handled by mistform?
+
       return prop.hidden
         ? html`<span></span>
             <div></div>`
@@ -117,7 +119,6 @@ console.log("this.value ", this.value)
         @tap=${() => {
           this.remove();
           this.parent.updateRowIndexes(this.index);
-          // this.parent.valueChanged();
         }}
       >
       </paper-icon-button>

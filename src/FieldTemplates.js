@@ -47,16 +47,13 @@ export class FieldTemplates extends FieldTemplateHelpers {
   // Combine field and helpText and return template
   getTemplate(props) {
     const _props = { ...props };
-    //  if (!_props.hidden) {
     const { fieldType, valueChangedEvent } = _props;
     _props.valueChangedEvent = valueChangedEvent || this.valueChangedEvent;
     if (this[fieldType]) {
       const template = this[fieldType](_props);
       return html` ${template}`;
     }
-
     console.error(`Invalid field type: ${fieldType}`);
-    //  }
     return '';
   }
 

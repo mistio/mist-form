@@ -144,8 +144,8 @@ describe('Field constraints', () => {
       expect(JSON.stringify(el.value)).to.equal(
         JSON.stringify({
           field: [
-            { value: '', name: 'Field2', cloud: 'cloudId3' },
-            { show: true, name: 'Field3', value: 'Value3', cloud: 'cloudId2' },
+            { name: 'Field2', cloud: 'cloudId3' },
+            { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3' },
           ],
         })
       );

@@ -21,13 +21,7 @@ export class FieldTemplateHelpers {
     const nodeList = this.getFirstLevelChildren(root);
     const formValid = !nodeList.some(node => {
       const notExcluded = !node.hasAttribute('excludeFromPayload');
-      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
-        return !node.getFieldsValid();
-      }
-      if (notExcluded) {
-        return node.validate && node.validate ? !node.validate() : false;
-      }
-      return false;
+      return notExcluded ? !node.validate() : false;
     });
     return formValid;
   }

@@ -9,15 +9,6 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
     return css``;
   }
 
-  // valueChanged(e) {
-  //   // I might have a problem here when trying to initialize values. I should check what I did with the item-id property
-  //   this.value = e.detail.value;
-  //   this.props.valueChangedEvent({
-  //     fieldPath: this.fieldPath,
-  //     value: this.value,
-  //   });
-  // }
-
   loadDynamicData() {
     if (
       this.mistForm.dynamicDataNamespace &&
@@ -79,8 +70,9 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
       this.props &&
       this.props.enum &&
       this.props.enum.find(prop => prop.id === this.props.value);
+
     if (value) {
-      this.props.value = value.title;
+      this.props.value = value.id;
     }
 
     return html`<paper-dropdown-menu
@@ -111,6 +103,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         </paper-listbox> </paper-dropdown-menu
       >${this.helpText(this.props)}`;
   }
+
   render() {
     super.render();
     const isDynamic = Object.prototype.hasOwnProperty.call(

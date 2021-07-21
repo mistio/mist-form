@@ -66,15 +66,10 @@ export const formatInputValue = node => {
     if (typeof value === 'string') {
       value = value && value.split(',').map(val => val.trim());
     }
-
-
   }
 
   return value;
 };
-
-export const isInvalid = node =>
-  node && node.validate ? !node.validate() : false;
 
 export const getFieldPath = (input, path) => {
   const [key, properties] = input;

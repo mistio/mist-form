@@ -145,20 +145,11 @@ export class MistForm extends LitElement {
     // 1. Find fields that depend on the field that just changed
     // 2. Change props for the dependant fields
     // 3. A re-render of those fields should happen automatically
-    // 4. TODO: See how to handle multirows
-    // For multirows, maybe it will be better if each row has a field path with a number corresponding to index
-    //   this.shadowRoot.querySelector('[fieldpath="cost.max_team_run_rate"]').value = "10204"
-    // TODO: Debounce the event, especially when it comes from text input fields
-    // TODO: I should check if this works for subform fields
-    this.updateComplete.then(() => {
-      // if (element.tagName === 'MULTI-ROW') {
-      //   // el.getRootNode().host.requestUpdate();
-      // }
 
+    this.updateComplete.then(() => {
       // Check field validity
       this.mistFormHelpers.updateState();
       // Get the field and update via the field
-      // this.updateDynamicData(el.fieldPath);
       this.dependencyController.updatePropertiesFromConditions(fieldPath);
     });
 
@@ -182,8 +173,7 @@ export class MistForm extends LitElement {
         properties.rowProps = {};
         for (const [key, val] of Object.entries(rowProps)) {
           properties.rowProps[key] = {
-            //  name: key,
-            ...val, // If user gave a separate name it will be overwritten here
+            ...val,
             fieldPath: `${properties.fieldPath}.${val.name || key}`,
           };
         }

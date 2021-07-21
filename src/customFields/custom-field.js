@@ -30,7 +30,6 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   }
 
   validate() {
-    // Maybe allow a validate property?
     const validateFunction = this.customElement[this.validateName];
     return validateFunction ? this.customElement.validateFunction() : true;
   }

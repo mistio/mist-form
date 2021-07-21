@@ -20,6 +20,11 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
     });
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.value = this.props.value || [];
+  }
+
   render() {
     super.render();
     return html`
@@ -29,6 +34,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
         ?excludeFromPayload="${this.props.excludeFromPayload}"
         @selected-values-changed=${this.valueChanged}
         class="${this.props.classes || ''} checkbox-group mist-form-input"
+        .selectedValues="${this.value}"
         attr-for-selected="key"
         selected-attribute="checked"
         multi
@@ -36,7 +42,11 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
       >
         ${this.props.enum.map(
           item =>
-            html`<paper-checkbox .id=${item.split(' ').join('-')} key="${item}" .checked="${this.props.value.includes(item)}"
+            html`<paper-checkbox
+                .id=${item.split(' ').join('-')}
+                key="${item}"
+                .checked="${this.props.value &&
+                this.props.value.includes(item)}"
                 >${item}</paper-checkbox
               >${this.helpText(this.props)}`
         )}
