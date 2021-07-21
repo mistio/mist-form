@@ -12,7 +12,7 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
     super.render();
     return html`<paper-input
         class="${this.props.classes || ''} mist-form-input"
-        @value-changed=${this.debouncedEventChange}
+        @value-changed=${this.valueChanged}
         always-float-label
         ...="${spreadProps(util.getConvertedProps(this.props))}"
         .label="${util.getLabel(this.props)}"

@@ -16,7 +16,7 @@ class MistFormTextArea extends elementBoilerplateMixin(LitElement) {
         ...="${spreadProps(util.getConvertedProps(this.props))}"
         .label="${util.getLabel(this.props)}"
         ?excludeFromPayload="${this.props.excludeFromPayload}"
-        @value-changed=${this.debouncedEventChange}
+        @value-changed=${this.valueChanged}
         fieldPath="${this.props.fieldPath}"
       ></paper-textarea
       >${this.helpText(this.props)}`;
