@@ -197,66 +197,65 @@ describe('Constraints form with data', () => {
   });
 
   it('Clicking submit button should give object', () => {
+    cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          cost: {
-            max_team_run_rate: 100,
-            max_total_run_rate: 200,
+      expect(el.value).to.deep.equal({
+        cost: {
+          max_team_run_rate: 100,
+          max_total_run_rate: 200,
+        },
+        size: {
+          allowed: ['test1', 'test2', 'test3'],
+          not_allowed: ['test4'],
+          cpu: {
+            min: 100,
+            max: 200,
+            show: false,
           },
-          size: {
-            allowed: ['test1', 'test2', 'test3'],
-            not_allowed: ['test4'],
-            cpu: {
-              min: 100,
-              max: 200,
-              show: false,
-            },
-            ram: {
-              min: 200,
-              max: 300,
-              show: false,
-            },
-            disk: {
-              min: 400,
-              max: 500,
-              show: true,
-            },
-            swap_disk: {
-              min: 600,
-              max: 700,
-              show: true,
-            },
+          ram: {
+            min: 200,
+            max: 300,
+            show: false,
           },
-          expiration: {
-            max: '100mo',
-            default: '20d',
-            actions: {
-              available: ['destroy', 'undefine'],
-              default: 'undefine',
-            },
-            notify: {
-              default: '100d',
-              require: true,
-              msg: 'Test',
-            },
+          disk: {
+            min: 400,
+            max: 500,
+            show: true,
           },
-          field: [
-            {
-              cloud: 'cloudId2',
-              name: 'Field2',
-              value: 'Value2',
-            },
-            {
-              show: true,
-              name: 'Field3',
-            },
-          ],
-        })
-      );
+          swap_disk: {
+            min: 600,
+            max: 700,
+            show: true,
+          },
+        },
+        expiration: {
+          max: '100mo',
+          default: '20d',
+          actions: {
+            available: ['destroy', 'undefine'],
+            default: 'undefine',
+          },
+          notify: {
+            default: '100d',
+            require: true,
+            msg: 'Test',
+          },
+        },
+        field: [
+          {
+            cloud: 'cloudId2',
+            name: 'Field2',
+            value: 'Value2',
+          },
+          {
+            show: true,
+            name: 'Field3',
+          },
+        ],
+      });
     });
   });
 });

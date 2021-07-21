@@ -93,19 +93,18 @@ describe('Custom field constraints', () => {
   });
 
   it('Clicking submit button should give object', () => {
+    cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          custom: {
-            paperSlider1: 20,
-            paperSlider2: 50,
-            colorSwatch: '#ffebee',
-            hidePaperSlider1: 'Text',
-          },
-        })
-      );
+      expect(el.value).to.deep.equal({
+        custom: {
+          paperSlider1: 20,
+          paperSlider2: 50,
+          colorSwatch: '#ffebee',
+          hidePaperSlider1: 'Text',
+        },
+      });
     });
   });
 });

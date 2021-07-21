@@ -151,27 +151,25 @@ describe('Expiration constraints', () => {
           cy.paperTextAreaType('#message', 'Test');
         });
       });
-    cy.wait(500);
+    cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          expiration: {
-            max: '100mo',
-            default: '20d',
-            actions: {
-              available: ['destroy', 'undefine'],
-              default: 'undefine',
-            },
-            notify: {
-              default: '100d',
-              msg: 'Test',
-            },
+      expect(el.value).to.deep.equal({
+        expiration: {
+          max: '100mo',
+          default: '20d',
+          actions: {
+            available: ['destroy', 'undefine'],
+            default: 'undefine',
           },
-        })
-      );
+          notify: {
+            default: '100d',
+            msg: 'Test',
+          },
+        },
+      });
     });
   });
 });

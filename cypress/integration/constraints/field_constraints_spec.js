@@ -136,14 +136,17 @@ describe('Field constraints', () => {
             cy.get('paper-checkbox').last().click({ force: true });
           });
       });
-    cy.wait(500);
+    cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
 
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({"field":[{"name":"Field2","cloud":"cloudId3"},{"cloud":"cloudId2","name":"Field3","show":true,"value":"Value3"}]})
-      );
+      expect(el.value).to.deep.equal({
+        field: [
+          { name: 'Field2', cloud: 'cloudId3' },
+          { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3' },
+        ],
+      });
     });
   });
 });

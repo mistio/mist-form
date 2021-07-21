@@ -68,14 +68,12 @@ describe('Cost constraints', () => {
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          cost: {
-            max_team_run_rate: 100,
-            max_total_run_rate: 100,
-          },
-        })
-      );
+      expect(el.value).to.deep.equal({
+        cost: {
+          max_team_run_rate: 100,
+          max_total_run_rate: 100,
+        },
+      });
     });
   });
 });

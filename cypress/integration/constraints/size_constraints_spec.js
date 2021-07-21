@@ -186,22 +186,20 @@ describe('Size constraints', () => {
         });
       });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
+    cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
-
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(
-        JSON.stringify({
-          size: {
-            allowed: ['test1', 'test2', 'test3'],
-            not_allowed: ['test4'],
-            cpu: { min: 100, max: 200, show: true },
-            ram: { min: 100, max: 200 },
-            disk: { min: 100, max: 200, show: true },
-            swap_disk: { min: 100, max: 0 },
-          },
-        })
-      );
+      expect(el.value).to.deep.equal({
+        size: {
+          allowed: ['test1', 'test2', 'test3'],
+          not_allowed: ['test4'],
+          cpu: { min: 100, max: 200, show: true },
+          ram: { min: 100, max: 200 },
+          disk: { min: 100, max: 200, show: true },
+          swap_disk: { min: 100, max: 0 },
+        },
+      });
     });
   });
 });
