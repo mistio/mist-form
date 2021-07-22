@@ -57,16 +57,13 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: cloud=>{console.log("cloud ", cloud); return cloud === 'cloudId1'} ,
+          func: cloud=> cloud === 'cloudId1' ,
         },
         hidePaperSlider1: {
-          func: value => {
-            console.log("value ", value)
-            return value === 'yes' || value === 'sure';
-          },
+          func: value => value === 'yes' || value === 'sure',
         },
         getDefaultActions: {
-          func: defaultActions => { console.log("defaultActions ", defaultActions); return defaultActions || []}
+          func: defaultActions => defaultActions || []
         },
         }
       };

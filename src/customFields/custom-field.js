@@ -36,7 +36,6 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
 
   valueChanged(e) {
     this.props.valueChangedEvent(e);
-    this.value = e.detail[this.valueProp];
   }
 
   setupComponent() {
@@ -55,6 +54,8 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
       this.valueChanged(e);
       this.value = this.customElement[this.valueProp];
     });
+    this.props[this.valueProp] = this.props.value;
+    this.value = this.props.value;
   }
 
   connectedCallback() {

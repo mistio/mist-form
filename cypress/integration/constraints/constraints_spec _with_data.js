@@ -196,6 +196,27 @@ describe('Constraints form with data', () => {
       });
   });
 
+  it('Check that data appears correctly in custom subform', () => {
+    cy.get('mist-form')
+      .find('#custom_constraint_container')
+      .within(() => {
+        cy.get('mist-form-custom-field')
+          .eq(0)
+          .find('paper-slider')
+          .should('have.value', 31);
+        cy.get('mist-form-custom-field')
+          .eq(1)
+          .find('paper-slider')
+          .should('have.value', 48);
+        cy.get('mist-form-custom-field')
+          .eq(2)
+          .find('paper-swatch-picker')
+          .then(el => {
+            expect(el[0].color).to.equal('#81d4fa');
+          });
+      });
+  });
+
   it('Clicking submit button should give object', () => {
     cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
@@ -255,6 +276,12 @@ describe('Constraints form with data', () => {
             name: 'Field3',
           },
         ],
+        custom: {
+          paperSlider1: 31,
+          paperSlider2: 48,
+          colorSwatch: '#81d4fa',
+          hidePaperSlider1: 'No',
+        },
       });
     });
   });

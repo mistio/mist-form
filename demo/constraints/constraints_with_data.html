@@ -45,6 +45,8 @@
       import '@polymer/paper-icon-button/paper-icon-button.js';
       import '@polymer/iron-icons/iron-icons.js';
       import '@polymer/iron-selector/iron-selector.js';
+      import '@polymer/paper-slider/paper-slider.js'
+      import '@polymer/paper-swatch-picker/paper-swatch-picker.js';
       import '../../mist-form.js';
 
       const jsonUrl = 'constraints.json';
@@ -63,20 +65,16 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: cloud=>{console.log("cloud ", cloud); return cloud === 'cloudId1'} ,
+          func: cloud=> cloud === 'cloudId1' ,
         },
         hidePaperSlider1: {
-          func: value => {
-            console.log("value ", value)
-            return value === 'yes' || value === 'sure';
-          },
+          func: value => value === 'yes' || value === 'sure',
         },
         getDefaultActions: {
           func: defaultActions => defaultActions || []
         },
         }
       };
-
       const initialValues = {
           cost: {
               max_team_run_rate: 100,
@@ -128,13 +126,14 @@
                   show: true,
                   name: 'Field3',
               },
-          ]
+          ],
+          custom:{paperSlider1:31,paperSlider2:48,colorSwatch:"#81d4fa",hidePaperSlider1:"No"}
       };
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues}>
           <div id="mist-form-custom">
             <paper-slider mist-form-type="paperSlider" editable></paper-slider>
-            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color" mist-form-value-change="color-picker-selected"></paper-swatch-picker>
           </div>
           <iron-ajax
             slot="formRequest"

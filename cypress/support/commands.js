@@ -25,7 +25,6 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('paperTextAreaType', (locator, text) => {
-  console.log('locator ', locator);
   cy.get(locator, {
     includeShadowDom: true,
   })
@@ -47,11 +46,7 @@ Cypress.Commands.add('testPaperDropdownSelected', (locator, text) => {
     includeShadowDom: true,
   })
     .find('paper-dropdown-menu > paper-listbox')
-    // .find('paper-listbox')
-    // .find('paper-item.iron-selected')
-    // .should('have.attr', 'value')
     .then(el => {
-      console.log('el ', el);
       expect(el[0].selected).to.equal(text);
     });
 });
