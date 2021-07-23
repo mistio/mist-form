@@ -35,7 +35,10 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   }
 
   valueChanged(e) {
-    this.props.valueChangedEvent(e);
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
+    });
   }
 
   setupComponent() {
