@@ -1,22 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
-// TODO: Set required property that gives error if element has empty value
-class DurationField extends LitElement {
-  static get properties() {
-    return {
-      value: { type: String },
-      name: { type: String },
-      label: { type: String },
-      units: { type: Array },
-      max: { type: Number },
-      min: { type: Number },
-      textValue: { type: Number },
-      unitValue: { type: String },
-    };
-  }
+import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
+class DurationField extends elementBoilerplateMixin(LitElement) {
   constructor() {
     super();
-    this.min = 1;
     this.units = this.enum || [
       { name: '', value: '' },
       { name: 'months', value: 'mo' },
@@ -60,72 +47,70 @@ class DurationField extends LitElement {
   }
 
   updateTextValue(e) {
-    if (!e.detail.value) {
-      this.shadowRoot.querySelector('paper-listbox').selectIndex(0);
-    }
-
     this.textValue = e.detail.value;
-    this.updateValue();
+    this.valueChanged();
   }
 
   updateUnitValue(e) {
     this.unitValue = e.detail.value;
-    this.updateValue();
+    this.valueChanged();
   }
 
-  updateValue() {
-    // if values valid, set value to new value, or else set to undefined
+  valueChanged() {
     this.value =
       this.textValue && this.unitValue
         ? `${this.textValue}${this.unitValue}`
         : undefined;
-    const event = new CustomEvent('value-changed', {
-      detail: {
-        value: this.value,
-      },
+    this.props.valueChangedEvent({
+      fieldPath: this.fieldPath,
+      value: this.value,
     });
-
-    this.dispatchEvent(event);
   }
 
   validate() {
-    if (!this.textValue) {
+    const numberValid =
+      this.shadowRoot.querySelector('#text') &&
+      this.shadowRoot.querySelector('#text').validate();
+
+    if (!this.textValue && !this.unitValue) {
       return true;
     }
-    return (
-      (parseInt(this.textValue, 10) && !!(this.textValue && this.unitValue)) ||
-      !!(!this.textValue && !this.unitValue)
-    );
+    if (!this.textValue || !this.unitValue) {
+      return false;
+    }
+    return numberValid;
   }
 
   connectedCallback() {
     super.connectedCallback();
-    if (this.value) {
-      this.textValue = this.value.replace(/[^0-9]/g, '');
-      this.unitValue = this.value.match(/\D/g).join('');
+    this.value = this.props.value;
+    if (this.props.value) {
+      this.textValue = this.value && this.value.replace(/[^0-9]/g, '');
+      this.unitValue = this.value && this.value.match(/\D/g).join('');
     }
   }
 
   render() {
-    // TODO: Style this like the other element labels
-    return html` <span class="label">${this.label}</span>
+    super.render();
+    return html` <span class="label">${this.props.label}</span>
       <paper-input
+        id="text"
         .step="1"
-        .min=${this.min}
-        .max=${this.max}
+        .min=${this.props.min || 1}
+        .max=${this.props.max}
         type="number"
         autovalidate="true"
         excludeFromPayload
         .value="${this.textValue}"
-        @value-changed=${this.updateTextValue}
+        @value-changed="${this.updateTextValue}"
       ></paper-input>
-      <paper-dropdown-menu no-animations="" excludeFromPayload>
+      <paper-dropdown-menu no-animations="" excludeFromPayload id="unit">
         <paper-listbox
           @selected-changed=${this.updateUnitValue}
           class="dropdown-content"
           slot="dropdown-content"
           attr-for-selected="value"
-          selected="${this.unitValue}"
+          selected="${this.unitValue || ''}"
         >
           ${this.units.map(
             unit =>

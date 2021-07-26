@@ -45,10 +45,8 @@ Cypress.Commands.add('testPaperDropdownSelected', (locator, text) => {
   cy.get(locator, {
     includeShadowDom: true,
   })
-    .find('paper-dropdown-menu')
-    .find('paper-item.iron-selected')
-    .should('have.attr', 'value')
-    .then(value => {
-      expect(value).to.equal(text);
+    .find('paper-dropdown-menu > paper-listbox')
+    .then(el => {
+      expect(el[0].selected).to.equal(text);
     });
 });

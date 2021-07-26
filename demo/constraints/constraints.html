@@ -47,12 +47,6 @@
       const submitUrl = 'api/v1/clouds';
       const constraintsData = {
         dynamicData: {
-          getDefaultActions: {
-          func: new Promise((resolve) => {
-              resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
-          }),
-          dependencies: ['expiration.actions.available'],
-        },
         clouds: {
           func: new Promise((resolve) => {
               resolve(() => {
@@ -63,15 +57,13 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: dependencyValues=> dependencyValues.cloud === 'cloudId1',
-          dependencies: ['field.cloud'],
+          func: cloud=> cloud === 'cloudId1' ,
         },
         hidePaperSlider1: {
-          func: dependencyValues => {
-            const value = dependencyValues['custom.hidePaperSlider1'];
-            return value === 'yes' || value === 'sure';
-          },
-          dependencies: ['custom.hidePaperSlider1']
+          func: value => value === 'yes' || value === 'sure',
+        },
+        getDefaultActions: {
+          func: defaultActions => defaultActions || []
         },
         }
       };
@@ -79,7 +71,7 @@
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
           <div id="mist-form-custom">
             <paper-slider mist-form-type="paperSlider" editable></paper-slider>
-            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color" mist-form-value-change="color-picker-selected"></paper-swatch-picker>
           </div>
           <iron-ajax
             slot="formRequest"

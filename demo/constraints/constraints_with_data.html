@@ -45,6 +45,8 @@
       import '@polymer/paper-icon-button/paper-icon-button.js';
       import '@polymer/iron-icons/iron-icons.js';
       import '@polymer/iron-selector/iron-selector.js';
+      import '@polymer/paper-slider/paper-slider.js'
+      import '@polymer/paper-swatch-picker/paper-swatch-picker.js';
       import '../../mist-form.js';
 
       const jsonUrl = 'constraints.json';
@@ -53,12 +55,6 @@
       const submitUrl = 'api/v1/clouds';
       const constraintsData = {
         dynamicData: {
-          getDefaultActions: {
-          func: new Promise((resolve) => {
-              resolve(dependencyValues => dependencyValues['expiration.actions.available'] || []);
-          }),
-          dependencies: ['expiration.actions.available'],
-        },
         clouds: {
           func: new Promise((resolve) => {
               resolve(() => {
@@ -69,19 +65,16 @@
         },
         conditionals: {
           fieldNameHidden: {
-          func: dependencyValues=> dependencyValues.cloud === 'cloudId1',
-          dependencies: ['field.cloud'],
+          func: cloud=> cloud === 'cloudId1' ,
         },
         hidePaperSlider1: {
-          func: dependencyValues => {
-            const value = dependencyValues['custom.hidePaperSlider1'];
-            return value === 'yes' || value === 'sure';
-          },
-          dependencies: ['custom.hidePaperSlider1']
+          func: value => value === 'yes' || value === 'sure',
+        },
+        getDefaultActions: {
+          func: defaultActions => defaultActions || []
         },
         }
       };
-
       const initialValues = {
           cost: {
               max_team_run_rate: 100,
@@ -133,13 +126,14 @@
                   show: true,
                   name: 'Field3',
               },
-          ]
+          ],
+          custom:{paperSlider1:31,paperSlider2:48,colorSwatch:"#81d4fa",hidePaperSlider1:"No"}
       };
       render(
         html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData} .initialValues=${initialValues}>
           <div id="mist-form-custom">
             <paper-slider mist-form-type="paperSlider" editable></paper-slider>
-            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color"></paper-swatch-picker>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color" mist-form-value-change="color-picker-selected"></paper-swatch-picker>
           </div>
           <iron-ajax
             slot="formRequest"
