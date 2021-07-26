@@ -128,7 +128,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     super.render();
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
-    return html` <span class="label">${this.label}</span>
+    return html` <span class="label">${this.props.label}</span>
       <div class="container" style="width:100%">
         <div class="row-header">
           ${Object.keys(this.props.rowProps).map(key =>

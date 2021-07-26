@@ -71,7 +71,7 @@ export class DependencyController {
           );
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
-          ].func(dependencyValues);
+          ].func(dependencyValues, fieldPath); // also pass old value here
           // What happens if newValue is object or Array?
           if (!element) {
             return;
