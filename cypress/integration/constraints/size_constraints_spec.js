@@ -40,28 +40,28 @@ describe('Size constraints', () => {
         cy.get('#cpu_constraint').within(() => {
           cy.get('#min').should('be.visible');
           cy.get('#max').should('be.visible');
-          cy.get('#show').should('be.visible');
+          cy.get('#show').find('paper-checkbox').should('have.attr', 'checked');
         });
 
         cy.get('#ram_constraint').should('exist');
         cy.get('#ram_constraint').within(() => {
           cy.get('#min').should('be.visible');
           cy.get('#max').should('be.visible');
-          cy.get('#show').should('be.visible');
+          cy.get('#show').find('paper-checkbox').should('have.attr', 'checked');
         });
 
         cy.get('#primary_disk_constraint').should('exist');
         cy.get('#primary_disk_constraint').within(() => {
           cy.get('#min').should('be.visible');
           cy.get('#max').should('be.visible');
-          cy.get('#show').should('be.visible');
+          cy.get('#show').find('paper-checkbox').should('have.attr', 'checked');
         });
 
         cy.get('#swap_disk_constraint').should('exist');
         cy.get('#swap_disk_constraint').within(() => {
           cy.get('#min').should('be.visible');
           cy.get('#max').should('be.visible');
-          cy.get('#show').should('be.visible');
+          cy.get('#show').find('paper-checkbox').should('have.attr', 'checked');
         });
       });
 
@@ -72,7 +72,14 @@ describe('Size constraints', () => {
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(JSON.stringify(el.value)).to.equal(JSON.stringify({}));
+      expect(el.value).to.deep.equal({
+        size: {
+          cpu: { show: true },
+          ram: { show: true },
+          disk: { show: true },
+          swap_disk: { show: true },
+        },
+      });
     });
   });
 
@@ -146,8 +153,6 @@ describe('Size constraints', () => {
             .find('input')
             .clear({ force: true })
             .type('200', { force: true });
-          cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
-          cy.get('mist-form-checkbox#show').click();
         });
 
         cy.get('#ram_constraint').within(() => {
@@ -159,6 +164,8 @@ describe('Size constraints', () => {
             .find('input')
             .clear({ force: true })
             .type('200', { force: true });
+          cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
+          cy.get('mist-form-checkbox#show').click();
         });
 
         cy.get('#primary_disk_constraint').within(() => {
@@ -170,8 +177,6 @@ describe('Size constraints', () => {
             .find('input')
             .clear({ force: true })
             .type('200', { force: true });
-          cy.get('mist-form-checkbox#show').should('be.visible');
-          cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
         });
 
         cy.get('#swap_disk_constraint').within(() => {
@@ -183,6 +188,8 @@ describe('Size constraints', () => {
             .find('input')
             .clear({ force: true })
             .type('50', { force: true });
+          cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
+          cy.get('mist-form-checkbox#show').click();
         });
       });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');

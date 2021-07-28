@@ -106,7 +106,7 @@
 			"label":"Show field",
 			"name":"show",
 			"id":"show",
-			"checked":true,
+			"value":true,
 			"type":"boolean",
 			"noLabelFloat":true
 		  }
@@ -242,7 +242,7 @@
 			"label":"Show",
 			"name":"show",
 			"id":"show",
-			"checked":true,
+			"value":true,
 			"type":"boolean",
 			"noLabelFloat":true
 		  }

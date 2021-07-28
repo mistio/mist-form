@@ -50,6 +50,9 @@ describe('Field constraints', () => {
               .find('input')
               .clear({ force: true })
               .type('Value1', { force: true });
+            cy.get('#show')
+              .find('paper-checkbox')
+              .should('have.attr', 'checked');
           });
 
         cy.get('paper-button.add').click({ force: true });
@@ -61,6 +64,9 @@ describe('Field constraints', () => {
               .find('input')
               .clear({ force: true })
               .type('Field2', { force: true });
+            cy.get('#show')
+              .find('paper-checkbox')
+              .should('have.attr', 'checked');
           });
       });
 
@@ -73,6 +79,7 @@ describe('Field constraints', () => {
       .within(() => {
         cy.get('paper-icon-button.remove').first().click({ force: true });
         cy.get('#name').find('input').invoke('val').should('contain', 'Field2');
+        cy.get('#show').find('paper-checkbox').should('have.attr', 'checked');
       });
   });
 
@@ -115,6 +122,7 @@ describe('Field constraints', () => {
               .find('paper-item')
               .eq(3)
               .click({ force: true });
+            cy.get('paper-checkbox').last().click({ force: true });
           });
 
         cy.get('mist-form-row')
@@ -133,7 +141,6 @@ describe('Field constraints', () => {
               .find('input')
               .clear({ force: true })
               .type('Value3', { force: true });
-            cy.get('paper-checkbox').last().click({ force: true });
           });
       });
     cy.wait(1000);

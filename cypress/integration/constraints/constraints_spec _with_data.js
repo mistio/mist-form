@@ -234,12 +234,10 @@ describe('Constraints form with data', () => {
           cpu: {
             min: 100,
             max: 200,
-            show: false,
           },
           ram: {
             min: 200,
             max: 300,
-            show: false,
           },
           disk: {
             min: 400,
