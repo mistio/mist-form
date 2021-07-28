@@ -161,7 +161,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         <div>
           <span class="addrule">
             <paper-button @tap=${this.addRow} class="add">
-              <iron-icon icon="icons:add"></iron-icon> Add a new ${this.label}
+            <iron-icon icon="icons:add"></iron-icon> Add a new ${this.props.newRowLabel || this.props.label}
             </paper-button>
           </span>
         </div>
