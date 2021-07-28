@@ -22,14 +22,9 @@ class MistFormRow extends LitElement {
         color: #adadad;
       }
 
-      paper-input,
-      paper-dropdown-menu {
-        width: 90%;
-        display: inline-block;
-        margin-right: 20px;
-        margin-top: -20px;
+      mist-form-dropdown {
+        margin-top: -10px;
       }
-
       paper-checkbox {
         --paper-checkbox-checked-color: #2196f3;
         --paper-checkbox-checked-ink-color: #2196f3;
@@ -39,8 +34,13 @@ class MistFormRow extends LitElement {
       :host {
         display: grid;
         grid-auto-columns: 1fr;
-        grid-column-gap: 5px;
+        grid-column-gap: 10px;
         grid-auto-flow: column;
+        align-items: center;
+      }
+
+      paper-icon-button {
+        color: #adadad;
       }
     `;
   }

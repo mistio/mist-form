@@ -230,13 +230,15 @@
 			"name":"name",
 			"type":"string",
 			"classes": "field-name",
+			"noLabelFloat":true,
 			"deps": [{"prop": "hidden", "func": "fieldNameHidden", "dependsOn": ".cloud"}]
 		  },
 		  "fieldValue":{
 			"label":"Field value",
 			"id": "value",
 			"name":"value",
-			"type":"string"
+			"type":"string",
+			"noLabelFloat":true
 		  },
 		  "show":{
 			"label":"Show",

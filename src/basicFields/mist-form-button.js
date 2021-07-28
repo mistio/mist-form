@@ -41,6 +41,7 @@ class MistFormButton extends elementBoilerplateMixin(LitElement) {
       .disabled=${this.disabled}
       fieldPath="${this.props.fieldPath}"
       style=${styleMap(this.props.styles && this.props.styles.inner)}
+      part="mist-form-button-inner"
       >${this.props.label}</paper-button
     >`;
   }
