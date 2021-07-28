@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
@@ -86,8 +87,11 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       class="${this.props.classes || ''} subform-container ${this.isOpen
         ? 'open'
         : ''} ${isEvenOrOdd(this.props.fieldPath)}"
+      style=${styleMap(this.props.styles && this.props.styles.container)}
     >
-      <span class="${this.props.classes || ''} subform-name"
+      <span
+        class="${this.props.classes || ''} subform-name"
+        style=${styleMap(this.props.styles && this.props.styles.name)}
         >${!this.props.hasToggle ? this.props.label : ''}</span
       >
 
@@ -99,6 +103,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         @checked-changed="${e => {
           this.isOpen = e.detail.value;
         }}"
+        style=${styleMap(this.props.styles && this.props.styles.toggle)}
         >${this.props.label}</paper-toggle-button
       >`}
       ${this.isOpen ? html`${this.props.inputs}` : ''}

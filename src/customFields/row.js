@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import * as util from '../utilities.js';
 
 class MistFormRow extends LitElement {
@@ -99,9 +100,11 @@ class MistFormRow extends LitElement {
       prop.valueChangedEvent = e => {
         this.valueChanged(e, prop.name, this.index);
       };
-      if (this.value) {
+
+      if (Object.keys(this.value).length) {
         prop.value = this.value[prop.name];
       }
+
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
 
       return prop.hidden

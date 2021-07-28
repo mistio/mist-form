@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
@@ -39,6 +40,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
         selected-attribute="checked"
         multi
         fieldPath="${this.props.fieldPath}"
+        style=${styleMap(this.props.styles && this.props.styles.selector)}
       >
         ${this.props.enum.map(
           item =>
@@ -47,6 +49,9 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
                 key="${item}"
                 .checked="${this.props.value &&
                 this.props.value.includes(item)}"
+                style=${styleMap(
+                  this.props.styles && this.props.styles.checkbox
+                )}
                 >${item}</paper-checkbox
               >${this.helpText(this.props)}`
         )}

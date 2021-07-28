@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistDropdown extends elementBoilerplateMixin(LitElement) {
@@ -22,6 +23,7 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
         ?excludeFromPayload="${this.props.excludeFromPayload}"
         value=""
         fieldPath="${this.props.fieldPath}"
+        style=${styleMap(this.props.styles && this.props.styles.inner)}
         >${this.props.label}</paper-checkbox
       >${this.helpText(this.props)}`;
   }

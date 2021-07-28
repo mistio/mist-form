@@ -77,6 +77,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       .index=${index}
       .parent=${this}
       .rowProps=${this.props.rowProps}
+      style=${styleMap(this.props.styles && this.props.styles.row)}
     ></mist-form-row>`;
   }
 
@@ -129,11 +130,20 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.props.label}</span>
-      <div class="container" style="width:100%">
-        <div class="row-header">
+      <div
+        class="container"
+        style="width:100%"
+        style=${styleMap(this.props.styles && this.props.styles.container)}
+      >
+        <div
+          class="row-header"
+          style=${styleMap(this.props.styles && this.props.styles.header)}
+        >
           ${Object.keys(this.props.rowProps).map(key =>
             !this.props.rowProps[key].hidden
-              ? html`<span class="row-item"
+              ? html`<span
+                  class="row-item"
+                  style=${styleMap(this.props.styles && this.props.styles.item)}
                   >${this.props.rowProps[key].label}</span
                 >`
               : ''
