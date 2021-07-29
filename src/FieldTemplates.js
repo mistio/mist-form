@@ -130,6 +130,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     .fieldTemplates="${this}"
     .helpText=${this.helpText}
     style=${styleMap(props.styles && props.styles.outer)}
+    exportparts="container: mist-form-multi-row-container, row-header: mist-form-multi-row-header, header-item: mist-form-multi-row-header-item, addrule: mist-form-multi-row-add-rule, row: mist-form-multi-row-row"
   ></mist-form-multi-row>`;
 
   custom = props =>

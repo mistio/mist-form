@@ -76,6 +76,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       .parent=${this}
       .rowProps=${this.props.rowProps}
       style=${styleMap(this.props.styles && this.props.styles.row)}
+      part="row"
     ></mist-form-row>`;
   }
 
@@ -132,16 +133,19 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         class="container"
         style="width:100%"
         style=${styleMap(this.props.styles && this.props.styles.container)}
+        part="container"
       >
         <div
           class="row-header"
           style=${styleMap(this.props.styles && this.props.styles.header)}
+          part="row-header"
         >
           ${Object.keys(this.props.rowProps).map(key =>
             !this.props.rowProps[key].hidden
               ? html`<span
                   class="row-item"
                   style=${styleMap(this.props.styles && this.props.styles.item)}
+                  part="header-item"
                   >${this.props.rowProps[key].label}</span
                 >`
               : ''
@@ -157,7 +161,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
           : ''}
 
         <div>
-          <span class="addrule">
+          <span class="addrule" part="addrule">
             <paper-button @tap=${this.addRow} class="add">
               <iron-icon icon="icons:add"></iron-icon> Add a new
               ${this.props.newRowLabel || this.props.label}
