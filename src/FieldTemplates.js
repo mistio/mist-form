@@ -1,6 +1,6 @@
 import { html } from 'lit-element';
-import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './basicFields/mist-form-button.js';
 import './basicFields/mist-form-checkbox-group.js';
 import './basicFields/mist-form-checkbox.js';
@@ -163,7 +163,6 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       style=${styleMap(props.styles && props.styles.outer)}
-      class="${props.classes}"
     >
     </mist-form-button>`;
 
