@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class DurationField extends elementBoilerplateMixin(LitElement) {
@@ -103,18 +104,29 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
         excludeFromPayload
         .value="${this.textValue}"
         @value-changed="${this.updateTextValue}"
+        style=${styleMap(this.props.styles && this.props.styles.input)}
       ></paper-input>
-      <paper-dropdown-menu no-animations="" excludeFromPayload id="unit">
+      <paper-dropdown-menu
+        no-animations=""
+        excludeFromPayload
+        id="unit"
+        style=${styleMap(this.props.styles && this.props.styles.dropdown)}
+      >
         <paper-listbox
           @selected-changed=${this.updateUnitValue}
           class="dropdown-content"
           slot="dropdown-content"
           attr-for-selected="value"
           selected="${this.unitValue || ''}"
+          style=${styleMap(this.props.styles && this.props.styles.listbox)}
         >
           ${this.units.map(
             unit =>
-              html`<paper-item value="${unit.value}">${unit.name}</paper-item>`
+              html`<paper-item
+                value="${unit.value}"
+                style=${styleMap(this.props.styles && this.props.styles.item)}
+                >${unit.name}</paper-item
+              >`
           )}
         </paper-listbox>
       </paper-dropdown-menu>`;

@@ -106,7 +106,7 @@
 			"label":"Show field",
 			"name":"show",
 			"id":"show",
-			"checked":true,
+			"value":true,
 			"type":"boolean",
 			"noLabelFloat":true
 		  }
@@ -230,19 +230,21 @@
 			"name":"name",
 			"type":"string",
 			"classes": "field-name",
+			"noLabelFloat":true,
 			"deps": [{"prop": "hidden", "func": "fieldNameHidden", "dependsOn": ".cloud"}]
 		  },
 		  "fieldValue":{
 			"label":"Field value",
 			"id": "value",
 			"name":"value",
-			"type":"string"
+			"type":"string",
+			"noLabelFloat":true
 		  },
 		  "show":{
 			"label":"Show",
 			"name":"show",
 			"id":"show",
-			"checked":true,
+			"value":true,
 			"type":"boolean",
 			"noLabelFloat":true
 		  }

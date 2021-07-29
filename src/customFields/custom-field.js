@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 // We can set these fields when passing web components to the form
 // 1. mist-form-type:  Necessary to define component name from json

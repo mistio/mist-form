@@ -1,4 +1,5 @@
 import { html } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
 import './basicFields/mist-form-button.js';
 import './basicFields/mist-form-checkbox-group.js';
@@ -63,6 +64,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-dropdown>`;
 
   radioGroup = props =>
@@ -71,6 +73,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-radio-group>`;
 
   checkboxGroup = props =>
@@ -79,6 +82,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-checkbox-group>`;
 
   input = props =>
@@ -87,6 +91,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
+      part="mist-form-text-field"
     ></mist-form-text-field>`;
 
   textArea = props =>
@@ -95,6 +101,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-text-area>`;
 
   boolean = props =>
@@ -103,6 +110,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-checkbox>`;
 
   durationField = props =>
@@ -111,15 +119,18 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-duration-field>`;
 
   multiRow = props => html`<mist-form-multi-row
     id="${props.id}"
     .mistForm=${this.mistForm}
     .props="${props}"
-    exportparts="row: multirow-row"
+    part="row"
     .fieldTemplates="${this}"
     .helpText=${this.helpText}
+    style=${styleMap(props.styles && props.styles.outer)}
+    exportparts="container: mist-form-multi-row-container, row-header: mist-form-multi-row-header, header-item: mist-form-multi-row-header-item, addrule: mist-form-multi-row-add-rule, row: mist-form-multi-row-row"
   ></mist-form-multi-row>`;
 
   custom = props =>
@@ -128,6 +139,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
     >
     </mist-form-custom-field>`;
 
@@ -138,6 +150,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .mistForm=${this.mistForm}
       .fieldTemplates=${this}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
+      exportparts="mist-form-text-field, mist-form-dropdown, mist-form-radio-group, mist-form-checkbox-group, mist-form-text-field, mist-form-text-area, mist-form-checkbox, mist-form-duration-field, mist-form-multi-row, mist-form-custom-field, mist-form-button"
     ></mist-form-subform>`;
 
   spinner = html`<paper-spinner active></paper-spinner>`;
@@ -148,25 +162,39 @@ export class FieldTemplates extends FieldTemplateHelpers {
       id="${props.id}"
       .props="${props}"
       .mistForm=${this.mistForm}
+      style=${styleMap(props.styles && props.styles.outer)}
     >
     </mist-form-button>`;
 
-  helpText = ({ helpUrl, helpText }) => {
+  helpText = ({ helpUrl, helpText, styles }) => {
     if (helpUrl) {
-      return html` <div class="helpText">
-        ${helpText}<a href="${helpUrl}" target="new">
+      return html` <div
+        class="helpText"
+        style=${styleMap(styles && styles.outer)}
+      >
+        ${helpText}<a
+          href="${helpUrl}"
+          target="new"
+          style=${styleMap(styles && styles.url)}
+        >
           <paper-icon-button
             icon="icons:help"
             alt="open docs"
             title="open docs"
             class="docs"
+            style=${styleMap(styles && styles.button)}
           >
           </paper-icon-button>
         </a>
       </div>`;
     }
     if (helpText) {
-      return html`<div class="helpText">${helpText}</div>`;
+      return html`<div
+        class="helpText"
+        style=${styleMap(styles && styles.outer)}
+      >
+        ${helpText}
+      </div>`;
     }
     return '';
   };

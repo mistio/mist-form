@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import * as util from '../utilities.js';
 
 class MistFormRow extends LitElement {
@@ -21,14 +22,9 @@ class MistFormRow extends LitElement {
         color: #adadad;
       }
 
-      paper-input,
-      paper-dropdown-menu {
-        width: 90%;
-        display: inline-block;
-        margin-right: 20px;
-        margin-top: -20px;
+      mist-form-dropdown {
+        margin-top: -10px;
       }
-
       paper-checkbox {
         --paper-checkbox-checked-color: #2196f3;
         --paper-checkbox-checked-ink-color: #2196f3;
@@ -38,8 +34,13 @@ class MistFormRow extends LitElement {
       :host {
         display: grid;
         grid-auto-columns: 1fr;
-        grid-column-gap: 5px;
+        grid-column-gap: 10px;
         grid-auto-flow: column;
+        align-items: center;
+      }
+
+      paper-icon-button {
+        color: #adadad;
       }
     `;
   }
@@ -99,9 +100,11 @@ class MistFormRow extends LitElement {
       prop.valueChangedEvent = e => {
         this.valueChanged(e, prop.name, this.index);
       };
-      if (this.value) {
+
+      if (Object.keys(this.value).length) {
         prop.value = this.value[prop.name];
       }
+
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
 
       return prop.hidden

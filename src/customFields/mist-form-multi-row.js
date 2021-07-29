@@ -33,15 +33,11 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         color: #424242;
         font-weight: bold;
       }
-      paper-icon-button {
-        color: #adadad;
-      }
       .add {
         color: #424242;
       }
 
-      .show-header,
-      .label {
+      .show-header {
         margin-top: auto;
         margin-bottom: 15px;
       }
@@ -54,8 +50,10 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       :host .row-header {
         display: grid;
         grid-auto-columns: 1fr;
-        grid-column-gap: 5px;
+        grid-column-gap: 10px;
         grid-auto-flow: column;
+        align-items: center;
+        font-weight: bold;
       }
     `;
   }
@@ -77,6 +75,8 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       .index=${index}
       .parent=${this}
       .rowProps=${this.props.rowProps}
+      style=${styleMap(this.props.styles && this.props.styles.row)}
+      part="row"
     ></mist-form-row>`;
   }
 
@@ -129,11 +129,23 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html` <span class="label">${this.props.label}</span>
-      <div class="container" style="width:100%">
-        <div class="row-header">
+      <div
+        class="container"
+        style="width:100%"
+        style=${styleMap(this.props.styles && this.props.styles.container)}
+        part="container"
+      >
+        <div
+          class="row-header"
+          style=${styleMap(this.props.styles && this.props.styles.header)}
+          part="row-header"
+        >
           ${Object.keys(this.props.rowProps).map(key =>
             !this.props.rowProps[key].hidden
-              ? html`<span class="row-item"
+              ? html`<span
+                  class="row-item"
+                  style=${styleMap(this.props.styles && this.props.styles.item)}
+                  part="header-item"
                   >${this.props.rowProps[key].label}</span
                 >`
               : ''
@@ -149,9 +161,10 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
           : ''}
 
         <div>
-          <span class="addrule">
+          <span class="addrule" part="addrule">
             <paper-button @tap=${this.addRow} class="add">
-              <iron-icon icon="icons:add"></iron-icon> Add a new ${this.label}
+              <iron-icon icon="icons:add"></iron-icon> Add a new
+              ${this.props.newRowLabel || this.props.label}
             </paper-button>
           </span>
         </div>

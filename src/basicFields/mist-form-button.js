@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import * as util from '../utilities.js';
 
@@ -39,6 +40,8 @@ class MistFormButton extends elementBoilerplateMixin(LitElement) {
       ...="${spreadProps(util.getConvertedProps(this.props))}"
       .disabled=${this.disabled}
       fieldPath="${this.props.fieldPath}"
+      style=${styleMap(this.props.styles && this.props.styles.inner)}
+      part="mist-form-button-inner"
       >${this.props.label}</paper-button
     >`;
   }

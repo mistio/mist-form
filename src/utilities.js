@@ -12,7 +12,7 @@ export const valueNotEmpty = value => {
   ) {
     return Object.keys(value).length > 0;
   }
-  return value !== undefined;
+  return value !== undefined && value !== false;
 };
 
 export const getSubformFromRef = (subforms, ref) => {

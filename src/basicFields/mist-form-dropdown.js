@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { until } from 'lit-html/directives/until.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
@@ -83,6 +84,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         no-animations=""
         value="${this.props.value || ''}"
         fieldPath="${this.props.fieldPath}"
+        style=${styleMap(this.props.styles && this.props.styles.dropdown)}
       >
         <paper-listbox
           selected="${this.props.value || ''}"
@@ -90,12 +92,14 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
           attr-for-selected="item-id"
           class="${this.props.classes || ''} dropdown-content"
           slot="dropdown-content"
+          style=${styleMap(this.props.styles && this.props.styles.listbox)}
         >
           ${this.props.enum.map(
             item =>
               html`<paper-item
                 value="${item.title || item}"
                 item-id="${item.id || item}"
+                style=${styleMap(this.props.styles && this.props.styles.item)}
               >
                 ${item.title || item}
               </paper-item>`
