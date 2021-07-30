@@ -202,9 +202,9 @@ describe('Size constraints', () => {
           allowed: ['test1', 'test2', 'test3'],
           not_allowed: ['test4'],
           cpu: { min: 100, max: 200, show: true },
-          ram: { min: 100, max: 200 },
+          ram: { min: 100, max: 200, show: false },
           disk: { min: 100, max: 200, show: true },
-          swap_disk: { min: 100, max: 50 },
+          swap_disk: { min: 100, max: 50, show: false },
         },
       });
     });
