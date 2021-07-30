@@ -150,7 +150,7 @@ describe('Field constraints', () => {
       const el = $el[0]; // get the DOM element from the jquery element
       expect(el.value).to.deep.equal({
         field: [
-          { name: 'Field2', cloud: 'cloudId3' },
+          { name: 'Field2', cloud: 'cloudId3', show: false },
           { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3' },
         ],
       });
