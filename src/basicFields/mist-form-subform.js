@@ -38,6 +38,10 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       .subform-name {
         font-weight: bold;
       }
+      .mist-form-input {
+        margin-top: 10px;
+        margin-left: 10px;
+      }
     `;
   }
 

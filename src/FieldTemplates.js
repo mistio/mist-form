@@ -64,6 +64,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      class="mist-form-input"
       style=${styleMap(props.styles && props.styles.outer)}
     ></mist-form-dropdown>`;
 
@@ -126,7 +127,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     id="${props.id}"
     .mistForm=${this.mistForm}
     .props="${props}"
-    part="row"
+    part="mist-form-multi-row"
     .fieldTemplates="${this}"
     .helpText=${this.helpText}
     style=${styleMap(props.styles && props.styles.outer)}
@@ -151,7 +152,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .fieldTemplates=${this}
       .helpText=${this.helpText}
       style=${styleMap(props.styles && props.styles.outer)}
-      exportparts="mist-form-text-field, mist-form-dropdown, mist-form-radio-group, mist-form-checkbox-group, mist-form-text-field, mist-form-text-area, mist-form-checkbox, mist-form-duration-field, mist-form-multi-row, mist-form-custom-field, mist-form-button"
+      exportparts="mist-form-text-field, mist-form-dropdown, mist-form-radio-group, mist-form-checkbox-group, mist-form-text-field, mist-form-text-area, mist-form-checkbox, mist-form-duration-field, mist-form-multi-row, mist-form-multi-row-row, mist-form-custom-field, mist-form-button"
     ></mist-form-subform>`;
 
   spinner = html`<paper-spinner active></paper-spinner>`;

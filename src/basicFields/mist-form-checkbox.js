@@ -24,7 +24,7 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
         value=""
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
-        >${this.props.label}</paper-checkbox
+        >${this.props.hideLabel ? '' : this.props.label}</paper-checkbox
       >${this.helpText(this.props)}`;
   }
 }

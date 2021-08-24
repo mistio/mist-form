@@ -246,7 +246,7 @@
 			"id":"show",
 			"value":true,
 			"type":"boolean",
-			"noLabelFloat":true
+			"hideLabel":true
 		  }
 		}
 	  },

@@ -20,10 +20,19 @@ class MistFormRow extends LitElement {
 
       paper-icon-button {
         color: #adadad;
+        margin-top: 16px;
       }
 
       mist-form-dropdown {
         margin-top: -10px;
+      }
+
+      mist-form-text-field {
+        margin-left: -10px;
+      }
+
+      mist-form-checkbox {
+        margin-top: 16px;
       }
       paper-checkbox {
         --paper-checkbox-checked-color: #2196f3;
@@ -33,10 +42,10 @@ class MistFormRow extends LitElement {
 
       :host {
         display: grid;
-        grid-auto-columns: 1fr;
-        grid-column-gap: 10px;
-        grid-auto-flow: column;
+        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        gap: 10px;
         align-items: center;
+        height: 46px;
       }
 
       paper-icon-button {

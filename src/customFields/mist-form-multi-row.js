@@ -49,10 +49,8 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
 
       :host .row-header {
         display: grid;
-        grid-auto-columns: 1fr;
-        grid-column-gap: 10px;
-        grid-auto-flow: column;
-        align-items: center;
+        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        gap: 10px;
         font-weight: bold;
       }
     `;
