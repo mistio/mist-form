@@ -20,7 +20,7 @@ class MistFormRow extends LitElement {
 
       paper-icon-button {
         color: #adadad;
-        margin-top: 16px;
+        margin-top: 5px;
       }
 
       mist-form-dropdown {
@@ -29,15 +29,11 @@ class MistFormRow extends LitElement {
 
       mist-form-text-field {
         margin-left: -10px;
+        margin-top: -10px;
       }
 
       mist-form-checkbox {
-        margin-top: 16px;
-      }
-      paper-checkbox {
-        --paper-checkbox-checked-color: #2196f3;
-        --paper-checkbox-checked-ink-color: #2196f3;
-        --paper-checkbox-unchecked-color: #424242;
+        margin-top: -1px;
       }
 
       :host {
@@ -46,10 +42,6 @@ class MistFormRow extends LitElement {
         gap: 10px;
         align-items: center;
         height: 46px;
-      }
-
-      paper-icon-button {
-        color: #adadad;
       }
     `;
   }
@@ -115,7 +107,9 @@ class MistFormRow extends LitElement {
       }
 
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
+      prop.noLabelFloat = true;
 
+      prop.styles = {"outer":  {"padding": "10px", "margin": 0}, ...prop.styles};
       return prop.hidden
         ? html`<span></span>
             <div></div>`

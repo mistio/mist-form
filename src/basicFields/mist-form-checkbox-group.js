@@ -1,12 +1,13 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-    return css`
+    return [fieldStyles, css`
     paper-checkbox {
       padding-top: 13px;
       margin-right: 10px;
@@ -20,7 +21,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
       margin-top: 10px;
       margin-left: 10px;
     }
-    `;
+    `];
   }
 
   validate() {
@@ -43,7 +44,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   render() {
     super.render();
     return html`
-      <span class="label">${this.props.label}:</span>
+      <span class="label">${this.props.label}</span>
       <iron-selector
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"

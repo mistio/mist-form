@@ -16,6 +16,13 @@
        ::part(mist-form-multi-row-row) {
         background-color: blue;
       } */
+      mist-form::part(mist-form-checkbox) {
+        float: left;
+        padding-top: 13px;
+        margin-right: 0;
+        --paper-checkbox-checked-color: red;
+        --paper-checkbox-checked-ink-color: red !important;
+      }
     </style>
   </head>
 
@@ -57,7 +64,7 @@
         clouds: {
           func: new Promise((resolve) => {
               resolve(() => {
-                return ['ALL', {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
+                return [{title: 'ALL', id:''}, {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
               });
           })
         },

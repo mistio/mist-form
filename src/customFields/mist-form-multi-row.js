@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 
@@ -52,6 +53,10 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         grid-template-columns: 2fr 4fr 4fr 30px 30px;
         gap: 10px;
         font-weight: bold;
+      }
+
+      .row-item {
+        padding: 0 10px;
       }
     `;
   }
