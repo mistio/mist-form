@@ -20,7 +20,9 @@ class MistFormRow extends LitElement {
 
       paper-icon-button {
         color: #adadad;
-        margin-top: 16px;
+        margin-top: 5px;
+        flex-basis: 4rem;
+        flex-grow: 1;
       }
 
       mist-form-dropdown {
@@ -29,27 +31,37 @@ class MistFormRow extends LitElement {
 
       mist-form-text-field {
         margin-left: -10px;
+        margin-top: -10px;
       }
 
       mist-form-checkbox {
-        margin-top: 16px;
-      }
-      paper-checkbox {
-        --paper-checkbox-checked-color: #2196f3;
-        --paper-checkbox-checked-ink-color: #2196f3;
-        --paper-checkbox-unchecked-color: #424242;
+        margin-top: -1px;
       }
 
       :host {
-        display: grid;
-        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        display: flex;
+        flex-wrap: wrap;
         gap: 10px;
-        align-items: center;
-        height: 46px;
       }
 
-      paper-icon-button {
-        color: #adadad;
+      :host(.inline) {
+        display: grid;
+        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        align-items: center;
+      }
+
+      .fields-container {
+        display: flex;
+        flex-wrap: wrap;
+        --threshold: 40rem;
+        flex-basis: 0;
+        flex-grow: 999;
+        min-width: 50%;
+      }
+
+      .fields-container > span {
+        flex-grow: 1;
+    flex-basis: calc((var(--threshold) - 100%) * 999);
       }
     `;
   }
@@ -115,14 +127,16 @@ class MistFormRow extends LitElement {
       }
 
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
+      prop.noLabelFloat = true;
 
-      return prop.hidden
-        ? html`<span></span>
-            <div></div>`
-        : html`${this.parent.fieldTemplates.getTemplate(prop)}`;
+      prop.styles = {"outer":  {"padding": "10px", "margin": 0}, ...prop.styles};
+      return html`<span style=${styleMap(prop.styles && prop.styles.outerSpan)}>${this.parent.fieldTemplates.getTemplate(prop)}</span>`;
     });
     return html`
-      ${row}
+    ${this.parent.props.inline ? html`${row}` : html`<span class="fields-container">
+        ${row}
+      </span>`}
+
       <paper-icon-button
         icon="icons:delete"
         alt="Remove row"

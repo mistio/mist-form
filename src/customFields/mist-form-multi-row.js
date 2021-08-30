@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 
@@ -25,6 +26,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         color: var(--mist-form-field-element-text-color, black);
         background: var(--mist-form-field-element-background-color, white);
         font-family: var(--mist-form-field-element-font-family, Roboto);
+        margin: 10px;
       }
 
       :host .label {
@@ -53,6 +55,10 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         gap: 10px;
         font-weight: bold;
       }
+
+      .row-item {
+        padding: 0 10px;
+      }
     `;
   }
 
@@ -75,6 +81,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       .rowProps=${this.props.rowProps}
       style=${styleMap(this.props.styles && this.props.styles.row)}
       part="row"
+      class="${this.props.inline ? 'inline':''}"
     ></mist-form-row>`;
   }
 
@@ -133,7 +140,8 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         style=${styleMap(this.props.styles && this.props.styles.container)}
         part="container"
       >
-        <div
+      ${!this.props.hideHeader ?
+        html`<div
           class="row-header"
           style=${styleMap(this.props.styles && this.props.styles.header)}
           part="row-header"
@@ -149,7 +157,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
               : ''
           )}
           <span></span>
-        </div>
+        </div>` : '' }
         ${this.value
           ? repeat(
               this.value,

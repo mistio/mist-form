@@ -1,13 +1,14 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import { until } from 'lit-html/directives/until.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-    return css``;
+    return [fieldStyles];
   }
 
   loadDynamicData() {
