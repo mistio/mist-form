@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 
@@ -81,7 +80,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
       .rowProps=${this.props.rowProps}
       style=${styleMap(this.props.styles && this.props.styles.row)}
       part="row"
-      class="${this.props.inline ? 'inline':''}"
+      class="${this.props.inline ? 'inline' : ''}"
     ></mist-form-row>`;
   }
 
@@ -140,24 +139,27 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         style=${styleMap(this.props.styles && this.props.styles.container)}
         part="container"
       >
-      ${!this.props.hideHeader ?
-        html`<div
-          class="row-header"
-          style=${styleMap(this.props.styles && this.props.styles.header)}
-          part="row-header"
-        >
-          ${Object.keys(this.props.rowProps).map(key =>
-            !this.props.rowProps[key].hidden
-              ? html`<span
-                  class="row-item"
-                  style=${styleMap(this.props.styles && this.props.styles.item)}
-                  part="header-item"
-                  >${this.props.rowProps[key].label}</span
-                >`
-              : ''
-          )}
-          <span></span>
-        </div>` : '' }
+        ${!this.props.hideHeader
+          ? html`<div
+              class="row-header"
+              style=${styleMap(this.props.styles && this.props.styles.header)}
+              part="row-header"
+            >
+              ${Object.keys(this.props.rowProps).map(key =>
+                !this.props.rowProps[key].hidden
+                  ? html`<span
+                      class="row-item"
+                      style=${styleMap(
+                        this.props.styles && this.props.styles.item
+                      )}
+                      part="header-item"
+                      >${this.props.rowProps[key].label}</span
+                    >`
+                  : ''
+              )}
+              <span></span>
+            </div>`
+          : ''}
         ${this.value
           ? repeat(
               this.value,

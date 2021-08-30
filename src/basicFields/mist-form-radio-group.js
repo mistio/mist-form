@@ -10,7 +10,6 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
     return [fieldStyles];
   }
 
-
   render() {
     super.render();
     return html` <paper-radio-group

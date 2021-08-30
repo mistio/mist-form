@@ -61,7 +61,7 @@ class MistFormRow extends LitElement {
 
       .fields-container > span {
         flex-grow: 1;
-    flex-basis: calc((var(--threshold) - 100%) * 999);
+        flex-basis: calc((var(--threshold) - 100%) * 999);
       }
     `;
   }
@@ -129,13 +129,15 @@ class MistFormRow extends LitElement {
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
       prop.noLabelFloat = true;
 
-      prop.styles = {"outer":  {"padding": "10px", "margin": 0}, ...prop.styles};
-      return html`<span style=${styleMap(prop.styles && prop.styles.outerSpan)}>${this.parent.fieldTemplates.getTemplate(prop)}</span>`;
+      prop.styles = { outer: { padding: '10px', margin: 0 }, ...prop.styles };
+      return html`<span style=${styleMap(prop.styles && prop.styles.outerSpan)}
+        >${this.parent.fieldTemplates.getTemplate(prop)}</span
+      >`;
     });
     return html`
-    ${this.parent.props.inline ? html`${row}` : html`<span class="fields-container">
-        ${row}
-      </span>`}
+      ${this.parent.props.inline
+        ? html`${row}`
+        : html`<span class="fields-container"> ${row} </span>`}
 
       <paper-icon-button
         icon="icons:delete"

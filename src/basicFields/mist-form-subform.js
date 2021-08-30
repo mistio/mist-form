@@ -106,12 +106,13 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         : ''} ${isEvenOrOdd(this.props.fieldPath)}"
       style=${styleMap(this.props.styles && this.props.styles.container)}
     >
-      ${label ? html`<span
-        class="${this.props.classes || ''} subform-name"
-        style=${styleMap(this.props.styles && this.props.styles.name)}
-        >${label}</span
-      >` : ''}
-
+      ${label
+        ? html`<span
+            class="${this.props.classes || ''} subform-name"
+            style=${styleMap(this.props.styles && this.props.styles.name)}
+            >${label}</span
+          >`
+        : ''}
       ${this.props.hasToggle &&
       html` <paper-toggle-button
         .name="${this.props.name}-toggle"

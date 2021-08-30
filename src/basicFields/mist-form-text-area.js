@@ -10,7 +10,6 @@ class MistFormTextArea extends elementBoilerplateMixin(LitElement) {
     return [fieldStyles];
   }
 
-
   render() {
     super.render();
     return html`<paper-textarea

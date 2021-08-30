@@ -7,16 +7,19 @@ import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-    return [fieldStyles, css`
-    paper-checkbox {
-      padding-top: 13px;
-      margin-right: 10px;
-    }
+    return [
+      fieldStyles,
+      css`
+        paper-checkbox {
+          padding-top: 13px;
+          margin-right: 10px;
+        }
 
-    .label {
-      font-weight: bold;
-    }
-    `];
+        .label {
+          font-weight: bold;
+        }
+      `,
+    ];
   }
 
   validate() {
