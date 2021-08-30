@@ -21,8 +21,11 @@ class MistFormRow extends LitElement {
       paper-icon-button {
         color: #adadad;
         margin-top: 5px;
+<<<<<<< HEAD
         flex-basis: 4rem;
         flex-grow: 1;
+=======
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
       }
 
       mist-form-dropdown {
@@ -49,6 +52,7 @@ class MistFormRow extends LitElement {
         grid-template-columns: 2fr 4fr 4fr 30px 30px;
         align-items: center;
       }
+<<<<<<< HEAD
 
       .fields-container {
         display: flex;
@@ -63,6 +67,8 @@ class MistFormRow extends LitElement {
         flex-grow: 1;
         flex-basis: calc((var(--threshold) - 100%) * 999);
       }
+=======
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
     `;
   }
 
@@ -129,10 +135,18 @@ class MistFormRow extends LitElement {
       prop.fieldPath = `${this.fieldPath}.${prop.name}`;
       prop.noLabelFloat = true;
 
+<<<<<<< HEAD
       prop.styles = { outer: { padding: '10px', margin: 0 }, ...prop.styles };
       return html`<span style=${styleMap(prop.styles && prop.styles.outerSpan)}
         >${this.parent.fieldTemplates.getTemplate(prop)}</span
       >`;
+=======
+      prop.styles = {"outer":  {"padding": "10px", "margin": 0}, ...prop.styles};
+      return prop.hidden
+        ? html`<span></span>
+            <div></div>`
+        : html`${this.parent.fieldTemplates.getTemplate(prop)}`;
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
     });
     return html`
       ${this.parent.props.inline

@@ -48,12 +48,22 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
 
       .subform-name {
         font-weight: bold;
+<<<<<<< HEAD
         padding: 0 10px;
+=======
+        margin: 10px;
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
       }
       .subform-container > paper-toggle-button {
         flex-basis: unset;
         width: 100%;
       }
+
+      paper-toggle-button {
+        margin-bottom: 10px;
+        margin-left: 10px;
+      }
+
     `;
   }
 
@@ -106,6 +116,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         : ''} ${isEvenOrOdd(this.props.fieldPath)}"
       style=${styleMap(this.props.styles && this.props.styles.container)}
     >
+<<<<<<< HEAD
       ${label
         ? html`<span
             class="${this.props.classes || ''} subform-name"
@@ -113,6 +124,14 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
             >${label}</span
           >`
         : ''}
+=======
+      ${label ? html`<span
+        class="${this.props.classes || ''} subform-name"
+        style=${styleMap(this.props.styles && this.props.styles.name)}
+        >${label}</span
+      >` : ''}
+
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
       ${this.props.hasToggle &&
       html` <paper-toggle-button
         .name="${this.props.name}-toggle"

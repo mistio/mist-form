@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 

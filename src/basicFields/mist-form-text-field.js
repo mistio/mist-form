@@ -7,9 +7,13 @@ import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormTextField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
+<<<<<<< HEAD
     return [
       fieldStyles,
       css`
+=======
+    return [fieldStyles, css`
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
     paper-input {
       --paper-input-container-label: {
         color: #4b4b4bl
@@ -19,8 +23,12 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
     paper-input > [slot='prefix'] {
       margin-right: 5px;
     }
+<<<<<<< HEAD
     `,
     ];
+=======
+    `];
+>>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
   }
 
   render() {
