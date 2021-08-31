@@ -7,7 +7,6 @@ import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-<<<<<<< HEAD
     return [
       fieldStyles,
       css`
@@ -21,23 +20,6 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
         }
       `,
     ];
-=======
-    return [fieldStyles, css`
-    paper-checkbox {
-      padding-top: 13px;
-      margin-right: 10px;
-    }
-
-    .label {
-      font-weight: bold;
-    }
-
-    iron-selector {
-      margin-top: 10px;
-      margin-left: 10px;
-    }
-    `];
->>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
   }
 
   validate() {
@@ -60,11 +42,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   render() {
     super.render();
     return html`
-<<<<<<< HEAD
       <div class="label">${this.props.label}</div>
-=======
-      <span class="label">${this.props.label}</span>
->>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
       <iron-selector
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"

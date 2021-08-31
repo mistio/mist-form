@@ -6,7 +6,6 @@ import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistDropdown extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-<<<<<<< HEAD
     return [
       fieldStyles,
       css`
@@ -17,15 +16,6 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
         }
       `,
     ];
-=======
-    return [fieldStyles,
-    css`
-       paper-checkbox {
-      --paper-checkbox-checked-color: #2196f3;
-      --paper-checkbox-checked-ink-color: #2196f3;
-      --paper-checkbox-unchecked-color: #424242;
-    }`];
->>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
   }
 
   validate() {
@@ -35,11 +25,7 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
   render() {
     this.props.checked = this.props.value;
     super.render();
-<<<<<<< HEAD
     console.log('this.props.styles ', this.props.styles);
-=======
-    console.log("this.props.styles ", this.props.styles)
->>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
     return html`<paper-checkbox
         class="${this.props.classes || ''} mist-form-input"
         ...="${spreadProps(this.props)}"

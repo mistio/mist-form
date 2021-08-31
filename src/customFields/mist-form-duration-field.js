@@ -17,7 +17,6 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
   }
 
   static get styles() {
-<<<<<<< HEAD
     return [
       fieldStyles,
       css`
@@ -48,35 +47,6 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
         }
       `,
     ];
-=======
-    return [fieldStyles, css`
-    :host {
-      display: flex;
-      color: var(--mist-form-duration-text-color, rgba(0, 0, 0, 0.54));
-      background: var(--mist-form-duration-background-color, white);
-      font-family: var(--mist-form-duration-font-family, Roboto);
-      padding-bottom: 10px;
-    }
-    .subform-container > :host {
-      padding-left: 0;
-    }
-    paper-input {
-      width: 30%;
-      display: inline-block;
-      margin-right: 20px;
-      margin-left: auto;
-    }
-    paper-dropdown-menu {
-      width: 20%;
-      display: inline-block;
-      margin-right: 20px;
-    }
-    .label {
-      margin-top: auto;
-      margin-bottom: 5px;
-    }
-  `];
->>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
   }
 
   updateTextValue(e) {
@@ -125,15 +95,11 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
 
   render() {
     super.render();
-<<<<<<< HEAD
     return html` <span
         class="label"
         style=${styleMap(this.props.styles && this.props.styles.label)}
         >${this.props.label}</span
       >
-=======
-    return html` <span class="label" style=${styleMap(this.props.styles && this.props.styles.label)}>${this.props.label}</span>
->>>>>>> 8ca28faffcb5516207291a8c25a8f0968865bb96
       <paper-input
         id="text"
         .step="1"
