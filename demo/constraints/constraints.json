@@ -204,6 +204,7 @@
 			"id":"field",
 			"type": "object",
 			"format":"multiRow",
+			"inline": true,
 			"properties":{
 			  "subform":{
 				"$ref":"#/definitions/fieldElementSubform"
