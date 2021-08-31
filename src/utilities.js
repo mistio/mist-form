@@ -12,7 +12,7 @@ export const valueNotEmpty = value => {
   ) {
     return Object.keys(value).length > 0;
   }
-  return value !== undefined && value !== false;
+  return value !== undefined;
 };
 
 export const getSubformFromRef = (subforms, ref) => {
@@ -68,6 +68,10 @@ export const formatInputValue = node => {
     }
   }
 
+  if (node.props && node.props.fieldType === 'boolean') {
+    // Convert an undefined boolean to false
+    value = !!value;
+  }
   return value;
 };
 
