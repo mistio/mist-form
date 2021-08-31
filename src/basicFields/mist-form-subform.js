@@ -25,6 +25,16 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         padding: var(--mist-subform-padding, 10px);
         color: var(--mist-subform-text-color, #424242);
         background-color: var(--mist-subform-background-color, white);
+        display: flex;
+        flex-wrap: wrap;
+        --threshold: 30rem;
+      }
+      .subform-container > * {
+        flex-grow: 1;
+        flex-basis: calc((var(--threshold) - 100%) * 999);
+      }
+      .subform-container > * + * {
+        margin-top: 10px;
       }
       .subform-container > .subform-container > mist-form-duration-field {
         padding-left: 0;
@@ -35,9 +45,21 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       .subform-container.open.even {
         background-color: white;
       }
+
       .subform-name {
         font-weight: bold;
+        padding: 0 10px;
       }
+      .subform-container > paper-toggle-button {
+        flex-basis: unset;
+        width: 100%;
+      }
+
+      paper-toggle-button {
+        margin-bottom: 10px;
+        margin-left: 10px;
+      }
+
     `;
   }
 
@@ -83,18 +105,20 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
     super.render();
+    const label = !this.props.hasToggle ? this.props.label : '';
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen
         ? 'open'
         : ''} ${isEvenOrOdd(this.props.fieldPath)}"
       style=${styleMap(this.props.styles && this.props.styles.container)}
     >
-      <span
-        class="${this.props.classes || ''} subform-name"
-        style=${styleMap(this.props.styles && this.props.styles.name)}
-        >${!this.props.hasToggle ? this.props.label : ''}</span
-      >
-
+      ${label
+        ? html`<span
+            class="${this.props.classes || ''} subform-name"
+            style=${styleMap(this.props.styles && this.props.styles.name)}
+            >${label}</span
+          >`
+        : ''}
       ${this.props.hasToggle &&
       html` <paper-toggle-button
         .name="${this.props.name}-toggle"

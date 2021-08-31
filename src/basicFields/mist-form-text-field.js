@@ -1,17 +1,15 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormTextField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-    return css`
-    paper-input {
-      margin-top: 10px;
-      margin-left: 10px;
-    }
-
+    return [
+      fieldStyles,
+      css`
     paper-input {
       --paper-input-container-label: {
         color: #4b4b4bl
@@ -21,7 +19,8 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
     paper-input > [slot='prefix'] {
       margin-right: 5px;
     }
-    `;
+    `,
+    ];
   }
 
   render() {

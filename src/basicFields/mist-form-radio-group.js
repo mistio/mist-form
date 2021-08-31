@@ -1,13 +1,15 @@
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { fieldStyles } from '../styles/fieldStyles.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
 class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-    return css``;
+    return [fieldStyles];
   }
+
 
   render() {
     super.render();

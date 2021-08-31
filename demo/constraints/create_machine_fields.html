@@ -55,7 +55,7 @@
       import '@polymer/paper-swatch-picker/paper-swatch-picker.js';
       import '../../mist-form.js';
 
-      const jsonUrl = 'constraints.json';
+      const jsonUrl = 'create_machine_fields.json';
       const id = 'test-mist-form';
       const method = 'POST';
       const submitUrl = 'api/v1/clouds';
@@ -70,15 +70,11 @@
         },
         },
         conditionals: {
-          fieldNameHidden: {
-          func: cloud=> cloud === 'cloudId1' ,
-        },
-        hidePaperSlider1: {
-          func: value => value === 'yes' || value === 'sure',
-        },
-        getDefaultActions: {
-          func: defaultActions => defaultActions || []
-        },
+          nameValid: {
+          func: cloud => {
+              return cloud === 'cloudId1' ? '^(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)$' : '^[0-9a-zA-Z-.]+$';
+          },
+        }
         }
       };
       render(

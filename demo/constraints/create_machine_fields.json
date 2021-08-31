@@ -1,0 +1,52 @@
+{
+	"type":"object",
+	"format": "form",
+	"id":"constraints-form",
+	"$schema":"http://json-schema.org/draft-07/schema#",
+	"label":"Constraints",
+	"description":"Create machine form",
+	"submitButtonLabel":"Add",
+	"canClose":true,
+	"additionalProperties":false,
+	"properties":{
+	  "costConstraintContainer":{
+		"name":"machine",
+		"label":"Machine",
+		"id":"machine_container",
+		"type":"object",
+		"format":"subformContainer",
+		"hasToggle":true,
+		"properties":{
+		  "subform":{
+			"$ref":"#/definitions/machineSubform"
+		  }
+		}
+	  }
+	},
+	"definitions":{
+	  "machineSubform":{
+		"id":"machine_subform",
+		"type":"object",
+		"format":"subform",
+		"properties":{
+            "cloud":{
+                "label":"Cloud",
+                "id":"cloud",
+                "type":"string",
+                "format":"dropdown",
+                "x-mist-enum":"clouds"
+              },
+              "name":{
+                "label":"name",
+                "id": "name",
+                "name":"value",
+                "type":"string",
+                "required": true,
+                "autoValidate":true,
+                "errorMessage": "Error!",
+                "deps": [{"prop": "allowedPattern", "func": "nameValid", "dependsOn": ".cloud"}]
+              }
+
+	  }}
+	}
+  }

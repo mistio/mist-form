@@ -204,6 +204,7 @@
 			"id":"field",
 			"type": "object",
 			"format":"multiRow",
+			"inline": true,
 			"properties":{
 			  "subform":{
 				"$ref":"#/definitions/fieldElementSubform"
@@ -246,7 +247,7 @@
 			"id":"show",
 			"value":true,
 			"type":"boolean",
-			"noLabelFloat":true
+			"hideLabel":true
 		  }
 		}
 	  },

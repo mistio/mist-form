@@ -165,7 +165,6 @@ describe('Size constraints', () => {
             .clear({ force: true })
             .type('200', { force: true });
           cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
-          cy.get('mist-form-checkbox#show').click();
         });
 
         cy.get('#primary_disk_constraint').within(() => {
@@ -189,7 +188,6 @@ describe('Size constraints', () => {
             .clear({ force: true })
             .type('50', { force: true });
           cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
-          cy.get('mist-form-checkbox#show').click();
         });
       });
     cy.get('mist-form').find('.submit-btn').should('not.have.attr', 'disabled');
