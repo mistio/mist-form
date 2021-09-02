@@ -71,6 +71,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
+    console.log("in connected")
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
   }
 
@@ -119,7 +120,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
             >${label}</span
           >`
         : ''}
-      ${this.props.hasToggle &&
+      ${this.props.hasToggle ?
       html` <paper-toggle-button
         .name="${this.props.name}-toggle"
         excludeFromPayload
@@ -129,7 +130,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         }}"
         style=${styleMap(this.props.styles && this.props.styles.toggle)}
         >${this.props.label}</paper-toggle-button
-      >`}
+      >`: ''}
       ${this.isOpen ? html`${this.props.inputs}` : ''}
     </div>`;
   }

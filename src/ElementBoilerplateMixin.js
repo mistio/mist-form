@@ -12,6 +12,7 @@ export const elementBoilerplateMixin = superClass =>
 
     connectedCallback() {
       super.connectedCallback();
+      console.log("in connected")
       this.name = this.props.name;
       this.fieldPath = this.props.fieldPath;
       this.mistForm.dependencyController.addElementReference(this);
@@ -32,9 +33,11 @@ export const elementBoilerplateMixin = superClass =>
     }
 
     validate() {
-      return (
-        this.shadowRoot.children[0] && this.shadowRoot.children[0].validate()
-      );
+      if (this.shadowRoot.children[0] && this.shadowRoot.children[0].validate) {
+        return this.shadowRoot.children[0].validate();
+      } else {
+        return true;
+      }
     }
 
     getFieldPath() {

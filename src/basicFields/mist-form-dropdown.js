@@ -71,12 +71,12 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
     const value =
       this.props &&
       this.props.enum &&
-      this.props.enum.find(prop => prop.id === this.props.value);
+      this.props.enum.find(prop => prop.id === this.props.value) || [];
+    this.props.enum = this.props.enum || [];
 
     if (value) {
       this.props.value = value.id;
     }
-
     return html`<paper-dropdown-menu
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
@@ -111,6 +111,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
 
   render() {
     super.render();
+    console.log("this ", this.props);
     const isDynamic = Object.prototype.hasOwnProperty.call(
       this.props,
       'x-mist-enum'
