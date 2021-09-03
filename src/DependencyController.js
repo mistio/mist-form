@@ -60,17 +60,15 @@ export class DependencyController {
     }
   }
 
-  async updatePropertiesFromConditions(fieldPath) {
+  updatePropertiesFromConditions(fieldPath) {
     // Debounce this function
     const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
-
-    //this.mistForm.updateComplete.then(() => {
+console.log("this.conditionMap ", this.conditionMap)
       if (conditions.length) {
-        debugger;
-conditions.forEach(condition => {
+          conditions.forEach(condition => {
           const element = this.elementReferencesByFieldPath[condition.target];
           const dependencyValues = this.getDependencyValues(
             condition,
@@ -79,30 +77,46 @@ conditions.forEach(condition => {
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues, fieldPath); // also pass old value here
-        const propUnchanged = JSON.stringify(element.props[condition.prop]) === JSON.stringify(newValue);
-          if (!element || propUnchanged) {
-            return;
-          } else {
-            debugger;
             this.updateProp(element, condition.prop, newValue);
-          }
         });
       }
-  //  });
   }
 
+  updatePropertiesByTarget(element)  {
+    console.log("this.mistForm.shadowRoot ", this.mistForm.shadowRoot)
+    if (!this.mistForm.shadowRoot) { return; }
+    const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
+    const conditions = this.conditionMap.filter(
+      dep => dep.target === element.fieldPath
+    );
+
+    if (conditions.length) {
+        conditions.forEach(condition => {
+        const dependencyValues = this.getDependencyValues(
+          condition,
+          formValues
+        );
+        if (dependencyValues === undefined) { return ;}
+        const prop = condition.prop;
+        const newValue = this.mistForm.dynamicDataNamespace.conditionals[
+          condition.func
+        ].func(dependencyValues); // also pass old value here
+        const propUnchanged = JSON.stringify(element.props[prop]) === JSON.stringify(newValue);
+        if (propUnchanged) { return; }
+        console.log("change element prpo")
+          element.props[prop] = newValue;
+      });
+    }
+
+  }
   getDependencyValues = (dependency, formValues) => {
     const source = dependency.dependsOn;
     return util.getNestedValueFromPath(source, formValues);
   };
 
    updateProp(element, prop, value) {
-
-      element.updateComplete.then(() => {
-          element.props = { ...element.props, [prop]: value };
-      console.log("element ", element.props)
-      debugger; });
-
-
+    const propUnchanged = JSON.stringify(element.props[prop]) === JSON.stringify(value);
+    if (!element || propUnchanged) { return; }
+      element.props = { ...element.props, [prop]: value };
   }
 }

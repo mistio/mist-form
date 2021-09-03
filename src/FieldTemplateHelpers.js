@@ -28,8 +28,9 @@ export class FieldTemplateHelpers {
 
   // Get first level input children
   getFirstLevelChildren = root => {
-    return [...root.children].filter(
+    console.log("root ", root)
+    return root ? [...root.children].filter(
       child => !child.hidden && child.matches(this.inputFields)
-    );
+    ) : [];
   };
 }

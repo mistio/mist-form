@@ -22,6 +22,7 @@ export const elementBoilerplateMixin = superClass =>
     render() {
       this.style.display = this.props.hidden ? 'none' : '';
       this.fieldPath = this.props.fieldPath;
+      this.mistForm.dependencyController.updatePropertiesByTarget(this);
     }
 
     valueChanged(e) {

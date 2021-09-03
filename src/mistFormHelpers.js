@@ -41,6 +41,7 @@ export class MistFormHelpers {
   }
 
   getValuesfromDOM(root) {
+    if (!root) { return {};}
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {

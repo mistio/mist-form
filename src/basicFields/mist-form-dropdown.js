@@ -95,7 +95,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
           slot="dropdown-content"
           style=${styleMap(this.props.styles && this.props.styles.listbox)}
         >
-          ${this.props.enum.map(
+          ${this.props.enum.length ? this.props.enum.map(
             item =>
               html`<paper-item
                 value="${item.title || item}"
@@ -104,14 +104,19 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
               >
                 ${item.title || item}
               </paper-item>`
-          )}
+          ) : html`<paper-item
+                disabled
+                style=${styleMap(this.props.styles && this.props.styles.item)}
+              >
+                No ${this.props.label.toLowerCase()} found
+              </paper-item>`
+          }
         </paper-listbox> </paper-dropdown-menu
       >${this.helpText(this.props)}`;
   }
 
   render() {
     super.render();
-    console.log("this ", this.props);
     const isDynamic = Object.prototype.hasOwnProperty.call(
       this.props,
       'x-mist-enum'
