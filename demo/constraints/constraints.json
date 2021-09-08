@@ -158,7 +158,7 @@
 			"id":"default_action",
 			"type":"string",
 			"format":"dropdown",
-			"deps": [{"prop": "enum", "func": "getDefaultActions", "dependsOn": "size.allowed"}]
+			"deps": [{"prop": "enum", "func": "getDefaultActions", "dependsOn": ".available"}]
 		  }
 		}
 	  },

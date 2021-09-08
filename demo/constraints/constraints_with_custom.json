@@ -21,6 +21,19 @@
 				"$ref":"#/definitions/fieldConstraints"
 			  }
 			}
+		  },
+		  "tabsContainer":{
+			"name":"tabs",
+			"label":"tabs",
+			"id":"tabs_container",
+			"type":"object",
+			"format":"subformContainer",
+			"hasToggle":true,
+			"properties":{
+			  "subform":{
+				"$ref":"#/definitions/tabsSubform"
+			  }
+			}
 		  }
 	},
 	"definitions":{
@@ -97,6 +110,18 @@
 			"value": 3
 		  }
 		}
+	  },
+	  "tabsSubform":{
+		"id":"tabs_subform",
+		"type":"object",
+		"format":"subform",
+		"properties":{
+			"subform":[
+				{"$ref":"#/definitions/tab1"},
+				{"$ref":"#/definitions/tab2"},
+				{"$ref":"#/definitions/tab3"},
+			]
+		  }
 	  }
 	}
   }

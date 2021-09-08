@@ -60,15 +60,14 @@ export class DependencyController {
     }
   }
 
-  updatePropertiesFromConditions(fieldPath) {
+  async updatePropertiesFromConditions(fieldPath) {
     // Debounce this function
     const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
-console.log("this.conditionMap ", this.conditionMap)
-      if (conditions.length) {
-          conditions.forEach(condition => {
+     // if (conditions.length) {
+        for (const condition of conditions) {
           const element = this.elementReferencesByFieldPath[condition.target];
           const dependencyValues = this.getDependencyValues(
             condition,
@@ -77,21 +76,21 @@ console.log("this.conditionMap ", this.conditionMap)
           const newValue = this.mistForm.dynamicDataNamespace.conditionals[
             condition.func
           ].func(dependencyValues, fieldPath); // also pass old value here
-            this.updateProp(element, condition.prop, newValue);
-        });
-      }
+            await this.updateProp(element, condition.prop, newValue);
+
+        };
+    //  }
   }
 
-  updatePropertiesByTarget(element)  {
-    console.log("this.mistForm.shadowRoot ", this.mistForm.shadowRoot)
+  async updatePropertiesByTarget(element)  {
     if (!this.mistForm.shadowRoot) { return; }
     const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
       dep => dep.target === element.fieldPath
     );
 
-    if (conditions.length) {
-        conditions.forEach(condition => {
+   // if (conditions.length) {
+      for (const condition of conditions) {
         const dependencyValues = this.getDependencyValues(
           condition,
           formValues
@@ -100,13 +99,19 @@ console.log("this.conditionMap ", this.conditionMap)
         const prop = condition.prop;
         const newValue = this.mistForm.dynamicDataNamespace.conditionals[
           condition.func
-        ].func(dependencyValues); // also pass old value here
-        const propUnchanged = JSON.stringify(element.props[prop]) === JSON.stringify(newValue);
-        if (propUnchanged) { return; }
-        console.log("change element prpo")
-          element.props[prop] = newValue;
-      });
-    }
+        ].func(dependencyValues, condition.dependsOn); // also pass old value here
+        const values = prop ? {[prop]: newValue} : newValue;
+        const props = Object.keys(values);
+        // TODO: replace with real function that compares stuff
+        const propsUnchanged = props.every(key => JSON.stringify(element.props[key]) == JSON.stringify(values[key]));
+        if (propsUnchanged) { return; }
+          props.forEach(prop => {
+            element.props[prop] = values[prop];
+          })
+          console.log("props in by target", element.props)
+        await element.updateComplete;
+      };
+   // }
 
   }
   getDependencyValues = (dependency, formValues) => {
@@ -114,9 +119,18 @@ console.log("this.conditionMap ", this.conditionMap)
     return util.getNestedValueFromPath(source, formValues);
   };
 
-   updateProp(element, prop, value) {
-    const propUnchanged = JSON.stringify(element.props[prop]) === JSON.stringify(value);
-    if (!element || propUnchanged) { return; }
-      element.props = { ...element.props, [prop]: value };
+   async updateProp(element, prop, value) {
+     const values = prop ? {[prop]: value} : value;
+     const props = Object.keys(values);
+     const propsUnchanged = props.every(key => {
+       // TODO: replace with real function that compares stuff
+       JSON.stringify(element.props[key]) == JSON.stringify(values[key])
+      });
+      if (!element || propsUnchanged) { return; }
+      console.log("values in by condition", values)
+      element.props = { ...element.props, ...values };
+      // Since I wait for the element to complete update, maybe I could set priorities.
+      // Parent elements should have bigger priority than their children to avoid losing data on re rendering
+      await element.updateComplete;
   }
 }
