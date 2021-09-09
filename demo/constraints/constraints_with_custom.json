@@ -21,19 +21,6 @@
 				"$ref":"#/definitions/fieldConstraints"
 			  }
 			}
-		  },
-		  "tabsContainer":{
-			"name":"tabs",
-			"label":"tabs",
-			"id":"tabs_container",
-			"type":"object",
-			"format":"subformContainer",
-			"hasToggle":true,
-			"properties":{
-			  "subform":{
-				"$ref":"#/definitions/tabsSubform"
-			  }
-			}
 		  }
 	},
 	"definitions":{

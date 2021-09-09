@@ -10,7 +10,6 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
     return [fieldStyles];
   }
 
-
   render() {
     super.render();
     return html` <paper-radio-group
@@ -18,6 +17,7 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
         .label="${util.getLabel(this.props)}"
         class="${this.props.classes || ''} mist-form-input"
         ?excludeFromPayload="${this.props.excludeFromPayload}"
+        .selected="${this.props.value}"
         @selected-changed=${this.valueChanged}
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.radioGroup)}
@@ -30,6 +30,7 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
               style=${styleMap(
                 this.props.styles && this.props.styles.radioButton
               )}
+              .name="${item}"
               >${item}</paper-radio-button
             >`
         )} </paper-radio-group

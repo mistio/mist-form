@@ -69,9 +69,10 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
 
   getDropdown() {
     const value =
-      this.props &&
-      this.props.enum &&
-      this.props.enum.find(prop => prop.id === this.props.value) || [];
+      (this.props &&
+        this.props.enum &&
+        this.props.enum.find(prop => prop.id === this.props.value)) ||
+      [];
     this.props.enum = this.props.enum || [];
 
     if (value) {
@@ -95,22 +96,25 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
           slot="dropdown-content"
           style=${styleMap(this.props.styles && this.props.styles.listbox)}
         >
-          ${this.props.enum.length ? this.props.enum.map(
-            item =>
-              html`<paper-item
-                value="${item.title || item}"
-                item-id="${item.id || item}"
-                style=${styleMap(this.props.styles && this.props.styles.item)}
-              >
-                ${item.title || item}
-              </paper-item>`
-          ) : html`<paper-item
+          ${this.props.enum.length
+            ? this.props.enum.map(
+                item =>
+                  html`<paper-item
+                    value="${item.title || item}"
+                    item-id="${item.id || item}"
+                    style=${styleMap(
+                      this.props.styles && this.props.styles.item
+                    )}
+                  >
+                    ${item.title || item}
+                  </paper-item>`
+              )
+            : html`<paper-item
                 disabled
                 style=${styleMap(this.props.styles && this.props.styles.item)}
               >
                 No ${this.props.label.toLowerCase()} found
-              </paper-item>`
-          }
+              </paper-item>`}
         </paper-listbox> </paper-dropdown-menu
       >${this.helpText(this.props)}`;
   }

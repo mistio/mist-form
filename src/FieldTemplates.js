@@ -159,21 +159,10 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .fieldTemplates=${this}
       .helpText=${this.helpText}
       style=${styleMap(props.styles && props.styles.outer)}
+      .radioGroupFunc=${this.radioGroup}
       exportparts="mist-form-text-field, mist-form-dropdown, mist-form-radio-group, mist-form-checkbox-group, mist-form-text-area, mist-form-checkbox, mist-form-duration-field, mist-form-multi-row, mist-form-multi-row-row, mist-form-custom-field, mist-form-button"
     ></mist-form-subform>`;
 
-  tabsContainer = props =>
-    html`<mist-form-tabs
-      id="${props.id}"
-      .props="${props}"
-      .mistForm=${this.mistForm}
-      .fieldTemplates=${this}
-      .helpText=${this.helpText}
-      style=${styleMap(props.styles && props.styles.outer)}
-      .subformFunc=${this.subformContainer}
-      .checkBoxGroupFunc=${this.checkboxGroup}
-      >
-    </mist-form-tabs>
   spinner = html`<paper-spinner active></paper-spinner>`;
 
   // Submit button should be disabled until all required fields are filled

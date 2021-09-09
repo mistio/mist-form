@@ -12,7 +12,6 @@ export const elementBoilerplateMixin = superClass =>
 
     connectedCallback() {
       super.connectedCallback();
-      console.log("in connected")
       this.name = this.props.name;
       this.fieldPath = this.props.fieldPath;
       this.mistForm.dependencyController.addElementReference(this);

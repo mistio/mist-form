@@ -41,7 +41,9 @@ export class MistFormHelpers {
   }
 
   getValuesfromDOM(root) {
-    if (!root) { return {};}
+    if (!root) {
+      return {};
+    }
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
@@ -75,7 +77,7 @@ export class MistFormHelpers {
 
   setInput(contents) {
     const _contents = { ...contents };
-    console.log("_contents ", _contents)
+    console.log('_contents ', _contents);
     if (_contents.format !== 'subformContainer') {
       for (const [key, val] of Object.entries(_contents.properties)) {
         _contents.properties[key].name = val.name || key;

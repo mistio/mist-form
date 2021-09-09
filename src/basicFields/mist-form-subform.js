@@ -14,6 +14,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       fieldPath: { type: String, reflect: true },
       isOpen: { type: Boolean },
       excludeFromPayload: { type: Boolean, reflect: true },
+      selectedTab: { type: String },
     };
   }
 
@@ -59,7 +60,6 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         margin-bottom: 10px;
         margin-left: 10px;
       }
-
     `;
   }
 
@@ -71,7 +71,9 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    console.log("in connected")
+    console.log('in connected');
+    this.selectedTab =
+      this.props.properties.tabs && this.props.properties.tabs.enum[0].label;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
   }
 
@@ -81,17 +83,16 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     );
   }
 
-  setupInputs() {
-    const subForm = util.getSubformFromRef(
-      this.mistForm.subforms,
-      this.props.properties.subform.$ref
-    );
-
+  getParentPath() {
     const path = this.props.fieldPath;
     const parentPath = this.props.omitTitle
       ? path.split('.').slice(0, -1).join('.')
       : path;
+    return parentPath;
+  }
 
+  getSubformInputs(ref) {
+    const subForm = util.getSubformFromRef(this.mistForm.subforms, ref);
     const subFormInputs = Object.keys(subForm.properties).map(key => [
       key,
       {
@@ -99,10 +100,36 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         hidden: this.props.hidden || subForm.properties[key].hidden,
       },
     ]);
-    this.props.inputs = this.mistForm.renderInputs(subFormInputs, parentPath);
+    return this.mistForm.renderInputs(subFormInputs, this.getParentPath());
+  }
+  setupInputs() {
+    // If subform
+    if (this.props.properties.subform) {
+      this.props.inputs = this.getSubformInputs(
+        this.props.properties.subform.$ref
+      );
+      // If tabbed
+    } else if (this.props.properties.tabs) {
+      this.props.inputs = this.props.properties.tabs.enum.map(tab => ({
+        label: tab.label,
+        inputs: this.getSubformInputs(tab.$ref),
+      }));
+    }
+    // If tabbed, this.props.inputs is an Array
   }
 
+  getTabs() {
+    return html`${this.radioGroupFunc({
+      enum: this.props.properties.tabs.enum.map(tab => tab.label),
+      value: this.props.properties.tabs.enum[0].label,
+      valueChangedEvent: e => {
+        this.selectedTab = e.value;
+      },
+    })}
+    ${this.props.inputs.find(input => input.label === this.selectedTab).inputs} `;
+  }
   render() {
+    const hasTabs = this.props.properties.tabs;
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
     super.render();
@@ -120,18 +147,23 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
             >${label}</span
           >`
         : ''}
-      ${this.props.hasToggle ?
-      html` <paper-toggle-button
-        .name="${this.props.name}-toggle"
-        excludeFromPayload
-        .checked="${this.isOpen}"
-        @checked-changed="${e => {
-          this.isOpen = e.detail.value;
-        }}"
-        style=${styleMap(this.props.styles && this.props.styles.toggle)}
-        >${this.props.label}</paper-toggle-button
-      >`: ''}
-      ${this.isOpen ? html`${this.props.inputs}` : ''}
+      ${this.props.hasToggle
+        ? html` <paper-toggle-button
+            .name="${this.props.name}-toggle"
+            excludeFromPayload
+            .checked="${this.isOpen}"
+            @checked-changed="${e => {
+              this.isOpen = e.detail.value;
+            }}"
+            style=${styleMap(this.props.styles && this.props.styles.toggle)}
+            >${this.props.label}</paper-toggle-button
+          >`
+        : ''}
+      ${this.isOpen
+        ? hasTabs
+          ? html`${this.getTabs()}`
+          : html`${this.props.inputs}`
+        : ''}
     </div>`;
   }
 }
