@@ -16,7 +16,7 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
         class="${this.props.classes || ''} mist-form-input"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
+
         .selected="${this.props.value}"
         @selected-changed=${this.valueChanged}
         fieldPath="${this.props.fieldPath}"

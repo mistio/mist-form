@@ -7,6 +7,7 @@ export const elementBoilerplateMixin = superClass =>
         value: { type: String },
         props: { type: Object },
         fieldPath: { type: String, reflect: true },
+        excludeFromPayload: { type: Boolean, reflect: true },
       };
     }
 
@@ -14,17 +15,21 @@ export const elementBoilerplateMixin = superClass =>
       super.connectedCallback();
       this.name = this.props.name;
       this.fieldPath = this.props.fieldPath;
+      this.excludeFromPayload = this.props.excludeFromPayload;
       this.mistForm.dependencyController.addElementReference(this);
       this.debouncedEventChange = debouncer(e => this.valueChanged(e), 400);
     }
 
     render() {
+      this.mistForm.dependencyController.updatePropertiesByTarget(this);
       this.style.display = this.props.hidden ? 'none' : '';
       this.fieldPath = this.props.fieldPath;
-      this.mistForm.dependencyController.updatePropertiesByTarget(this);
+      console.log("this.props ", this.props);
+
     }
 
     valueChanged(e) {
+      console.log("e ", e)
       this.value = e.detail.value;
       this.props.valueChangedEvent({
         fieldPath: this.fieldPath,

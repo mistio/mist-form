@@ -89,7 +89,8 @@ class MistFormRow extends LitElement {
   updateIndexAndFieldPath(index) {
     this.index = index;
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
-    for (const child of this.shadowRoot.children) {
+    const children = this.parent.props.inline ? this.shadowRoot.children : this.shadowRoot.querySelector('.fields-container').children;
+    for (const child of children) {
       if (child.props) {
         child.props = {
           ...child.props,
@@ -99,10 +100,9 @@ class MistFormRow extends LitElement {
       }
     }
     this.updateComplete.then(() => {
-      for (const child of this.shadowRoot.children) {
-        if (child.props) {
-          this.parent.mistForm.dependencyController.addElementReference(child);
-        }
+      for (const child of children) {
+        this.parent.mistForm.dependencyController.removeElementReference(child.fieldPath);
+        this.parent.mistForm.dependencyController.addElementReference(child);
       }
     });
     this.requestUpdate();
@@ -115,6 +115,7 @@ class MistFormRow extends LitElement {
 
   render() {
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
+    const isNumbered = this.parent.props.numbered;
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };
 
@@ -136,6 +137,7 @@ class MistFormRow extends LitElement {
         : html`${this.parent.fieldTemplates.getTemplate(prop)}`;
     });
     return html`
+    ${isNumbered ? html`<span>${this.index}.</span>` : ''}
       ${this.parent.props.inline
         ? html`${row}`
         : html`<span class="fields-container"> ${row} </span>`}

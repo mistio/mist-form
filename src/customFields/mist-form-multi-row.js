@@ -146,6 +146,14 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
               style=${styleMap(this.props.styles && this.props.styles.header)}
               part="row-header"
             >
+              ${this.props.numbered ? html`<span
+                      class="row-item"
+                      style=${styleMap(
+                        this.props.styles && this.props.styles.item
+                      )}
+                      part="header-item"
+                      >No.</span
+                    >` : ''}
               ${Object.keys(this.props.rowProps).map(key =>
                 !this.props.rowProps[key].hidden
                   ? html`<span

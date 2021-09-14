@@ -46,7 +46,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
       <iron-selector
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
+
         @selected-values-changed=${this.valueChanged}
         class="${this.props.classes || ''} checkbox-group mist-form-input"
         .selectedValues="${this.value}"

@@ -97,18 +97,6 @@
 			"value": 3
 		  }
 		}
-	  },
-	  "tabsSubform":{
-		"id":"tabs_subform",
-		"type":"object",
-		"format":"subform",
-		"properties":{
-			"subform":[
-				{"$ref":"#/definitions/tab1"},
-				{"$ref":"#/definitions/tab2"},
-				{"$ref":"#/definitions/tab3"},
-			]
-		  }
 	  }
 	}
   }

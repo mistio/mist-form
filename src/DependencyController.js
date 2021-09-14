@@ -12,7 +12,14 @@ export class DependencyController {
   }
 
   removeElementReference(target) {
+
+    console.log("target ", target);
+    console.log("this.elementReferencesByFieldPath[target] ", this.elementReferencesByFieldPath[target])
+
     delete this.elementReferencesByFieldPath[target];
+    console.log("this.elementReferencesByFieldPath ", this.elementReferencesByFieldPath);
+    console.log("this.elementReferencesByFieldPath[target] ", this.elementReferencesByFieldPath[target])
+
   }
 
   // Differentiate if dependsOn is string or array
@@ -50,12 +57,12 @@ export class DependencyController {
           prop,
           func,
         };
-        if (
-          !this.conditionMap.find(
-            x => JSON.stringify(x) === JSON.stringify(condition)
-          )
+        // TODO: Replace stringify with real function that compares
+        const conditionNotInMap = !this.conditionMap.find(
+          x => JSON.stringify(x) === JSON.stringify(condition)
         )
-          this.conditionMap.push(condition);
+        if (conditionNotInMap) {
+          this.conditionMap.push(condition);}
       });
     }
   }
@@ -79,6 +86,7 @@ export class DependencyController {
   }
 
   async updatePropertiesByTarget(element) {
+
     if (!this.mistForm.shadowRoot) {
       return;
     }
@@ -86,7 +94,6 @@ export class DependencyController {
     const conditions = this.conditionMap.filter(
       dep => dep.target === element.fieldPath
     );
-
     // if (conditions.length) {
     for (const condition of conditions) {
       const dependencyValues = this.getDependencyValues(condition, formValues);
@@ -103,13 +110,17 @@ export class DependencyController {
       const propsUnchanged = props.every(
         key => JSON.stringify(element.props[key]) == JSON.stringify(values[key])
       );
+
       if (propsUnchanged) {
         return;
       }
+      console.log("values ", values);
+      console.log("props ", props)
       props.forEach(prop => {
         element.props[prop] = values[prop];
       });
-      console.log('props in by target', element.props);
+      console.log("element.props ", element.props);
+
       await element.updateComplete;
     }
     // }
@@ -129,8 +140,9 @@ export class DependencyController {
     if (!element || propsUnchanged) {
       return;
     }
-    console.log('values in by condition', values);
+
     element.props = { ...element.props, ...values };
+
     // Since I wait for the element to complete update, maybe I could set priorities.
     // Parent elements should have bigger priority than their children to avoid losing data on re rendering
     await element.updateComplete;

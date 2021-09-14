@@ -34,6 +34,10 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         flex-grow: 1;
         flex-basis: calc((var(--threshold) - 100%) * 999);
       }
+      .subform-container.stacked > * {
+        flex-grow: 1;
+        flex-basis: 100%
+      }
       .subform-container > * + * {
         margin-top: 10px;
       }
@@ -51,7 +55,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         font-weight: bold;
         padding: 0 10px;
       }
-      .subform-container > paper-toggle-button {
+      .subform-container > paper-toggle-button, .subform-container > mist-form-radio-group {
         flex-basis: unset;
         width: 100%;
       }
@@ -71,9 +75,8 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    console.log('in connected');
     this.selectedTab =
-      this.props.properties.tabs && this.props.properties.tabs.enum[0].label;
+    this.props.properties.tabs && this.props.properties.tabs.enum[0].label;
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
   }
 
@@ -83,15 +86,15 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     );
   }
 
-  getParentPath() {
-    const path = this.props.fieldPath;
+  getParentPath(tabIndex) {
+    const path = tabIndex !== undefined ? `${this.props.fieldPath}[${[tabIndex]}]` : this.props.fieldPath;
     const parentPath = this.props.omitTitle
       ? path.split('.').slice(0, -1).join('.')
       : path;
     return parentPath;
   }
 
-  getSubformInputs(ref) {
+  getSubformInputs(ref, tabIndex) {
     const subForm = util.getSubformFromRef(this.mistForm.subforms, ref);
     const subFormInputs = Object.keys(subForm.properties).map(key => [
       key,
@@ -100,7 +103,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         hidden: this.props.hidden || subForm.properties[key].hidden,
       },
     ]);
-    return this.mistForm.renderInputs(subFormInputs, this.getParentPath());
+    return this.mistForm.renderInputs(subFormInputs, this.getParentPath(tabIndex));
   }
   setupInputs() {
     // If subform
@@ -110,9 +113,9 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       );
       // If tabbed
     } else if (this.props.properties.tabs) {
-      this.props.inputs = this.props.properties.tabs.enum.map(tab => ({
+      this.props.inputs = this.props.properties.tabs.enum.map((tab, index) => ({
         label: tab.label,
-        inputs: this.getSubformInputs(tab.$ref),
+        inputs: this.getSubformInputs(tab.$ref, index),
       }));
     }
     // If tabbed, this.props.inputs is an Array
@@ -121,12 +124,14 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
   getTabs() {
     return html`${this.radioGroupFunc({
       enum: this.props.properties.tabs.enum.map(tab => tab.label),
-      value: this.props.properties.tabs.enum[0].label,
+      value: this.selectedTab,
+      excludeFromPayload: true,
       valueChangedEvent: e => {
         this.selectedTab = e.value;
+        this.valueChanged({detail: {value: e.value}})
       },
     })}
-    ${this.props.inputs.find(input => input.label === this.selectedTab).inputs} `;
+    ${this.props.inputs.find(input => input.label === this.selectedTab).inputs}`;
   }
   render() {
     const hasTabs = this.props.properties.tabs;

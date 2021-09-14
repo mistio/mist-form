@@ -82,7 +82,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
         class="${this.props.classes || ''} mist-form-input"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
+
         no-animations=""
         value="${this.props.value || ''}"
         fieldPath="${this.props.fieldPath}"
