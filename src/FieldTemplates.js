@@ -44,6 +44,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
       'multiRow',
     ];
   }
+  // TODO: The required property for components clashes with the json schema require property.
+  // I should use a different required for components and transform it before passing it.
 
   // Combine field and helpText and return template
   getTemplate(props) {

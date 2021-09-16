@@ -17,8 +17,13 @@ export const valueNotEmpty = value => {
 
 export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];
-  const subForm = subforms.find(el => el[0] === subformName)[1];
-  return subForm;
+  console.log("subformName ", subformName );
+  console.log("subforms ", subforms)
+
+  const subForm = subforms.find(el => { console.log("el[0] ", el[0]); console.log("subformName ", subformName); return el[0] === subformName});
+console.log("subForm ", subForm)
+
+  return subForm[1];
 };
 
 export const getLabel = props =>
@@ -46,9 +51,67 @@ export const getInputs = data => {
     jsonProperties[key],
   ]);
 
-  return inputs;
+  return removeFileNamesFromRefs(inputs);
 };
+const removeFileNamesFromRefs = data => {
+return data.map(item=> {
+ if (item[1].format === "subformContainer") {
+   const ref = item[1].properties.subform && item[1].properties.subform.$ref;
+   if (ref) {
+    item[1].properties.subform.$ref = `#${ref.split('#')[1]}`;
+   }
 
+ }
+ return item;
+});
+}
+export const getDefinitions = async data => {
+
+  let newDefinitions = {};
+  const fields = {
+      ...data.properties,
+      ...data.definitions
+  };
+
+  for (const [key, val] of Object.entries(fields)) {
+      if (val.format === 'subformContainer') {
+          const ref = val.properties && val.properties.subform && val.properties.subform.$ref;
+          console.log("ref ", ref)
+          if (ref && !ref.startsWith('#')) {
+              const src = ref.split('#')[0];
+              const response = await fetch(src);
+              const jsonData = await response.json();
+              console.log("jsonData ", jsonData)
+              const defs = await getDefinitions(jsonData);
+              newDefinitions = {
+                  ...newDefinitions,
+                  ...defs
+              }
+          }
+      } else {
+          for (const [propKey, propVal] of Object.entries(val.properties)) {
+              const ref = propVal.properties && propVal.properties.subform && propVal.properties.subform.$ref;
+
+              console.log("ref ", ref)
+              if (ref && !ref.startsWith('#')) {
+                  const src = ref.split('#')[0];
+                  const response = await fetch(src);
+                  const jsonData = await response.json();
+                  console.log("jsonData 2", jsonData)
+                  const defs = await getDefinitions(jsonData);
+
+                  newDefinitions = {
+                      ...newDefinitions,
+                      ...defs
+                  }
+              }
+          }
+      }
+
+  }
+
+  return {...data.definitions, ...newDefinitions};
+}
 export const getSubforms = data => {
   const jsonDefinitions = data.definitions;
   const subforms =

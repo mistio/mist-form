@@ -4,7 +4,8 @@ import { DependencyController } from './DependencyController.js';
 import * as util from './utilities.js';
 import { MistFormHelpers } from './mistFormHelpers.js';
 import { mistFormStyles } from './styles/mistFormStyles.js';
-
+// Loading schemas from multiple files is supported. For know, the subforms need unique names.
+// TODO: Check json schema  if duplicate names are allowed as long as they are in different schemas
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -79,8 +80,10 @@ export class MistForm extends LitElement {
   getJSON(url) {
     fetch(url)
       .then(response => response.json())
-      .then(data => {
+      .then(async (data) => {
+        const definitions = await util.getDefinitions(data);
         this.data = data;
+        this.data.definitions = {...data.definitions, ...definitions};
       })
       .catch(error => {
         this.dataError = error;
@@ -91,7 +94,6 @@ export class MistForm extends LitElement {
   setupInputs() {
     this.inputs = util.getInputs(this.data);
     this.subforms = util.getSubforms(this.data);
-
     this.inputs.forEach((input, index) => {
       const contents = input[1];
       this.inputs[index][1] = this.mistFormHelpers.setInput(contents);

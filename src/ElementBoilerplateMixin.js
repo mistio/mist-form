@@ -24,12 +24,9 @@ export const elementBoilerplateMixin = superClass =>
       this.mistForm.dependencyController.updatePropertiesByTarget(this);
       this.style.display = this.props.hidden ? 'none' : '';
       this.fieldPath = this.props.fieldPath;
-      console.log("this.props ", this.props);
-
     }
 
     valueChanged(e) {
-      console.log("e ", e)
       this.value = e.detail.value;
       this.props.valueChangedEvent({
         fieldPath: this.fieldPath,

@@ -113,7 +113,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
                 disabled
                 style=${styleMap(this.props.styles && this.props.styles.item)}
               >
-                No ${this.props.label.toLowerCase()} found
+                No ${this.props.label && this.props.label.toLowerCase()} found
               </paper-item>`}
         </paper-listbox> </paper-dropdown-menu
       >${this.helpText(this.props)}`;

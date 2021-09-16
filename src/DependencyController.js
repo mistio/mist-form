@@ -12,14 +12,7 @@ export class DependencyController {
   }
 
   removeElementReference(target) {
-
-    console.log("target ", target);
-    console.log("this.elementReferencesByFieldPath[target] ", this.elementReferencesByFieldPath[target])
-
     delete this.elementReferencesByFieldPath[target];
-    console.log("this.elementReferencesByFieldPath ", this.elementReferencesByFieldPath);
-    console.log("this.elementReferencesByFieldPath[target] ", this.elementReferencesByFieldPath[target])
-
   }
 
   // Differentiate if dependsOn is string or array
@@ -114,13 +107,9 @@ export class DependencyController {
       if (propsUnchanged) {
         return;
       }
-      console.log("values ", values);
-      console.log("props ", props)
       props.forEach(prop => {
         element.props[prop] = values[prop];
       });
-      console.log("element.props ", element.props);
-
       await element.updateComplete;
     }
     // }
