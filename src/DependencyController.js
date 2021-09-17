@@ -1,5 +1,6 @@
 import * as util from './utilities.js';
-
+// When setting dependency paths, you should use the key of a field and not it's name
+// If the name is different from the key it's used for the final value property
 export class DependencyController {
   constructor(mistForm) {
     this.conditionMap = [];
@@ -72,8 +73,15 @@ export class DependencyController {
       const dependencyValues = this.getDependencyValues(condition, formValues);
       const newValue = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
-      ].func(dependencyValues, fieldPath); // also pass old value here
-      await this.updateProp(element, condition.prop, newValue);
+      ].type === 'promise' ? await this.mistForm.dynamicDataNamespace.conditionals[
+        condition.func
+      ].func(dependencyValues, condition.dependsOn) : this.mistForm.dynamicDataNamespace.conditionals[
+        condition.func
+      ].func(dependencyValues, condition.dependsOn);
+     // Promise.resolve(func).then(newValue => {
+        this.updateProp(element, condition.prop, newValue);
+     // })
+
     }
     //  }
   }
@@ -96,21 +104,29 @@ export class DependencyController {
       const prop = condition.prop;
       const newValue = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
-      ].func(dependencyValues, condition.dependsOn); // also pass old value here
-      const values = prop ? { [prop]: newValue } : newValue;
-      const props = Object.keys(values);
-      // TODO: replace with real function that compares stuff
-      const propsUnchanged = props.every(
-        key => JSON.stringify(element.props[key]) == JSON.stringify(values[key])
-      );
+      ].type === 'promise' ? await this.mistForm.dynamicDataNamespace.conditionals[
+        condition.func
+      ].func(dependencyValues, condition.dependsOn) : this.mistForm.dynamicDataNamespace.conditionals[
+        condition.func
+      ].func(dependencyValues, condition.dependsOn);// also pass old value here
+    //  Promise.resolve(func).then(async newValue => {
+        const values = prop ? { [prop]: newValue } : newValue;
+        const props = Object.keys(values);
+        // TODO: replace with real function that compares stuff
+        const propsUnchanged = props.every(
+          key => JSON.stringify(element.props[key]) == JSON.stringify(values[key])
+        );
 
-      if (propsUnchanged) {
-        return;
-      }
-      props.forEach(prop => {
-        element.props[prop] = values[prop];
-      });
-      await element.updateComplete;
+        if (propsUnchanged) {
+          return;
+        }
+        props.forEach(prop => {
+          element.props[prop] = values[prop];
+        });
+        await element.updateComplete;
+    //  })
+
+
     }
     // }
   }
@@ -126,12 +142,12 @@ export class DependencyController {
       // TODO: replace with real function that compares stuff
       JSON.stringify(element.props[key]) == JSON.stringify(values[key]);
     });
+
     if (!element || propsUnchanged) {
       return;
     }
 
     element.props = { ...element.props, ...values };
-
     // Since I wait for the element to complete update, maybe I could set priorities.
     // Parent elements should have bigger priority than their children to avoid losing data on re rendering
     await element.updateComplete;

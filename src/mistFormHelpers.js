@@ -48,7 +48,8 @@ export class MistFormHelpers {
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
       const inputName = node.name;
-      const notExcluded = !node.hasAttribute('excludeFromPayload');
+      const notExcluded = !node.hasAttribute('excludefrompayload');
+
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
         const domValues = node.getValue();
         if (!util.valueNotEmpty(domValues)) {

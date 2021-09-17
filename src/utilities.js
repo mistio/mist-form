@@ -17,11 +17,7 @@ export const valueNotEmpty = value => {
 
 export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];
-  console.log("subformName ", subformName );
-  console.log("subforms ", subforms)
-
-  const subForm = subforms.find(el => { console.log("el[0] ", el[0]); console.log("subformName ", subformName); return el[0] === subformName});
-console.log("subForm ", subForm)
+  const subForm = subforms.find(el =>  el[0] === subformName);
 
   return subForm[1];
 };
@@ -76,12 +72,10 @@ export const getDefinitions = async data => {
   for (const [key, val] of Object.entries(fields)) {
       if (val.format === 'subformContainer') {
           const ref = val.properties && val.properties.subform && val.properties.subform.$ref;
-          console.log("ref ", ref)
           if (ref && !ref.startsWith('#')) {
               const src = ref.split('#')[0];
               const response = await fetch(src);
               const jsonData = await response.json();
-              console.log("jsonData ", jsonData)
               const defs = await getDefinitions(jsonData);
               newDefinitions = {
                   ...newDefinitions,
@@ -91,13 +85,10 @@ export const getDefinitions = async data => {
       } else {
           for (const [propKey, propVal] of Object.entries(val.properties)) {
               const ref = propVal.properties && propVal.properties.subform && propVal.properties.subform.$ref;
-
-              console.log("ref ", ref)
               if (ref && !ref.startsWith('#')) {
                   const src = ref.split('#')[0];
                   const response = await fetch(src);
                   const jsonData = await response.json();
-                  console.log("jsonData 2", jsonData)
                   const defs = await getDefinitions(jsonData);
 
                   newDefinitions = {
@@ -140,7 +131,8 @@ export const formatInputValue = node => {
 
 export const getFieldPath = (input, path) => {
   const [key, properties] = input;
-  const fieldName = properties.name || key;
+  //const fieldName = properties.name || key;
+  const fieldName = key;
   return path ? [path, fieldName].join('.') : fieldName;
 };
 

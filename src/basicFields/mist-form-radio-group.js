@@ -11,6 +11,7 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
   }
 
   render() {
+    // Add support for titles and ids in radioGroup like I have in dropdowns
     super.render();
     return html` <paper-radio-group
         ...="${spreadProps(this.props)}"

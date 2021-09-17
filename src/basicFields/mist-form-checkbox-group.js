@@ -56,7 +56,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.selector)}
       >
-        ${this.props.enum.map(
+        ${(this.props.enum || []).map(
           item =>
             html`<paper-checkbox
                 .id=${item.split(' ').join('-')}
