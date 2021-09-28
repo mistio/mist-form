@@ -81,10 +81,6 @@ export class MistForm extends LitElement {
     fetch(url)
       .then(response => response.json())
       .then(async (data) => {
-<<<<<<< Updated upstream
-=======
-        console.log("data ", data)
->>>>>>> Stashed changes
         const definitions = await util.getDefinitions(data);
         this.data = data;
         this.data.definitions = {...data.definitions, ...definitions};

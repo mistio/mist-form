@@ -71,67 +71,6 @@ export class DependencyController {
     for (const condition of conditions) {
       const element = this.elementReferencesByFieldPath[condition.target];
       const dependencyValues = this.getDependencyValues(condition, formValues);
-<<<<<<< Updated upstream
-      const newValue = this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ].type === 'promise' ? await this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ].func(dependencyValues, condition.dependsOn) : this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ].func(dependencyValues, condition.dependsOn);
-     // Promise.resolve(func).then(newValue => {
-        this.updateProp(element, condition.prop, newValue);
-     // })
-
-    }
-    //  }
-  }
-
-  async updatePropertiesByTarget(element) {
-
-    if (!this.mistForm.shadowRoot) {
-      return;
-    }
-    const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
-    const conditions = this.conditionMap.filter(
-      dep => dep.target === element.fieldPath
-    );
-    // if (conditions.length) {
-    for (const condition of conditions) {
-      const dependencyValues = this.getDependencyValues(condition, formValues);
-      if (dependencyValues === undefined) {
-        return;
-      }
-      const prop = condition.prop;
-      const newValue = this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ].type === 'promise' ? await this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ].func(dependencyValues, condition.dependsOn) : this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ].func(dependencyValues, condition.dependsOn);// also pass old value here
-    //  Promise.resolve(func).then(async newValue => {
-        const values = prop ? { [prop]: newValue } : newValue;
-        const props = Object.keys(values);
-        // TODO: replace with real function that compares stuff
-        const propsUnchanged = props.every(
-          key => JSON.stringify(element.props[key]) == JSON.stringify(values[key])
-        );
-
-        if (propsUnchanged) {
-          return;
-        }
-        props.forEach(prop => {
-          element.props[prop] = values[prop];
-        });
-        await element.updateComplete;
-    //  })
-
-
-    }
-    // }
-  }
-=======
       const func = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
       ];
@@ -188,7 +127,6 @@ export class DependencyController {
     }
     // }
   }
->>>>>>> Stashed changes
   getDependencyValues = (dependency, formValues) => {
     const source = dependency.dependsOn;
     return util.getValueByFieldPath(source, this.mistForm);
