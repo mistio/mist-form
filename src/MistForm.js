@@ -81,6 +81,10 @@ export class MistForm extends LitElement {
     fetch(url)
       .then(response => response.json())
       .then(async (data) => {
+<<<<<<< Updated upstream
+=======
+        console.log("data ", data)
+>>>>>>> Stashed changes
         const definitions = await util.getDefinitions(data);
         this.data = data;
         this.data.definitions = {...data.definitions, ...definitions};
@@ -106,7 +110,7 @@ export class MistForm extends LitElement {
   }
 
   submitForm() {
-    const params = this.getValuesfromDOM(this.shadowRoot);
+    const params = this.getValuesfromDOM(this.shadowRoot, true);
 
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
@@ -132,7 +136,7 @@ export class MistForm extends LitElement {
   }
 
   updateMistFormValue() {
-    this.value = this.getValuesfromDOM(this.shadowRoot);
+    this.value = this.getValuesfromDOM(this.shadowRoot, true);
     const event = new CustomEvent('mist-form-value-changed', {
       detail: {
         value: this.value,
@@ -164,6 +168,7 @@ export class MistForm extends LitElement {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       const properties = input[1];
+      properties.fieldPath = util.getFieldPath(input, path);
       properties.fieldPath = util.getFieldPath(input, path);
 
       if (properties.format === 'multiRow') {

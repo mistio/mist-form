@@ -78,6 +78,10 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
     if (value) {
       this.props.value = value.id;
     }
+<<<<<<< Updated upstream
+=======
+    console.log("this.props ", this.props)
+>>>>>>> Stashed changes
     return html`<paper-dropdown-menu
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
@@ -106,6 +110,10 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
                       this.props.styles && this.props.styles.item
                     )}
                   >
+<<<<<<< Updated upstream
+=======
+                  ${item.image ? html`<img width="24px" alt="${item.alt}" src="${item.image}">` :''}
+>>>>>>> Stashed changes
                     ${item.title || item}
                   </paper-item>`
               )

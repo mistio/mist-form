@@ -22,6 +22,8 @@ export class MistFormHelpers {
 
   attachInitialValue(props) {
     const _props = { ...props };
+    //const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
+
     if (this.mistForm.initialValues) {
       const initialValue = util.getNestedValueFromPath(
         _props.fieldPath,
@@ -40,14 +42,23 @@ export class MistFormHelpers {
     return _props;
   }
 
+<<<<<<< Updated upstream
   getValuesfromDOM(root) {
+=======
+  getValuesfromDOM(root, byName) {
+>>>>>>> Stashed changes
     if (!root) {
       return {};
     }
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
+<<<<<<< Updated upstream
       const inputName = node.name;
+=======
+console.log()
+      const inputName = byName ? node.name : node.key;
+>>>>>>> Stashed changes
       const notExcluded = !node.hasAttribute('excludefrompayload');
 
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {

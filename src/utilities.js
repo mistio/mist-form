@@ -19,7 +19,17 @@ export const getSubformFromRef = (subforms, ref) => {
   const subformName = ref.split('/').slice(-1)[0];
   const subForm = subforms.find(el =>  el[0] === subformName);
 
+<<<<<<< Updated upstream
   return subForm[1];
+=======
+if (subForm) {
+  return subForm[1];
+} else {
+  console.error("Could not find subform ", ref);
+  console.log("subforms list ", subforms)
+}
+
+>>>>>>> Stashed changes
 };
 
 export const getLabel = props =>
@@ -70,8 +80,15 @@ export const getDefinitions = async data => {
   };
 
   for (const [key, val] of Object.entries(fields)) {
+<<<<<<< Updated upstream
       if (val.format === 'subformContainer') {
           const ref = val.properties && val.properties.subform && val.properties.subform.$ref;
+=======
+    console.log("val ", val);
+      if (val.format === 'subformContainer') {
+          const ref = val.properties && val.properties.subform && val.properties.subform.$ref;
+          console.log("ref ", ref)
+>>>>>>> Stashed changes
           if (ref && !ref.startsWith('#')) {
               const src = ref.split('#')[0];
               const response = await fetch(src);
@@ -90,6 +107,7 @@ export const getDefinitions = async data => {
                   const response = await fetch(src);
                   const jsonData = await response.json();
                   const defs = await getDefinitions(jsonData);
+<<<<<<< Updated upstream
 
                   newDefinitions = {
                       ...newDefinitions,
@@ -101,6 +119,18 @@ export const getDefinitions = async data => {
 
   }
 
+=======
+
+                  newDefinitions = {
+                      ...newDefinitions,
+                      ...defs
+                  }
+              }
+          }
+      }
+
+  }
+>>>>>>> Stashed changes
   return {...data.definitions, ...newDefinitions};
 }
 export const getSubforms = data => {
@@ -136,6 +166,7 @@ export const getFieldPath = (input, path) => {
   return path ? [path, fieldName].join('.') : fieldName;
 };
 
+
 export const debouncer = function (callback, wait) {
   let timeout = 1000;
   return (...args) => {
@@ -145,3 +176,18 @@ export const debouncer = function (callback, wait) {
     }, wait);
   };
 };
+
+export const getValueByFieldPath = (fieldPath, root) => {
+  console.log("root ", root)
+  const fieldPathArray = fieldPath.split('.');
+  let lastEl = root;
+  fieldPathArray.forEach((item, index) => {
+    const path = fieldPath.split(".").slice(0,index + 1).join(".");
+    lastEl = lastEl.shadowRoot.querySelector(`[fieldPath='${path}']`) || lastEl.shadowRoot.querySelector(`[fieldPath='${path.slice(0,-3)}']`).shadowRoot.querySelector(`[fieldPath='${path}']`);
+
+     if (!lastEl) { // Is row. TODO: Make this better
+      lastEl = lastEl.shadowRoot.querySelector(`[fieldPath='${path.slice(0,-3)}']`).shadowRoot.querySelector(`[fieldPath='${path}']`) ;
+     }
+  });
+  return lastEl.value;
+}
