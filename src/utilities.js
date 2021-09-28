@@ -70,10 +70,8 @@ export const getDefinitions = async data => {
   };
 
   for (const [key, val] of Object.entries(fields)) {
-    console.log("val ", val);
       if (val.format === 'subformContainer') {
           const ref = val.properties && val.properties.subform && val.properties.subform.$ref;
-          console.log("ref ", ref)
           if (ref && !ref.startsWith('#')) {
               const src = ref.split('#')[0];
               const response = await fetch(src);
@@ -149,13 +147,11 @@ export const debouncer = function (callback, wait) {
 };
 
 export const getValueByFieldPath = (fieldPath, root) => {
-  console.log("root ", root)
   const fieldPathArray = fieldPath.split('.');
   let lastEl = root;
   fieldPathArray.forEach((item, index) => {
     const path = fieldPath.split(".").slice(0,index + 1).join(".");
     lastEl = lastEl.shadowRoot.querySelector(`[fieldPath='${path}']`) || lastEl.shadowRoot.querySelector(`[fieldPath='${path.slice(0,-3)}']`).shadowRoot.querySelector(`[fieldPath='${path}']`);
-
      if (!lastEl) { // Is row. TODO: Make this better
       lastEl = lastEl.shadowRoot.querySelector(`[fieldPath='${path.slice(0,-3)}']`).shadowRoot.querySelector(`[fieldPath='${path}']`) ;
      }

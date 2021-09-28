@@ -88,9 +88,10 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
 
   getParentPath(tabIndex) {
     const path = tabIndex !== undefined ? `${this.props.fieldPath}[${[tabIndex]}]` : this.props.fieldPath;
-    const parentPath = this.props.omitTitle
-      ? path.split('.').slice(0, -1).join('.')
-      : path;
+    // const parentPath = this.props.omitTitle
+    //   ? path.split('.').slice(0, -1).join('.')
+    //   : path;
+    const parentPath = path;
     return parentPath;
   }
 

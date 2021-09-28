@@ -42,6 +42,41 @@ export class MistFormHelpers {
     return _props;
   }
 
+  getValuesFromDOMByFieldPath(root) {
+    if (!root) {
+      return {};
+    }
+    let formValues = {};
+    const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
+    nodeList.forEach(node => {
+      const inputName = node.name;
+      const notExcluded = !node.hasAttribute('excludefrompayload');
+      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
+        const domValues = node.getValue();
+        if (!util.valueNotEmpty(domValues)) {
+          return {};
+        }
+        if (node.props.omitTitle) {
+          formValues = { ...formValues, ...domValues };
+        } else {
+          formValues[inputName] = domValues;
+        }
+      } else if (notExcluded) {
+        if (util.valueNotEmpty(node.value)) {
+          // If the input has a value of undefined and wasn't required, don't add it
+          const inputValue = util.formatInputValue(node);
+          formValues = { ...formValues, [inputName]: inputValue };
+        }
+      }
+      return false;
+    });
+    if (root.flatten) {
+      formValues = Object.values(formValues).flat(1);
+    }
+
+    return formValues;
+  }
+
   getValuesfromDOM(root, byName) {
     if (!root) {
       return {};
@@ -49,10 +84,8 @@ export class MistFormHelpers {
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
-console.log()
-      const inputName = byName ? node.name : node.key;
+      const inputName = node.name;
       const notExcluded = !node.hasAttribute('excludefrompayload');
-
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
         const domValues = node.getValue();
         if (!util.valueNotEmpty(domValues)) {
@@ -85,6 +118,7 @@ console.log()
     if (_contents.format !== 'subformContainer') {
       for (const [key, val] of Object.entries(_contents.properties)) {
         _contents.properties[key].name = val.name || key;
+        _contents.properties[key].key = key
         _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(
           val
         );

@@ -165,8 +165,7 @@ export class MistForm extends LitElement {
     return inputs.map(input => {
       const properties = input[1];
       properties.fieldPath = util.getFieldPath(input, path);
-      properties.fieldPath = util.getFieldPath(input, path);
-
+      properties.key = input[0];
       if (properties.format === 'multiRow') {
         const subForm = util.getSubformFromRef(
           this.subforms,
@@ -177,6 +176,7 @@ export class MistForm extends LitElement {
         for (const [key, val] of Object.entries(rowProps)) {
           properties.rowProps[key] = {
             ...val,
+            key,
             fieldPath: `${properties.fieldPath}.${val.name || key}`,
           };
         }
