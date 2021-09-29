@@ -129,7 +129,7 @@ export class DependencyController {
   }
   getDependencyValues = (dependency, formValues) => {
     const source = dependency.dependsOn;
-    return util.getValueByFieldPath(source, this.mistForm);
+    return util.getNestedValueFromPath(source, formValues);
   };
 
   async updateProp(element, prop, value) {

@@ -25,10 +25,14 @@ export class MistFormHelpers {
     //const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
 
     if (this.mistForm.initialValues) {
+      // Fix this
       const initialValue = util.getNestedValueFromPath(
         _props.fieldPath,
         this.mistForm.initialValues
       );
+      console.log("initialValue ", initialValue);
+      console.log("_props ", _props);
+
       if (initialValue !== undefined) {
         if (_props.format === 'subformContainer') {
           if (this.mistForm.firstRender) {

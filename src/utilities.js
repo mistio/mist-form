@@ -130,8 +130,7 @@ export const formatInputValue = node => {
 
 export const getFieldPath = (input, path) => {
   const [key, properties] = input;
-  //const fieldName = properties.name || key;
-  const fieldName = key;
+  const fieldName = properties.name || key;
   return path ? [path, fieldName].join('.') : fieldName;
 };
 
