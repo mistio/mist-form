@@ -25,29 +25,29 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
 
   render() {
     super.render();
-    return html`<paper-input
+    return html` ${this.props.preffix &&
+      html`<span
+        slot="prefix"
+        style=${styleMap(this.props.styles && this.props.styles.prefix)}
+        >${this.props.preffix}</span
+      >`}
+      <paper-input
         class="${this.props.classes || ''} mist-form-input"
         @value-changed=${this.debouncedEventChange}
         always-float-label
         ...="${spreadProps(util.getConvertedProps(this.props))}"
         .label="${util.getLabel(this.props)}"
-
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
       >
-        ${this.props.preffix &&
-        html`<span
-          slot="prefix"
-          style=${styleMap(this.props.styles && this.props.styles.prefix)}
-          >${this.props.preffix}</span
-        >`}
-        ${this.props.suffix &&
-        html`<span
-          slot="suffix"
-          style=${styleMap(this.props.styles && this.props.styles.suffix)}
-          >${this.props.suffix}</span
-        >`} </paper-input
-      >${this.helpText(this.props)}`;
+      </paper-input>
+      ${this.props.suffix &&
+      html`<span
+        slot="suffix"
+        style=${styleMap(this.props.styles && this.props.styles.suffix)}
+        >${this.props.suffix}</span
+      >`}
+      ${this.helpText(this.props)}`;
   }
 }
 

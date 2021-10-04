@@ -22,22 +22,24 @@ export class DependencyController {
     if (!props) {
       return;
     }
-    if (
-      props.deps &&
-      this.mistForm.dynamicDataNamespace &&
-      this.mistForm.dynamicDataNamespace.conditionals
-    ) {
+    const hasConditionals = props.deps &&
+    this.mistForm.dynamicDataNamespace &&
+    this.mistForm.dynamicDataNamespace.conditionals;
+
+    if (hasConditionals) {
       props.deps.forEach(dep => {
         this.elementReferencesByFieldPath[element.fieldPath] = element;
         const { prop, func } = dep;
         // Check for relative path
-        // const level = dep.dependsOn.search(/[^.]+$/);
+        // Not sure if this working 100%
+        // I need to check
         let level;
         const isRelative = dep.dependsOn.split('').some((el, index) => {
           const isNotDot = el !== '.';
           level = isNotDot ? index : level;
           return isNotDot;
         });
+
         const dependsOn =
           level > 0
             ? `${props.fieldPath
@@ -51,12 +53,13 @@ export class DependencyController {
           prop,
           func,
         };
-        // TODO: Replace stringify with real function that compares
+        // TODO: Replace stringify with real function that compares objects
         const conditionNotInMap = !this.conditionMap.find(
-          x => JSON.stringify(x) === JSON.stringify(condition)
-        )
+          x => JSON.stringify(x) == JSON.stringify(condition)
+        );
         if (conditionNotInMap) {
-          this.conditionMap.push(condition);}
+          this.conditionMap.push(condition);
+        }
       });
     }
   }
@@ -76,17 +79,19 @@ export class DependencyController {
       ];
       if (func) {
         const isPromise = func && func.type === 'promise';
-        const newValue = isPromise ? await func.func(dependencyValues, condition.dependsOn) : func.func(dependencyValues, condition.dependsOn);
+        const newValue = isPromise
+          ? await func.func(dependencyValues, condition.dependsOn, formValues)
+          : func.func(dependencyValues, condition.dependsOn, formValues);
+        // Don't do any updates if function returns undefined
         this.updateProp(element, condition.prop, newValue);
       } else {
-        console.error("Dependency function not found for: ", condition)
+        console.error('Dependency function not found for: ', condition);
       }
     }
     //  }
   }
 
   async updatePropertiesByTarget(element) {
-
     if (!this.mistForm.shadowRoot) {
       return;
     }
@@ -106,23 +111,26 @@ export class DependencyController {
       ];
       if (func) {
         const isPromise = func && func.type === 'promise';
-        const newValue = isPromise ? await func.func(dependencyValues, condition.dependsOn) : func.func(dependencyValues, condition.dependsOn);// also pass old value here
-          const values = prop ? { [prop]: newValue } : newValue;
-          const props = Object.keys(values);
-          // TODO: replace with real function that compares stuff
-          const propsUnchanged = props.every(
-            key => JSON.stringify(element.props[key]) == JSON.stringify(values[key])
-          );
-
-          if (propsUnchanged) {
-            return;
-          }
-          props.forEach(prop => {
-            element.props[prop] = values[prop];
-          });
-          await element.updateComplete;
+        const newValue = isPromise
+          ? await func.func(dependencyValues, condition.dependsOn, formValues)
+          : func.func(dependencyValues, condition.dependsOn, formValues); // also pass old value here
+        const values = prop ? { [prop]: newValue } : newValue;
+        const props = Object.keys(values);
+        // TODO: replace with real function that compares stuff
+        const propsUnchanged = props.every(
+          key =>
+            JSON.stringify(element.props[key]) == JSON.stringify(values[key])
+        );
+          // Undefined gets returned from func when you don't want to update
+        if (propsUnchanged || newValue === undefined) {
+          return;
+        }
+        props.forEach(prop => {
+          element.props[prop] = values[prop];
+        });
+        await element.updateComplete;
       } else {
-        console.error("Dependency function not found for: ", condition)
+        console.error('Dependency function not found for: ', condition);
       }
     }
     // }
@@ -139,8 +147,7 @@ export class DependencyController {
       // TODO: replace with real function that compares stuff
       JSON.stringify(element.props[key]) == JSON.stringify(values[key]);
     });
-
-    if (!element || propsUnchanged) {
+    if (!element || propsUnchanged || value === undefined) {
       return;
     }
 
