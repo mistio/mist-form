@@ -6,9 +6,20 @@ import { until } from 'lit-html/directives/until.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
+
 class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return [fieldStyles];
+  }
+
+  static get properties() {
+    return {
+      value: { type: String },
+      props: { type: Object },
+      fieldPath: { type: String, reflect: true },
+      disabled: { type: Boolean, reflect: true },
+      searchValue: {type: String }
+    };
   }
 
   loadDynamicData() {
@@ -97,8 +108,23 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
           slot="dropdown-content"
           style=${styleMap(this.props.styles && this.props.styles.listbox)}
         >
+        ${this.props.searchable ? html`
+        <paper-input label="Search"
+            @tap=${(e)=>{e.stopPropagation();}}
+            @keydown=${(e)=>{e.stopPropagation();}}
+            @value-changed=${(e)=>{e.stopPropagation(); this.searchValue = e.detail.value}}></paper-input>
+        ` : ''}
+
           ${this.props.enum.length
-            ? this.props.enum.map(
+            ? this.props.enum.
+            filter(item =>{
+              if (this.searchValue) {
+                return item.title ? item.title.toLowerCase().includes(this.searchValue.toLowerCase()) : item.toLowerCase().includes(this.searchValue.toLowerCase())
+              } else {
+                return true;
+              }
+            }).
+            map(
                 item =>
                   html`<paper-item
                     value="${item.title || item}"
