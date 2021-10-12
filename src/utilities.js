@@ -1,7 +1,6 @@
 export const getNestedValueFromPath = (path, object, defaultValue) =>
   path
-   // .split(/[\.\[\]\'\"]/)
-    .split(/[.[]'"]/)
+    .split(/[\.\[\]\'\"]/)
     .filter(p => p)
     .reduce((o, p) => (o ? o[p] : defaultValue), object);
 

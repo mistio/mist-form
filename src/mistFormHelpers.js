@@ -84,9 +84,7 @@ export class MistFormHelpers {
     }
     let formValues = {};
     // If root is the root of mist-form, search in mist-form-fields instead of root
-    const nodeList = this.fieldTemplates.getFirstLevelChildren(
-      root.querySelector('#mist-form-fields') || root
-    );
+    const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
       const inputName = node.name;
       const notExcluded = !node.hasAttribute('excludefrompayload');

@@ -28,8 +28,9 @@ export class FieldTemplateHelpers {
 
   // Get first level input children
   getFirstLevelChildren = root => {
-    return root
-      ? [...root.children].filter(
+    const newRoot = root.querySelector('#mist-form-fields') || root;
+    return newRoot
+      ? [...newRoot.children].filter(
           child => !child.hidden && child.matches(this.inputFields)
         )
       : [];
