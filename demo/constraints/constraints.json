@@ -7,6 +7,7 @@
 	"description": "Constraints form",
 	"submitButtonLabel": "Add",
 	"canClose": true,
+	"showJSON": true,
 	"additionalProperties": false,
 	"properties": {
 	  "costConstraintContainer": {
@@ -158,6 +159,7 @@
 			"id": "default_action",
 			"type": "string",
 			"format": "dropdown",
+			"searchable": true,
 			"deps": [
 			  {
 				"prop": "enum",

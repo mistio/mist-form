@@ -4,6 +4,7 @@ import { DependencyController } from './DependencyController.js';
 import * as util from './utilities.js';
 import { MistFormHelpers } from './mistFormHelpers.js';
 import { mistFormStyles } from './styles/mistFormStyles.js';
+import 'ace-custom-element/dist/index.min.js';
 // Loading schemas from multiple files is supported. For know, the subforms need unique names.
 // TODO: Check json schema  if duplicate names are allowed as long as they are in different schemas
 export class MistForm extends LitElement {
@@ -14,6 +15,8 @@ export class MistForm extends LitElement {
       dataError: { type: Object },
       formError: { type: String },
       initialValues: { type: Object },
+      value: { type: Object },
+      jsonOpen: { type: Boolean },
     };
   }
 
@@ -36,6 +39,7 @@ export class MistForm extends LitElement {
     this.getValuesfromDOM = this.mistFormHelpers.getValuesfromDOM.bind(
       this.mistFormHelpers
     );
+    this.jsonOpen = false;
   }
 
   firstUpdated() {
@@ -60,7 +64,30 @@ export class MistForm extends LitElement {
 
       return html`
         <div class="mist-header">${this.data.label}</div>
-        ${formFields}
+        ${this.data.showJSON
+          ? html`<paper-toggle-button
+              .name="mist-form-json-toggle"
+              excludeFromPayload
+              .checked="${this.jsonOpen}"
+              @checked-changed="${e => {
+                this.jsonOpen = e.detail.value;
+              }}"
+              >Show Json</paper-toggle-button
+            >`
+          : ''}
+        ${this.jsonOpen
+          ? html`<ace-editor
+              class="editor"
+              theme="ace/theme/monokai"
+              mode="json"
+              value="${JSON.stringify(this.value, null, 2)}"
+            ></ace-editor>`
+          : ''}
+        <span
+          id="mist-form-fields"
+          style="${this.jsonOpen ? 'visibility: hidden; height: 0' : ''}"
+          >${formFields}</span
+        >
 
         <div class="buttons">
           ${this.mistFormHelpers.displayCancelButton(this.data.canClose, this)}
@@ -80,10 +107,10 @@ export class MistForm extends LitElement {
   getJSON(url) {
     fetch(url)
       .then(response => response.json())
-      .then(async (data) => {
+      .then(async data => {
         const definitions = await util.getDefinitions(data);
         this.data = data;
-        this.data.definitions = {...data.definitions, ...definitions};
+        this.data.definitions = { ...data.definitions, ...definitions };
       })
       .catch(error => {
         this.dataError = error;

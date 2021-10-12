@@ -1,6 +1,25 @@
 import * as util from './utilities.js';
 // When setting dependency paths, you should use the key of a field and not it's name
 // If the name is different from the key it's used for the final value property
+
+async function updateProp(element, prop, value) {
+  const values = prop ? { [prop]: value } : value;
+  const props = Object.keys(values);
+  const propsUnchanged = props.every(key => {
+    // TODO: replace with real function that compares stuff
+    // Also this should probably return here but it works as it is?
+    JSON.stringify(element.props[key]) === JSON.stringify(values[key]);
+  });
+  if (!element || propsUnchanged || value === undefined) {
+    return;
+  }
+
+  element.props = { ...element.props, ...values };
+  // Since I wait for the element to complete update, maybe I could set priorities.
+  // Parent elements should have bigger priority than their children to avoid losing data on re rendering
+  await element.updateComplete;
+}
+
 export class DependencyController {
   constructor(mistForm) {
     this.conditionMap = [];
@@ -22,44 +41,50 @@ export class DependencyController {
     if (!props) {
       return;
     }
-    const hasConditionals = props.deps &&
-    this.mistForm.dynamicDataNamespace &&
-    this.mistForm.dynamicDataNamespace.conditionals;
+    const hasConditionals =
+      props.deps &&
+      this.mistForm.dynamicDataNamespace &&
+      this.mistForm.dynamicDataNamespace.conditionals;
 
     if (hasConditionals) {
       props.deps.forEach(dep => {
         this.elementReferencesByFieldPath[element.fieldPath] = element;
         const { prop, func } = dep;
+        const dependsOnArray =
+          typeof dep.dependsOn === 'object' ? dep.dependsOn : [dep.dependsOn];
         // Check for relative path
         // Not sure if this working 100%
         // I need to check
-        let level;
-        const isRelative = dep.dependsOn.split('').some((el, index) => {
-          const isNotDot = el !== '.';
-          level = isNotDot ? index : level;
-          return isNotDot;
-        });
+        dependsOnArray.forEach(dependsOn => {
+          let level;
+          // This is weird, I need to refactor
+          const isRelative = dependsOn.split('').some((el, index) => {
+            const isNotDot = el !== '.';
+            level = isNotDot ? index : level;
+            return isNotDot;
+          });
 
-        const dependsOn =
-          level > 0
-            ? `${props.fieldPath
-                .split('.')
-                .slice(0, -1 * level)
-                .join('.')}.${dep.dependsOn.slice(level)}`
-            : dep.dependsOn;
-        const condition = {
-          dependsOn,
-          target: props.fieldPath,
-          prop,
-          func,
-        };
-        // TODO: Replace stringify with real function that compares objects
-        const conditionNotInMap = !this.conditionMap.find(
-          x => JSON.stringify(x) == JSON.stringify(condition)
-        );
-        if (conditionNotInMap) {
-          this.conditionMap.push(condition);
-        }
+          const absoluteDependsOn =
+            level > 0
+              ? `${props.fieldPath
+                  .split('.')
+                  .slice(0, -1 * level)
+                  .join('.')}.${dependsOn.slice(level)}`
+              : dependsOn;
+          const condition = {
+            dependsOn: absoluteDependsOn,
+            target: props.fieldPath,
+            prop,
+            func,
+          };
+          // TODO: Replace stringify with real function that compares objects
+          const conditionNotInMap = !this.conditionMap.find(
+            x => JSON.stringify(x) === JSON.stringify(condition)
+          );
+          if (conditionNotInMap) {
+            this.conditionMap.push(condition);
+          }
+        });
       });
     }
   }
@@ -83,7 +108,7 @@ export class DependencyController {
           ? await func.func(dependencyValues, condition.dependsOn, formValues)
           : func.func(dependencyValues, condition.dependsOn, formValues);
         // Don't do any updates if function returns undefined
-        this.updateProp(element, condition.prop, newValue);
+        updateProp(element, condition.prop, newValue);
       } else {
         console.error('Dependency function not found for: ', condition);
       }
@@ -105,7 +130,7 @@ export class DependencyController {
       if (dependencyValues === undefined) {
         return;
       }
-      const prop = condition.prop;
+
       const func = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
       ];
@@ -114,14 +139,14 @@ export class DependencyController {
         const newValue = isPromise
           ? await func.func(dependencyValues, condition.dependsOn, formValues)
           : func.func(dependencyValues, condition.dependsOn, formValues); // also pass old value here
-        const values = prop ? { [prop]: newValue } : newValue;
+        const values = condition.prop ? { [condition.prop]: newValue } : newValue;
         const props = Object.keys(values);
         // TODO: replace with real function that compares stuff
         const propsUnchanged = props.every(
           key =>
-            JSON.stringify(element.props[key]) == JSON.stringify(values[key])
+            JSON.stringify(element.props[key]) === JSON.stringify(values[key])
         );
-          // Undefined gets returned from func when you don't want to update
+        // Undefined gets returned from func when you don't want to update
         if (propsUnchanged || newValue === undefined) {
           return;
         }
@@ -139,21 +164,4 @@ export class DependencyController {
     const source = dependency.dependsOn;
     return util.getNestedValueFromPath(source, formValues);
   };
-
-  async updateProp(element, prop, value) {
-    const values = prop ? { [prop]: value } : value;
-    const props = Object.keys(values);
-    const propsUnchanged = props.every(key => {
-      // TODO: replace with real function that compares stuff
-      JSON.stringify(element.props[key]) == JSON.stringify(values[key]);
-    });
-    if (!element || propsUnchanged || value === undefined) {
-      return;
-    }
-
-    element.props = { ...element.props, ...values };
-    // Since I wait for the element to complete update, maybe I could set priorities.
-    // Parent elements should have bigger priority than their children to avoid losing data on re rendering
-    await element.updateComplete;
-  }
 }

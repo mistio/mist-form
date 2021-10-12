@@ -27,6 +27,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         background: var(--mist-form-field-element-background-color, white);
         font-family: var(--mist-form-field-element-font-family, Roboto);
         margin: 10px;
+        width: 100%;
       }
 
       :host .label {
@@ -133,10 +134,9 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     super.render();
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
-    return html` <span class="label">${this.props.label}</span>
+    return html`<span class="label">${this.props.label}</span>
       <div
         class="container"
-        style="width:100%"
         style=${styleMap(this.props.styles && this.props.styles.container)}
         part="container"
       >
@@ -146,14 +146,16 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
               style=${styleMap(this.props.styles && this.props.styles.header)}
               part="row-header"
             >
-              ${this.props.numbered ? html`<span
-                      class="row-item"
-                      style=${styleMap(
-                        this.props.styles && this.props.styles.item
-                      )}
-                      part="header-item"
-                      >No.</span
-                    >` : ''}
+              ${this.props.numbered
+                ? html`<span
+                    class="row-item"
+                    style=${styleMap(
+                      this.props.styles && this.props.styles.item
+                    )}
+                    part="header-item"
+                    >No.</span
+                  >`
+                : ''}
               ${Object.keys(this.props.rowProps).map(key =>
                 !this.props.rowProps[key].hidden
                   ? html`<span

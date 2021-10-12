@@ -30,9 +30,6 @@ export class MistFormHelpers {
         _props.fieldPath,
         this.mistForm.initialValues
       );
-      console.log("initialValue ", initialValue);
-      console.log("_props ", _props);
-
       if (initialValue !== undefined) {
         if (_props.format === 'subformContainer') {
           if (this.mistForm.firstRender) {
@@ -86,7 +83,10 @@ export class MistFormHelpers {
       return {};
     }
     let formValues = {};
-    const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
+    // If root is the root of mist-form, search in mist-form-fields instead of root
+    const nodeList = this.fieldTemplates.getFirstLevelChildren(
+      root.querySelector('#mist-form-fields') || root
+    );
     nodeList.forEach(node => {
       const inputName = node.name;
       const notExcluded = !node.hasAttribute('excludefrompayload');
@@ -95,7 +95,7 @@ export class MistFormHelpers {
         if (!util.valueNotEmpty(domValues)) {
           return {};
         }
-        if (node.props.omitTitle) {
+        if (node.props.omitTitle && byName) {
           formValues = { ...formValues, ...domValues };
         } else {
           formValues[inputName] = domValues;
@@ -122,7 +122,7 @@ export class MistFormHelpers {
     if (_contents.format !== 'subformContainer') {
       for (const [key, val] of Object.entries(_contents.properties)) {
         _contents.properties[key].name = val.name || key;
-        _contents.properties[key].key = key
+        _contents.properties[key].key = key;
         _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(
           val
         );

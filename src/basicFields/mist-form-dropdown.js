@@ -6,10 +6,16 @@ import { until } from 'lit-html/directives/until.js';
 import * as util from '../utilities.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
-
 class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
   static get styles() {
-    return [fieldStyles];
+    return [
+      fieldStyles,
+      css`
+        .dropdown-image {
+          margin: 0 16px 0 8px;
+        }
+      `,
+    ];
   }
 
   static get properties() {
@@ -18,7 +24,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
       props: { type: Object },
       fieldPath: { type: String, reflect: true },
       disabled: { type: Boolean, reflect: true },
-      searchValue: {type: String }
+      searchValue: { type: String },
     };
   }
 
@@ -82,7 +88,9 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
     const value =
       (this.props &&
         this.props.enum &&
-        this.props.enum.find(prop => prop.id === this.props.value || prop === this.props.value)) ||
+        this.props.enum.find(
+          prop => prop.id === this.props.value || prop === this.props.value
+        )) ||
       [];
     this.props.enum = this.props.enum || [];
 
@@ -94,7 +102,6 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
         class="${this.props.classes || ''} mist-form-input"
-
         no-animations=""
         value="${this.props.value || ''}"
         fieldPath="${this.props.fieldPath}"
@@ -108,35 +115,58 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
           slot="dropdown-content"
           style=${styleMap(this.props.styles && this.props.styles.listbox)}
         >
-        ${this.props.searchable ? html`
-        <paper-input label="Search"
-            @tap=${(e)=>{e.stopPropagation();}}
-            @keydown=${(e)=>{e.stopPropagation();}}
-            @value-changed=${(e)=>{e.stopPropagation(); this.searchValue = e.detail.value}}></paper-input>
-        ` : ''}
-
+          ${this.props.searchable
+            ? html`
+                <paper-input
+                  label="Search"
+                  @tap=${e => {
+                    e.stopPropagation();
+                  }}
+                  @keydown=${e => {
+                    e.stopPropagation();
+                  }}
+                  @value-changed=${e => {
+                    e.stopPropagation();
+                    this.searchValue = e.detail.value;
+                  }}
+                ></paper-input>
+              `
+            : ''}
           ${this.props.enum.length
-            ? this.props.enum.
-            filter(item =>{
-              if (this.searchValue) {
-                return item.title ? item.title.toLowerCase().includes(this.searchValue.toLowerCase()) : item.toLowerCase().includes(this.searchValue.toLowerCase())
-              } else {
-                return true;
-              }
-            }).
-            map(
-                item =>
-                  html`<paper-item
-                    value="${item.title || item}"
-                    item-id="${item.id || item}"
-                    style=${styleMap(
-                      this.props.styles && this.props.styles.item
-                    )}
-                  >
-                  ${item.image ? html`<img width="24px" alt="${item.alt}" src="${item.image}">` :''}
-                    ${item.title || item}
-                  </paper-item>`
-              )
+            ? this.props.enum
+                .filter(item => {
+                  if (this.searchValue) {
+                    return item.title
+                      ? item.title
+                          .toLowerCase()
+                          .includes(this.searchValue.toLowerCase())
+                      : item
+                          .toLowerCase()
+                          .includes(this.searchValue.toLowerCase());
+                  } else {
+                    return true;
+                  }
+                })
+                .map(
+                  item =>
+                    html`<paper-item
+                      value="${item.title || item}"
+                      item-id="${item.id || item}"
+                      style=${styleMap(
+                        this.props.styles && this.props.styles.item
+                      )}
+                    >
+                      ${item.image
+                        ? html`<img
+                            class="dropdown-image"
+                            width="24px"
+                            alt="${item.alt}"
+                            src="${item.image}"
+                          />`
+                        : ''}
+                      ${item.title || item}
+                    </paper-item>`
+                )
             : html`<paper-item
                 disabled
                 style=${styleMap(this.props.styles && this.props.styles.item)}
