@@ -15,8 +15,6 @@ export class MistForm extends LitElement {
       dataError: { type: Object },
       formError: { type: String },
       initialValues: { type: Object },
-      value: { type: Object },
-      jsonOpen: { type: Boolean },
     };
   }
 
@@ -71,21 +69,23 @@ export class MistForm extends LitElement {
               .checked="${this.jsonOpen}"
               @checked-changed="${e => {
                 this.jsonOpen = e.detail.value;
+                this.shadowRoot.querySelector('#json-view').style = !this.jsonOpen ? 'visibility: hidden; height: 0' : '';
+                this.shadowRoot.querySelector('#mist-form-fields').style = this.jsonOpen ? 'visibility: hidden; height: 0' : '';
+                if (this.jsonOpen) {
+                  this.shadowRoot.querySelector('#json-view').value = JSON.stringify(this.value, null, 2);
+                }
               }}"
               >Show Json</paper-toggle-button
             >`
           : ''}
-        ${this.jsonOpen
-          ? html`<ace-editor
-              class="editor"
+            <ace-editor
+              id="json-view"
               theme="ace/theme/monokai"
               mode="json"
-              value="${JSON.stringify(this.value, null, 2)}"
-            ></ace-editor>`
-          : ''}
+              style="visibility: hidden; height: 0"
+            ></ace-editor>
         <span
           id="mist-form-fields"
-          style="${this.jsonOpen ? 'visibility: hidden; height: 0' : ''}"
           >${formFields}</span
         >
 
