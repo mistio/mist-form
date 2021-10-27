@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import { styleMap } from 'lit-html/directives/style-map.js';
 import * as util from '../utilities.js';
 
 class MistFormRow extends LitElement {
@@ -117,8 +116,12 @@ class MistFormRow extends LitElement {
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
   }
 
-  render() {
+  update(changedProperties) {
     this.fieldPath = `${this.parent.fieldPath}[${this.index}]`;
+    super.update(changedProperties);
+  }
+
+  render() {
     const isNumbered = this.parent.props.numbered;
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };

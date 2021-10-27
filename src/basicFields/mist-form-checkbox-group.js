@@ -22,10 +22,6 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
     ];
   }
 
-  validate() {
-    return true;
-  }
-
   valueChanged() {
     this.value = this.shadowRoot.querySelector('iron-selector').selectedValues;
     this.props.valueChangedEvent({
@@ -39,8 +35,14 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
     this.value = this.props.value || [];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden ? 'none' : '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     return html`
       <div class="label">${this.props.label}</div>
       <iron-selector

@@ -2,6 +2,7 @@ import { debouncer } from './utilities.js';
 
 export const elementBoilerplateMixin = superClass =>
   class extends superClass {
+    // Check correct property types
     static get properties() {
       return {
         value: { type: String },
@@ -20,12 +21,6 @@ export const elementBoilerplateMixin = superClass =>
       this.debouncedEventChange = debouncer(e => this.valueChanged(e), 400);
     }
 
-    render() {
-      this.mistForm.dependencyController.updatePropertiesByTarget(this);
-      this.style.display = this.props.hidden ? 'none' : '';
-      this.fieldPath = this.props.fieldPath;
-    }
-
     valueChanged(e) {
       this.value = e.detail.value;
       this.props.valueChangedEvent({
@@ -37,9 +32,8 @@ export const elementBoilerplateMixin = superClass =>
     validate() {
       if (this.shadowRoot.children[0] && this.shadowRoot.children[0].validate) {
         return this.shadowRoot.children[0].validate();
-      } else {
-        return true;
       }
+      return true;
     }
 
     getFieldPath() {

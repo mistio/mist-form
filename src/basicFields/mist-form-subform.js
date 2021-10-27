@@ -113,6 +113,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       this.getParentPath(tabIndex)
     );
   }
+
   setupInputs() {
     // If subform
     if (this.props.properties.subform) {
@@ -141,11 +142,21 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     })}
     ${this.props.inputs.find(input => input.label === this.selectedTab).inputs}`;
   }
-  render() {
-    const hasTabs = this.props.properties.tabs;
+
+  getInputs = hasTabs =>
+    hasTabs ? html`${this.getTabs()}` : html`${this.props.inputs}`;
+
+  update(changedProperties) {
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
-    super.render();
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden ? 'none' : '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
+  render() {
+    const hasTabs = this.props.properties.tabs;
     const label = !this.props.hasToggle ? this.props.label : '';
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen
@@ -172,11 +183,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
             >${this.props.label}</paper-toggle-button
           >`
         : ''}
-      ${this.isOpen
-        ? hasTabs
-          ? html`${this.getTabs()}`
-          : html`${this.props.inputs}`
-        : ''}
+      ${this.isOpen ? this.getInputs(hasTabs) : ''}
     </div>`;
   }
 }

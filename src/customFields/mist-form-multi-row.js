@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 
@@ -67,12 +66,12 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = [...this.value, {}];
   }
 
-  validate() {
-    // Check that all fields have a name
-    // const noFieldsEmpty = this.value.every(field => field.name);
-    // return noFieldsEmpty;
-    return true;
-  }
+  // validate() {
+  //   // Check that all fields have a name
+  //   // const noFieldsEmpty = this.value.every(field => field.name);
+  //   // return noFieldsEmpty;
+  //   return true;
+  // }
 
   createRow(index, value) {
     return html`<mist-form-row
@@ -130,8 +129,14 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = this.props.value || [];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden ? 'none' : '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
     return html`<span class="label">${this.props.label}</span>

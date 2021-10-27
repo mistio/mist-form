@@ -93,8 +93,14 @@ class DurationField extends elementBoilerplateMixin(LitElement) {
     }
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden ? 'none' : '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     return html` <span
         class="label"
         style=${styleMap(this.props.styles && this.props.styles.label)}

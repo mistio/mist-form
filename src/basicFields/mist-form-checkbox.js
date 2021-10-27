@@ -18,13 +18,16 @@ class MistFormCheckbox extends elementBoilerplateMixin(LitElement) {
     ];
   }
 
-  validate() {
-    return true;
+  update(changedProperties) {
+    this.props.checked = this.props.value;
+
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden ? 'none' : '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
   }
 
   render() {
-    super.render();
-    this.props.checked = this.props.value;
     return html`<paper-checkbox
         class="${this.props.classes || ''} mist-form-input"
         ...="${spreadProps(this.props)}"

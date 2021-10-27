@@ -23,8 +23,14 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
     ];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden ? 'none' : '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     return html` ${this.props.preffix &&
       html`<span
         slot="prefix"
