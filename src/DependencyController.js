@@ -98,6 +98,7 @@ export class DependencyController {
     // if (conditions.length) {
     for (const condition of conditions) {
       const element = this.elementReferencesByFieldPath[condition.target];
+      if (element.hidden) { break; }
       const dependencyValues = this.getDependencyValues(condition, formValues);
       const func = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
@@ -124,7 +125,6 @@ export class DependencyController {
     const conditions = this.conditionMap.filter(
       dep => dep.target === element.fieldPath
     );
-    // if (conditions.length) {
     for (const condition of conditions) {
       const dependencyValues = this.getDependencyValues(condition, formValues);
       if (dependencyValues === undefined) {
@@ -158,7 +158,6 @@ export class DependencyController {
         console.error('Dependency function not found for: ', condition);
       }
     }
-    // }
   }
   getDependencyValues = (dependency, formValues) => {
     const source = dependency.dependsOn;
