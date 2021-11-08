@@ -150,7 +150,9 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     this.setupInputs();
     this.excludeFromPayload = !this.isOpen;
     this.mistForm.dependencyController.updatePropertiesByTarget(this);
-    this.style.display = this.props.hidden ? 'none' : '';
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display;
     this.fieldPath = this.props.fieldPath;
     super.update(changedProperties);
   }

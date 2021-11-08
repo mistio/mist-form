@@ -14,6 +14,10 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         .dropdown-image {
           margin: 0 16px 0 8px;
         }
+
+        .search {
+          padding: 0 16px;
+        }
       `,
     ];
   }
@@ -47,7 +51,11 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
               this.mistForm.shadowRoot
             );
             const dependencyValues = dependencies
-              ? util.getDependencyValues(formValues, dependencies)
+              ? // TODO: Line 55 needs investigation
+                this.mistForm.dependencyController.getDependencyValues(
+                  dependencies,
+                  formValues
+                )
               : {};
 
             const enumData = getEnumData(dependencyValues);
@@ -118,6 +126,7 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
           ${this.props.searchable
             ? html`
                 <paper-input
+                  class="search"
                   label="Search"
                   @tap=${e => {
                     e.stopPropagation();
@@ -178,7 +187,9 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
 
   update(changedProperties) {
     this.mistForm.dependencyController.updatePropertiesByTarget(this);
-    this.style.display = this.props.hidden ? 'none' : '';
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display;
     this.fieldPath = this.props.fieldPath;
     const isDynamic = Object.prototype.hasOwnProperty.call(
       this.props,

@@ -22,7 +22,9 @@ class MistFormCheckbox extends elementBoilerplateMixin(LitElement) {
     this.props.checked = this.props.value;
 
     this.mistForm.dependencyController.updatePropertiesByTarget(this);
-    this.style.display = this.props.hidden ? 'none' : '';
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display;
     this.fieldPath = this.props.fieldPath;
     super.update(changedProperties);
   }
