@@ -20,14 +20,18 @@ export class MistFormHelpers {
       .setDisabled(!this.mistForm.allFieldsValid);
   }
 
-  attachInitialValue(props) {
+  attachInitialValue(props, parentProps) {
     const _props = { ...props };
-    //const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
+    // const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
+    const fieldPath =
+      parentProps && parentProps.omitTitle
+        ? _props.fieldPath.split('.').splice(-2, 1).join('.')
+        : _props.fieldPath;
 
     if (this.mistForm.initialValues) {
       // Fix this
       const initialValue = util.getNestedValueFromPath(
-        _props.fieldPath,
+        fieldPath,
         this.mistForm.initialValues
       );
       if (initialValue !== undefined) {

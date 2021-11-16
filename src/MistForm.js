@@ -69,25 +69,30 @@ export class MistForm extends LitElement {
               .checked="${this.jsonOpen}"
               @checked-changed="${e => {
                 this.jsonOpen = e.detail.value;
-                this.shadowRoot.querySelector('#json-view').style = !this.jsonOpen ? 'visibility: hidden; height: 0' : '';
-                this.shadowRoot.querySelector('#mist-form-fields').style = this.jsonOpen ? 'visibility: hidden; height: 0' : '';
+                this.shadowRoot.querySelector('#json-view').style = !this
+                  .jsonOpen
+                  ? 'visibility: hidden; height: 0'
+                  : '';
+                this.shadowRoot.querySelector('#mist-form-fields').style = this
+                  .jsonOpen
+                  ? 'visibility: hidden; height: 0'
+                  : '';
                 if (this.jsonOpen) {
-                  this.shadowRoot.querySelector('#json-view').value = JSON.stringify(this.value, null, 2);
+                  this.shadowRoot.querySelector(
+                    '#json-view'
+                  ).value = JSON.stringify(this.value, null, 2);
                 }
               }}"
               >Show Json</paper-toggle-button
             >`
           : ''}
-            <ace-editor
-              id="json-view"
-              theme="ace/theme/monokai"
-              mode="json"
-              style="visibility: hidden; height: 0"
-            ></ace-editor>
-        <span
-          id="mist-form-fields"
-          >${formFields}</span
-        >
+        <ace-editor
+          id="json-view"
+          theme="ace/theme/monokai"
+          mode="json"
+          style="visibility: hidden; height: 0"
+        ></ace-editor>
+        <span id="mist-form-fields">${formFields}</span>
 
         <div class="buttons">
           ${this.mistFormHelpers.displayCancelButton(this.data.canClose, this)}
@@ -187,7 +192,7 @@ export class MistForm extends LitElement {
     this.updateMistFormValue();
   };
 
-  renderInputs(inputs, path) {
+  renderInputs(inputs, path, parentProps) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       const properties = input[1];
@@ -209,7 +214,8 @@ export class MistForm extends LitElement {
         }
       }
       const propertiesWithInitialValues = this.mistFormHelpers.attachInitialValue(
-        properties
+        properties,
+        parentProps
       );
       return this.fieldTemplates.getTemplate(propertiesWithInitialValues);
     });

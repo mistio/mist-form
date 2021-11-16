@@ -98,7 +98,9 @@ export class DependencyController {
     // if (conditions.length) {
     for (const condition of conditions) {
       const element = this.elementReferencesByFieldPath[condition.target];
-      if (element.hidden) { break; }
+      if (element.hidden) {
+        break;
+      }
       const dependencyValues = this.getDependencyValues(condition, formValues);
       const func = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
@@ -139,7 +141,9 @@ export class DependencyController {
         const newValue = isPromise
           ? await func.func(dependencyValues, condition.dependsOn, formValues)
           : func.func(dependencyValues, condition.dependsOn, formValues); // also pass old value here
-        const values = condition.prop ? { [condition.prop]: newValue } : newValue;
+        const values = condition.prop
+          ? { [condition.prop]: newValue }
+          : newValue;
         const props = Object.keys(values);
         // TODO: replace with real function that compares stuff
         const propsUnchanged = props.every(
@@ -159,6 +163,7 @@ export class DependencyController {
       }
     }
   }
+
   getDependencyValues = (dependency, formValues) => {
     const source = dependency.dependsOn;
     return util.getNestedValueFromPath(source, formValues);

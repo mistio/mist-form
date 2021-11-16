@@ -110,7 +110,8 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     ]);
     return this.mistForm.renderInputs(
       subFormInputs,
-      this.getParentPath(tabIndex)
+      this.getParentPath(tabIndex),
+      this.props
     );
   }
 
