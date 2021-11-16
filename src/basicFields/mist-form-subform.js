@@ -125,7 +125,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     } else if (this.props.properties.tabs) {
       this.props.inputs = this.props.properties.tabs.enum.map((tab, index) => ({
         label: tab.label,
-        inputs: this.getSubformInputs(tab.$ref, index),
+        inputs: this.getSubformInputs(tab && tab.$ref, index),
       }));
     }
     // If tabbed, this.props.inputs is an Array
