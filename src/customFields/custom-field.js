@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import { styleMap } from 'lit-html/directives/style-map.js';
-import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
+import * as util from '../utilities.js';
 // We can set these fields when passing web components to the form
 // 1. mist-form-type:  Necessary to define component name from json
 // 2. mist-form-value-change: The name of the value change event. Default is value-change
@@ -18,6 +17,10 @@ const getValidateName = el =>
 const getValueProp = el =>
   el.attributes['mist-form-value-prop'] &&
   el.attributes['mist-form-value-prop'].value;
+
+const getValuePath = el =>
+  el.attributes['mist-form-value-path'] &&
+  el.attributes['mist-form-value-path'].value;
 
 class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
@@ -37,6 +40,9 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   }
 
   valueChanged(e) {
+    this.value = this.valuePath
+      ? util.getNestedValueFromPath(this.valuePath, e)
+      : this.customElement[this.valueProp];
     this.props.valueChangedEvent({
       fieldPath: this.fieldPath,
       value: this.value,
@@ -52,12 +58,11 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
       getValueChangeName(prototype) || this.valueChangeName;
     this.validateName = getValidateName(prototype) || this.validateName;
     this.valueProp = getValueProp(prototype) || this.valueProp;
-
+    this.valuePath = getValuePath(prototype);
     this.customElement = prototype.cloneNode();
 
     this.addEventListener(this.valueChangeName, e => {
       this.valueChanged(e);
-      this.value = this.customElement[this.valueProp];
     });
     this.props[this.valueProp] = this.props.value;
     this.value = this.props.value;
@@ -68,8 +73,20 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
     this.setupComponent();
   }
 
+  update(changedProperties) {
+    if (!changedProperties.has('value')) {
+      this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    }
+
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
+    // super.render();
     for (const [key, val] of Object.entries(this.props)) {
       this.customElement[key] = val;
     }

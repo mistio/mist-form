@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 import './row.js';
 
@@ -27,6 +26,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
         background: var(--mist-form-field-element-background-color, white);
         font-family: var(--mist-form-field-element-font-family, Roboto);
         margin: 10px;
+        width: 100%;
       }
 
       :host .label {
@@ -66,12 +66,12 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = [...this.value, {}];
   }
 
-  validate() {
-    // Check that all fields have a name
-    // const noFieldsEmpty = this.value.every(field => field.name);
-    // return noFieldsEmpty;
-    return true;
-  }
+  // validate() {
+  //   // Check that all fields have a name
+  //   // const noFieldsEmpty = this.value.every(field => field.name);
+  //   // return noFieldsEmpty;
+  //   return true;
+  // }
 
   createRow(index, value) {
     return html`<mist-form-row
@@ -129,14 +129,21 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = this.props.value || [];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     // I should decide whether to allow styling with styleMaps or parts. Maybe even both?
     // const rowStyles = { backgroundColor: 'blue', color: 'white' };
-    return html` <span class="label">${this.props.label}</span>
+    return html`<span class="label">${this.props.label}</span>
       <div
         class="container"
-        style="width:100%"
         style=${styleMap(this.props.styles && this.props.styles.container)}
         part="container"
       >
@@ -146,6 +153,16 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
               style=${styleMap(this.props.styles && this.props.styles.header)}
               part="row-header"
             >
+              ${this.props.numbered
+                ? html`<span
+                    class="row-item"
+                    style=${styleMap(
+                      this.props.styles && this.props.styles.item
+                    )}
+                    part="header-item"
+                    >No.</span
+                  >`
+                : ''}
               ${Object.keys(this.props.rowProps).map(key =>
                 !this.props.rowProps[key].hidden
                   ? html`<span

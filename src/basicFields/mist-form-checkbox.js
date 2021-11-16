@@ -4,7 +4,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { fieldStyles } from '../styles/fieldStyles.js';
 import { elementBoilerplateMixin } from '../ElementBoilerplateMixin.js';
 
-class MistDropdown extends elementBoilerplateMixin(LitElement) {
+class MistFormCheckbox extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return [
       fieldStyles,
@@ -18,21 +18,23 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
     ];
   }
 
-  validate() {
-    return true;
+  update(changedProperties) {
+    this.props.checked = this.props.value;
+
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
   }
 
   render() {
-    this.props.checked = this.props.value;
-    super.render();
-
     return html`<paper-checkbox
         class="${this.props.classes || ''} mist-form-input"
         ...="${spreadProps(this.props)}"
         @checked-changed=${this.valueChanged}
         .checked="${this.props.value}"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
-        value=""
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
         part="mist-form-checkbox"
@@ -41,4 +43,4 @@ class MistDropdown extends elementBoilerplateMixin(LitElement) {
   }
 }
 
-customElements.define('mist-form-checkbox', MistDropdown);
+customElements.define('mist-form-checkbox', MistFormCheckbox);

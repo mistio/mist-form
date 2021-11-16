@@ -23,15 +23,16 @@
     "@polymer/paper-spinner": "^3.0.2",
     "@polymer/paper-styles": "^3.0.1",
     "@polymer/paper-swatch-picker": "^3.0.1",
-    "@polymer/paper-toggle-button": "^3.0.1"
+    "@polymer/paper-toggle-button": "^3.0.1",
+    "ace-custom-element": "^1.6.5"
   },
   "deprecated": false,
   "description": "Webcomponent mist-form following open-wc recommendations",
   "devDependencies": {
     "@open-wc/eslint-config": "^2.0.0",
-    "@open-wc/testing": "^2.0.0",
-    "@open-wc/testing-karma": "^3.0.0",
-    "cypress": "^6.8.0",
+    "@open-wc/testing": "^3.0.1",
+    "@open-wc/testing-karma": "^4.0.9",
+    "cypress": "^8.7.0",
     "deepmerge": "^3.2.0",
     "es-dev-server": "^1.23.0",
     "eslint": "^6.1.0",
@@ -109,5 +110,5 @@
     "test:cypress": "cypress open",
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
-  "version": "0.4.4"
+  "version": "0.5.1"
 }

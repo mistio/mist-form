@@ -22,10 +22,6 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
     ];
   }
 
-  validate() {
-    return true;
-  }
-
   valueChanged() {
     this.value = this.shadowRoot.querySelector('iron-selector').selectedValues;
     this.props.valueChangedEvent({
@@ -39,14 +35,21 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
     this.value = this.props.value || [];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     return html`
       <div class="label">${this.props.label}</div>
       <iron-selector
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
         @selected-values-changed=${this.valueChanged}
         class="${this.props.classes || ''} checkbox-group mist-form-input"
         .selectedValues="${this.value}"
@@ -56,7 +59,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.selector)}
       >
-        ${this.props.enum.map(
+        ${(this.props.enum || []).map(
           item =>
             html`<paper-checkbox
                 .id=${item.split(' ').join('-')}

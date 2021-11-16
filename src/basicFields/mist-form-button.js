@@ -18,10 +18,6 @@ class MistFormButton extends elementBoilerplateMixin(LitElement) {
     return css``;
   }
 
-  validate() {
-    return true;
-  }
-
   setDisabled(disabled) {
     this.disabled = disabled;
   }
@@ -31,8 +27,16 @@ class MistFormButton extends elementBoilerplateMixin(LitElement) {
     this.disabled = !!this.props.disabled;
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
+
   render() {
-    super.render();
     return html` <paper-button
       class="${this.props.classes || ''} btn-block"
       raised

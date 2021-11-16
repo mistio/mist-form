@@ -44,6 +44,8 @@ export class FieldTemplates extends FieldTemplateHelpers {
       'multiRow',
     ];
   }
+  // TODO: The required property for components clashes with the json schema require property.
+  // I should use a different required for components and transform it before passing it.
 
   // Combine field and helpText and return template
   getTemplate(props) {
@@ -159,6 +161,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .fieldTemplates=${this}
       .helpText=${this.helpText}
       style=${styleMap(props.styles && props.styles.outer)}
+      .radioGroupFunc=${this.radioGroup}
       exportparts="mist-form-text-field, mist-form-dropdown, mist-form-radio-group, mist-form-checkbox-group, mist-form-text-area, mist-form-checkbox, mist-form-duration-field, mist-form-multi-row, mist-form-multi-row-row, mist-form-custom-field, mist-form-button"
     ></mist-form-subform>`;
 

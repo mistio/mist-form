@@ -20,11 +20,18 @@ export class MistFormHelpers {
       .setDisabled(!this.mistForm.allFieldsValid);
   }
 
-  attachInitialValue(props) {
+  attachInitialValue(props, parentProps) {
     const _props = { ...props };
+    // const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
+    const fieldPath =
+      parentProps && parentProps.omitTitle
+        ? _props.fieldPath.split('.').splice(-2, 1).join('.')
+        : _props.fieldPath;
+
     if (this.mistForm.initialValues) {
+      // Fix this
       const initialValue = util.getNestedValueFromPath(
-        _props.fieldPath,
+        fieldPath,
         this.mistForm.initialValues
       );
       if (initialValue !== undefined) {
@@ -40,12 +47,15 @@ export class MistFormHelpers {
     return _props;
   }
 
-  getValuesfromDOM(root) {
+  getValuesFromDOMByFieldPath(root) {
+    if (!root) {
+      return {};
+    }
     let formValues = {};
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
       const inputName = node.name;
-      const notExcluded = !node.hasAttribute('excludeFromPayload');
+      const notExcluded = !node.hasAttribute('excludefrompayload');
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
         const domValues = node.getValue();
         if (!util.valueNotEmpty(domValues)) {
@@ -72,11 +82,49 @@ export class MistFormHelpers {
     return formValues;
   }
 
+  getValuesfromDOM(root, byName) {
+    if (!root) {
+      return {};
+    }
+    let formValues = {};
+    // If root is the root of mist-form, search in mist-form-fields instead of root
+    const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
+    nodeList.forEach(node => {
+      const inputName = node.name;
+      const notExcluded = !node.hasAttribute('excludefrompayload');
+      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
+        const domValues = node.getValue();
+        if (!util.valueNotEmpty(domValues)) {
+          return {};
+        }
+        if (node.props.omitTitle && byName) {
+          formValues = { ...formValues, ...domValues };
+        } else {
+          formValues[inputName] = domValues;
+        }
+      } else if (notExcluded) {
+        if (util.valueNotEmpty(node.value)) {
+          // If the input has a value of undefined and wasn't required, don't add it
+          const inputValue = util.formatInputValue(node);
+          formValues = { ...formValues, [inputName]: inputValue };
+        }
+      }
+      return false;
+    });
+    if (root.flatten) {
+      formValues = Object.values(formValues).flat(1);
+    }
+
+    return formValues;
+  }
+
   setInput(contents) {
     const _contents = { ...contents };
+
     if (_contents.format !== 'subformContainer') {
       for (const [key, val] of Object.entries(_contents.properties)) {
         _contents.properties[key].name = val.name || key;
+        _contents.properties[key].key = key;
         _contents.properties[key].fieldType = this.fieldTemplates.getFieldType(
           val
         );

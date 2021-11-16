@@ -4,7 +4,9 @@ import { DependencyController } from './DependencyController.js';
 import * as util from './utilities.js';
 import { MistFormHelpers } from './mistFormHelpers.js';
 import { mistFormStyles } from './styles/mistFormStyles.js';
-
+import 'ace-custom-element/dist/index.min.js';
+// Loading schemas from multiple files is supported. For know, the subforms need unique names.
+// TODO: Check json schema  if duplicate names are allowed as long as they are in different schemas
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -35,6 +37,7 @@ export class MistForm extends LitElement {
     this.getValuesfromDOM = this.mistFormHelpers.getValuesfromDOM.bind(
       this.mistFormHelpers
     );
+    this.jsonOpen = false;
   }
 
   firstUpdated() {
@@ -59,7 +62,37 @@ export class MistForm extends LitElement {
 
       return html`
         <div class="mist-header">${this.data.label}</div>
-        ${formFields}
+        ${this.data.showJSON
+          ? html`<paper-toggle-button
+              .name="mist-form-json-toggle"
+              excludeFromPayload
+              .checked="${this.jsonOpen}"
+              @checked-changed="${e => {
+                this.jsonOpen = e.detail.value;
+                this.shadowRoot.querySelector('#json-view').style = !this
+                  .jsonOpen
+                  ? 'visibility: hidden; height: 0'
+                  : '';
+                this.shadowRoot.querySelector('#mist-form-fields').style = this
+                  .jsonOpen
+                  ? 'visibility: hidden; height: 0'
+                  : '';
+                if (this.jsonOpen) {
+                  this.shadowRoot.querySelector(
+                    '#json-view'
+                  ).value = JSON.stringify(this.value, null, 2);
+                }
+              }}"
+              >Show Json</paper-toggle-button
+            >`
+          : ''}
+        <ace-editor
+          id="json-view"
+          theme="ace/theme/monokai"
+          mode="json"
+          style="visibility: hidden; height: 0"
+        ></ace-editor>
+        <span id="mist-form-fields">${formFields}</span>
 
         <div class="buttons">
           ${this.mistFormHelpers.displayCancelButton(this.data.canClose, this)}
@@ -79,8 +112,10 @@ export class MistForm extends LitElement {
   getJSON(url) {
     fetch(url)
       .then(response => response.json())
-      .then(data => {
+      .then(async data => {
+        const definitions = await util.getDefinitions(data);
         this.data = data;
+        this.data.definitions = { ...data.definitions, ...definitions };
       })
       .catch(error => {
         this.dataError = error;
@@ -91,7 +126,6 @@ export class MistForm extends LitElement {
   setupInputs() {
     this.inputs = util.getInputs(this.data);
     this.subforms = util.getSubforms(this.data);
-
     this.inputs.forEach((input, index) => {
       const contents = input[1];
       this.inputs[index][1] = this.mistFormHelpers.setInput(contents);
@@ -104,7 +138,7 @@ export class MistForm extends LitElement {
   }
 
   submitForm() {
-    const params = this.getValuesfromDOM(this.shadowRoot);
+    const params = this.getValuesfromDOM(this.shadowRoot, true);
 
     if (Object.keys(params).length === 0) {
       this.formError = 'Please insert some data';
@@ -130,7 +164,7 @@ export class MistForm extends LitElement {
   }
 
   updateMistFormValue() {
-    this.value = this.getValuesfromDOM(this.shadowRoot);
+    this.value = this.getValuesfromDOM(this.shadowRoot, true);
     const event = new CustomEvent('mist-form-value-changed', {
       detail: {
         value: this.value,
@@ -158,12 +192,12 @@ export class MistForm extends LitElement {
     this.updateMistFormValue();
   };
 
-  renderInputs(inputs, path) {
+  renderInputs(inputs, path, parentProps) {
     // Ignore subform, its data was already passed to subform container
     return inputs.map(input => {
       const properties = input[1];
       properties.fieldPath = util.getFieldPath(input, path);
-
+      properties.key = input[0];
       if (properties.format === 'multiRow') {
         const subForm = util.getSubformFromRef(
           this.subforms,
@@ -174,12 +208,14 @@ export class MistForm extends LitElement {
         for (const [key, val] of Object.entries(rowProps)) {
           properties.rowProps[key] = {
             ...val,
+            key,
             fieldPath: `${properties.fieldPath}.${val.name || key}`,
           };
         }
       }
       const propertiesWithInitialValues = this.mistFormHelpers.attachInitialValue(
-        properties
+        properties,
+        parentProps
       );
       return this.fieldTemplates.getTemplate(propertiesWithInitialValues);
     });

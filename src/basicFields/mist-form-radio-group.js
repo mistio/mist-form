@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { fieldStyles } from '../styles/fieldStyles.js';
@@ -10,14 +10,22 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
     return [fieldStyles];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
 
   render() {
-    super.render();
+    // Add support for titles and ids in radioGroup like I have in dropdowns
     return html` <paper-radio-group
         ...="${spreadProps(this.props)}"
         .label="${util.getLabel(this.props)}"
         class="${this.props.classes || ''} mist-form-input"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
+        .selected="${this.props.value}"
         @selected-changed=${this.valueChanged}
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.radioGroup)}
@@ -30,6 +38,7 @@ class MistFormRadioGroup extends elementBoilerplateMixin(LitElement) {
               style=${styleMap(
                 this.props.styles && this.props.styles.radioButton
               )}
+              .name="${item}"
               >${item}</paper-radio-button
             >`
         )} </paper-radio-group

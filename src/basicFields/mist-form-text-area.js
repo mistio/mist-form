@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { fieldStyles } from '../styles/fieldStyles.js';
@@ -10,15 +10,21 @@ class MistFormTextArea extends elementBoilerplateMixin(LitElement) {
     return [fieldStyles];
   }
 
+  update(changedProperties) {
+    this.mistForm.dependencyController.updatePropertiesByTarget(this);
+    this.style.display = this.props.hidden
+      ? 'none'
+      : this.props.styles?.outer?.display || '';
+    this.fieldPath = this.props.fieldPath;
+    super.update(changedProperties);
+  }
 
   render() {
-    super.render();
     return html`<paper-textarea
         class="${this.props.classes || ''} mist-form-input"
         always-float-label
         ...="${spreadProps(util.getConvertedProps(this.props))}"
         .label="${util.getLabel(this.props)}"
-        ?excludeFromPayload="${this.props.excludeFromPayload}"
         @value-changed=${this.debouncedEventChange}
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
