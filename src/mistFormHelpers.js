@@ -93,7 +93,7 @@ export class MistFormHelpers {
       const inputName = node.name;
       const notExcluded = !node.hasAttribute('excludefrompayload');
       if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
-        const domValues = node.getValue();
+        const domValues = node.getValue(byName);
         if (!util.valueNotEmpty(domValues)) {
           return {};
         }
