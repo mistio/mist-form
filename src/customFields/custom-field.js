@@ -26,7 +26,7 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
-
+  // TODO: Check if value clearing works
   constructor() {
     super();
     this.valueChangeName = 'value-change';
