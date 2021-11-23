@@ -81,9 +81,10 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
   }
 
-  getValue() {
+  getValue(byName) {
     return this.mistForm.getValuesfromDOM(
-      this.shadowRoot.querySelector('.subform-container')
+      this.shadowRoot.querySelector('.subform-container'),
+      byName
     );
   }
 
