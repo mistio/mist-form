@@ -15,6 +15,12 @@ describe('Field clearing test', () => {
             .find('paper-item')
             .eq(1)
             .click({ force: true });
+
+            cy.get('paper-dropdown-menu').then($el => {
+              const el = $el[0]; // get the DOM element from the jquery element
+              expect(el.value).to.equal('Cloud 1');
+            });
+
         });
         cy.get('#location').within(() => {
           cy.get('paper-dropdown-menu').click();
@@ -62,6 +68,11 @@ describe('Field clearing test', () => {
             .find('paper-item')
             .eq(2)
             .click({ force: true });
+
+            cy.get('paper-dropdown-menu').then($el => {
+              const el = $el[0]; // get the DOM element from the jquery element
+              expect(el.value).to.equal('Cloud 2');
+            });
         });
       });
   });
