@@ -39,10 +39,12 @@ describe('Field clearing test', () => {
         cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
         cy.paperTextAreaType('#message', 'Message');
 
-        cy.get('#paper_slider')
-        .find('input')
-        .clear({ force: true })
-        .type('20', { force: true });
+        cy.get('#paper_slider').find('paper-slider').then($el => {
+          for(let i=0;i<20;i++) {
+            $el[0].increment();
+          }
+        })
+
       });
   });
 
