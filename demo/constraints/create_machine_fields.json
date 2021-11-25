@@ -96,6 +96,20 @@
 				  "dependsOn": ".cloud"
 				}
 			  ]
+		  },
+		  "slider":{
+			"label":"Slider",
+			"id":"paper_slider",
+			"type": "string",
+			"format":"paperSlider",
+			"name": "slider",
+			"deps": [
+				{
+				  "prop": "value",
+				  "func": "clearDataSlider",
+				  "dependsOn": ".cloud"
+				}
+			  ]
 		  }
 		}
 	  }

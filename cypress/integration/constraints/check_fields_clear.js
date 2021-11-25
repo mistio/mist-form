@@ -5,7 +5,7 @@ describe('Field clearing test', () => {
     );
   });
 
-  it('Pick data', () => {
+  it('Fill with data', () => {
     cy.get('mist-form')
       .find('#machine_container')
       .within(() => {
@@ -52,7 +52,7 @@ describe('Field clearing test', () => {
           location: 'location1',
           name: 'test',
           show: true,
-          msg: 'Message',
+          msg: 'Message'
         },
       });
     });

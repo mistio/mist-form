@@ -104,11 +104,6 @@ export class DependencyController {
       const func = this.mistForm.dynamicDataNamespace.conditionals[
         condition.func
       ];
-      console.log(
-        'this.mistForm.dynamicDataNamespace.conditionals ',
-        this.mistForm.dynamicDataNamespace.conditionals
-      );
-      console.log('condition.func ', condition.func);
       if (func) {
         const isPromise = func && func.type === 'promise';
         const newValue = isPromise

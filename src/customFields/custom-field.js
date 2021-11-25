@@ -88,7 +88,11 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   render() {
     // super.render();
     for (const [key, val] of Object.entries(this.props)) {
-      this.customElement[key] = val;
+      if (key === this.valueProp) {
+        this.customElement[key] = this.value !== undefined ? this.value : val;
+      } else {
+        this.customElement[key] = val;
+      }
     }
 
     return html`${this.customElement}`;
