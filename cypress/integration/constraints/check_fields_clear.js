@@ -38,10 +38,15 @@ describe('Field clearing test', () => {
 
         cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
         cy.paperTextAreaType('#message', 'Message');
+
+        cy.get('#paper_slider')
+        .find('input')
+        .clear({ force: true })
+        .type('20', { force: true });
       });
   });
 
-  it('Clicking submit button should give {"machine":{"cloud":"cloudId1","location":"location1","name":"test","show":true,"msg":"Message"}}', () => {
+  it('Clicking submit button should give {"machine":{"cloud":"cloudId1","location":"location1","name":"test","show":true,"msg":"Message", "slider": 20}}', () => {
     cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
@@ -52,7 +57,8 @@ describe('Field clearing test', () => {
           location: 'location1',
           name: 'test',
           show: true,
-          msg: 'Message'
+          msg: 'Message',
+          slider: 20
         },
       });
     });
@@ -76,12 +82,12 @@ describe('Field clearing test', () => {
         });
       });
   });
-  it('Clicking submit button should give {"machine":{"cloud":"cloudId2"}', () => {
+  it('Clicking submit button should give {"machine":{"cloud":"cloudId2", "slider": 0}', () => {
     cy.wait(1000);
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(el.value).to.deep.equal({ machine: { cloud: 'cloudId2' } });
+      expect(el.value).to.deep.equal({ machine: { cloud: 'cloudId2', slider: 0 } });
     });
   });
 });
