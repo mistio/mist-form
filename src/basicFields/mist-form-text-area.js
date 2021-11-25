@@ -24,6 +24,7 @@ class MistFormTextArea extends elementBoilerplateMixin(LitElement) {
         class="${this.props.classes || ''} mist-form-input"
         always-float-label
         ...="${spreadProps(util.getConvertedProps(this.props))}"
+        .value="${this.value !== undefined ? this.value : this.props.value}"
         .label="${util.getLabel(this.props)}"
         @value-changed=${this.debouncedEventChange}
         fieldPath="${this.props.fieldPath}"

@@ -26,7 +26,7 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
-
+  // TODO: Check if value clearing works
   constructor() {
     super();
     this.valueChangeName = 'value-change';
@@ -88,7 +88,11 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   render() {
     // super.render();
     for (const [key, val] of Object.entries(this.props)) {
-      this.customElement[key] = val;
+      if (key === this.valueProp) {
+        this.customElement[key] = this.value !== undefined ? this.value : val;
+      } else {
+        this.customElement[key] = val;
+      }
     }
 
     return html`${this.customElement}`;

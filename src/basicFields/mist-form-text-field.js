@@ -44,6 +44,7 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
         @value-changed=${this.debouncedEventChange}
         always-float-label
         ...="${spreadProps(util.getConvertedProps(this.props))}"
+        .value="${this.value !== undefined ? this.value : this.props.value}"
         .label="${util.getLabel(this.props)}"
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}

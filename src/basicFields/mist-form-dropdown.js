@@ -93,12 +93,16 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
   }
 
   getDropdown() {
+    const selectedValue = this.value !== undefined
+    ? this.value
+    : (this.props.value || '');
+
     const value =
       this.props &&
       this.props.enum &&
       this.props.enum.find(
         prop =>
-          (prop.id && prop.id === this.props.value) || prop === this.props.value
+          (prop.id && prop.id === selectedValue) || prop === selectedValue
       );
     this.props.enum = this.props.enum || [];
 
@@ -111,7 +115,6 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
         .label="${util.getLabel(this.props)}"
         class="${this.props.classes || ''} mist-form-input"
         no-animations=""
-        value="${this.props.value || ''}"
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.dropdown)}
       >

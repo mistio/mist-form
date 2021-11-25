@@ -1,52 +1,117 @@
 {
-	"type":"object",
+	"type": "object",
 	"format": "form",
-	"id":"constraints-form",
-	"$schema":"http://json-schema.org/draft-07/schema#",
-	"label":"Constraints",
-	"description":"Create machine form",
-	"submitButtonLabel":"Add",
-	"canClose":true,
-	"additionalProperties":false,
-	"properties":{
-	  "costConstraintContainer":{
-		"name":"machine",
-		"label":"Machine",
-		"id":"machine_container",
-		"type":"object",
-		"format":"subformContainer",
-		"hasToggle":true,
-		"properties":{
-		  "subform":{
-			"$ref":"#/definitions/machineSubform"
+	"id": "constraints-form",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"label": "Constraints",
+	"description": "Create machine form",
+	"submitButtonLabel": "Add",
+	"canClose": true,
+	"additionalProperties": false,
+	"properties": {
+	  "costConstraintContainer": {
+		"name": "machine",
+		"label": "Machine",
+		"id": "machine_container",
+		"type": "object",
+		"format": "subformContainer",
+		"hasToggle": false,
+		"properties": {
+		  "subform": {
+			"$ref": "#/definitions/machineSubform"
 		  }
 		}
 	  }
 	},
-	"definitions":{
-	  "machineSubform":{
-		"id":"machine_subform",
-		"type":"object",
-		"format":"subform",
-		"properties":{
-            "cloud":{
-                "label":"Cloud",
-                "id":"cloud",
-                "type":"string",
-                "format":"dropdown",
-                "x-mist-enum":"clouds"
-              },
-              "name":{
-                "label":"name",
-                "id": "name",
-                "name":"value",
-                "type":"string",
-                "required": true,
-                "autoValidate":true,
-                "errorMessage": "Error!",
-                "deps": [{"prop": "allowedPattern", "func": "nameValid", "dependsOn": ".cloud"}]
-              }
-
-	  }}
+	"definitions": {
+	  "machineSubform": {
+		"id": "machine_subform",
+		"type": "object",
+		"format": "subform",
+		"properties": {
+		  "cloud": {
+			"label": "Cloud",
+			"id": "cloud",
+			"type": "string",
+			"format": "dropdown",
+			"x-mist-enum": "clouds"
+		  },
+		  "location": {
+			"label": "Location",
+			"id": "location",
+			"type": "string",
+			"format": "dropdown",
+			"deps": [
+			  {
+				"prop": "value",
+				"func": "clearData",
+				"dependsOn": ".cloud"
+			  },
+			  {
+				"prop": "enum",
+				"func": "getLocations",
+				"dependsOn": ".cloud"
+			  }
+			]
+		  },
+		  "name": {
+			"label": "name",
+			"id": "name",
+			"name": "name",
+			"type": "string",
+			"autoValidate": true,
+			"errorMessage": "Error!",
+			"deps": [
+			  {
+				"prop": "value",
+				"func": "clearData",
+				"dependsOn": ".cloud"
+			  }
+			]
+		  },
+		  "show": {
+			"label": "Show field",
+			"name": "show",
+			"id": "show",
+			"value": true,
+			"type": "boolean",
+			"noLabelFloat": true,
+			"deps": [
+				{
+				  "prop": "value",
+				  "func": "clearData",
+				  "dependsOn": ".cloud"
+				}
+			  ]
+		  },
+		  "msg": {
+			"label": "Message",
+			"id": "message",
+			"type": "string",
+			"format": "textArea",
+			"deps": [
+				{
+				  "prop": "value",
+				  "func": "clearData",
+				  "dependsOn": ".cloud"
+				}
+			  ]
+		  },
+		  "slider":{
+			"label":"Slider",
+			"id":"paper_slider",
+			"type": "string",
+			"format":"paperSlider",
+			"name": "slider",
+			"deps": [
+				{
+				  "prop": "value",
+				  "func": "clearDataSlider",
+				  "dependsOn": ".cloud"
+				}
+			  ]
+		  }
+		}
+	  }
 	}
   }

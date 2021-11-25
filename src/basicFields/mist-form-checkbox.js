@@ -34,7 +34,7 @@ class MistFormCheckbox extends elementBoilerplateMixin(LitElement) {
         class="${this.props.classes || ''} mist-form-input"
         ...="${spreadProps(this.props)}"
         @checked-changed=${this.valueChanged}
-        .checked="${this.props.value}"
+        .checked="${this.value !== undefined ? this.value : this.props.value}"
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
         part="mist-form-checkbox"

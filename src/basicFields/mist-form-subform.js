@@ -162,11 +162,19 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
   render() {
     const hasTabs = this.props.properties.tabs;
     const label = !this.props.hasToggle ? this.props.label : '';
+    const containerStyles =
+      this.props.styles &&
+      (this.isOpen
+        ? { ...this.props.styles.container, ...this.props.styles.containerOpen }
+        : {
+            ...this.props.styles.container,
+            ...this.props.styles.containerClosed,
+          });
     return html`<div
       class="${this.props.classes || ''} subform-container ${this.isOpen
         ? 'open'
         : ''} ${isEvenOrOdd(this.props.fieldPath)}"
-      style=${styleMap(this.props.styles && this.props.styles.container)}
+      style=${styleMap(containerStyles)}
     >
       ${label
         ? html`<span

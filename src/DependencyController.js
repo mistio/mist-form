@@ -4,19 +4,18 @@ import * as util from './utilities.js';
 
 async function updateProp(element, prop, value) {
   const values = prop ? { [prop]: value } : value;
-  const props = Object.keys(values);
-  const propsUnchanged = props.every(key => {
-    // TODO: replace with real function that compares stuff
-    // Also this should probably return here but it works as it is?
-    JSON.stringify(element.props[key]) === JSON.stringify(values[key]);
-  });
-  if (!element || propsUnchanged || value === undefined) {
+  if (!element || value === undefined) {
     return;
   }
 
   element.props = { ...element.props, ...values };
+  if (prop === 'value') {
+    element.value = value;
+  }
+
   // Since I wait for the element to complete update, maybe I could set priorities.
   // Parent elements should have bigger priority than their children to avoid losing data on re rendering
+  //
   await element.updateComplete;
 }
 
@@ -91,7 +90,7 @@ export class DependencyController {
 
   async updatePropertiesFromConditions(fieldPath) {
     // Debounce this function
-    const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
+    let formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
@@ -111,7 +110,14 @@ export class DependencyController {
           ? await func.func(dependencyValues, condition.dependsOn, formValues)
           : func.func(dependencyValues, condition.dependsOn, formValues);
         // Don't do any updates if function returns undefined
-        updateProp(element, condition.prop, newValue);
+        //  formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
+        updateProp(
+          element,
+          condition.prop,
+          newValue,
+          util.getNestedValueFromPath(condition.target, formValues)
+        );
+        // this.mistForm.updateMistFormValue();
       } else {
         console.error('Dependency function not found for: ', condition);
       }

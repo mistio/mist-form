@@ -45,6 +45,7 @@ class MistFormCheckboxGroup extends elementBoilerplateMixin(LitElement) {
   }
 
   render() {
+    // TODO: Allow to be cleared
     return html`
       <div class="label">${this.props.label}</div>
       <iron-selector
