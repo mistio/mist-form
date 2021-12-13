@@ -107,6 +107,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       {
         ...subForm.properties[key],
         hidden: this.props.hidden || subForm.properties[key].hidden,
+        parent: this,
       },
     ]);
     return this.mistForm.renderInputs(

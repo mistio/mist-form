@@ -66,13 +66,6 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = [...this.value, {}];
   }
 
-  // validate() {
-  //   // Check that all fields have a name
-  //   // const noFieldsEmpty = this.value.every(field => field.name);
-  //   // return noFieldsEmpty;
-  //   return true;
-  // }
-
   createRow(index, value) {
     return html`<mist-form-row
       .value=${value}
@@ -86,14 +79,9 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
   }
 
   getValue() {
-    const value = [];
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
-
-    rows.forEach(row => {
-      value.push(row.value);
-    });
-
-    return value;
+    const val = Array.from(rows).map(row => row.value);
+    return val;
   }
 
   updateRowIndexes(indexToRemove) {

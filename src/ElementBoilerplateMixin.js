@@ -23,6 +23,13 @@ export const elementBoilerplateMixin = superClass =>
 
     valueChanged(e) {
       this.value = e.detail.value;
+      const parentProps = this.props.parent?.props;
+      if (parentProps) {
+        parentProps.valueChangedEvent({
+          fieldPath: this.props.parent.fieldPath,
+          value: this.props.parent.getValue(),
+        });
+      }
       this.props.valueChangedEvent({
         fieldPath: this.fieldPath,
         value: this.value,
