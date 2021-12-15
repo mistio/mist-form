@@ -270,6 +270,7 @@
 			"format": "subformContainer",
 			"hasToggle": false,
 			"omitTitle": true,
+			"excludeFromPayload": true,
 			"properties": {
 			  "subform": {
 				"$ref": "#/definitions/subformInMultirowSubform"

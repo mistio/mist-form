@@ -51,7 +51,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
 
       :host .row-header {
         display: grid;
-        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        grid-template-columns: 2fr 4fr 4fr 30px 4fr 30px;
         gap: 10px;
         font-weight: bold;
       }
@@ -78,9 +78,9 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     ></mist-form-row>`;
   }
 
-  getValue() {
+  getValue(byName) {
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
-    const val = Array.from(rows).map(row => row.value);
+    const val = Array.from(rows).map(row => byName ? row.valueByName : row.value);
     return val;
   }
 
