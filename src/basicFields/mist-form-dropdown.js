@@ -93,16 +93,14 @@ class MistFormDropdown extends elementBoilerplateMixin(LitElement) {
   }
 
   getDropdown() {
-    const selectedValue = this.value !== undefined
-    ? this.value
-    : (this.props.value || '');
+    const selectedValue =
+      this.value !== undefined ? this.value : this.props.value || '';
 
     const value =
       this.props &&
       this.props.enum &&
       this.props.enum.find(
-        prop =>
-          (prop.id && prop.id === selectedValue) || prop === selectedValue
+        prop => (prop.id && prop.id === selectedValue) || prop === selectedValue
       );
     this.props.enum = this.props.enum || [];
 

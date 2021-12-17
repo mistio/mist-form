@@ -1,5 +1,6 @@
 # \<mist-form>
 
+A web component to create a form from a json schema using web components
 Create a form from a json schema.
 *Explain how you can add new fields*
 *Explain how to add styling*
@@ -69,20 +70,6 @@ To run the tests in watch mode (for <abbr title="test driven development">TDD</a
 
 ```bash
 npm run test:watch
-```
-
-## Demoing with Storybook
-
-To run a local instance of Storybook for your component, run
-
-```bash
-npm run storybook
-```
-
-To build a production version of Storybook, run
-
-```bash
-npm run storybook:build
 ```
 
 ## Tooling configs

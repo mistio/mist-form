@@ -4,9 +4,11 @@ import { DependencyController } from './DependencyController.js';
 import * as util from './utilities.js';
 import { MistFormHelpers } from './mistFormHelpers.js';
 import { mistFormStyles } from './styles/mistFormStyles.js';
-import 'ace-custom-element/dist/index.min.js';
-// Loading schemas from multiple files is supported. For know, the subforms need unique names.
+import './customFields/mist-form-code-block.js';
+// Loading schemas from multiple files is supported. For now, the subforms need unique names.
 // TODO: Check json schema  if duplicate names are allowed as long as they are in different schemas
+// TODO: Updae to Lit 2. I haven't updated until now because Lit 2 doesn't support spreadProps, but spreadProps can be replaced
+// Idea for the future: Dependencies can be handled with a Finite State Machine
 export class MistForm extends LitElement {
   static get properties() {
     return {
@@ -15,6 +17,7 @@ export class MistForm extends LitElement {
       dataError: { type: Object },
       formError: { type: String },
       initialValues: { type: Object },
+      jsonOpen: { type: Boolean },
     };
   }
 
@@ -27,7 +30,7 @@ export class MistForm extends LitElement {
     super();
     this.allFieldsValid = true;
     this.value = {};
-    this.firstRender = true;
+    this.firstRender = true; // Why do I use this? Can't I used firstUpdated?
     this.fieldTemplates = new FieldTemplates(
       this,
       this.dispatchValueChangedEvent
@@ -40,8 +43,11 @@ export class MistForm extends LitElement {
     this.jsonOpen = false;
   }
 
+  // Runs the first time after render. Part of the lit lifecycle
   firstUpdated() {
     this.getJSON(this.src);
+    // Transform initial values is a function than can be passed as a prop in mist-form
+    // TODO: add example in docs
     if (this.transformInitialValues) {
       this.initialValues = this.transformInitialValues(this.initialValues);
     }
@@ -49,12 +55,13 @@ export class MistForm extends LitElement {
 
   render() {
     if (this.data) {
+      // This is used instead of firstUpdate because render runs before firstUpdated and I need to do this before render (or I won't have any fields to render)
       if (this.firstRender) {
-        this.setupInputs();
+        this.setupFields();
       }
       // The data here will come validated so no checks required
 
-      const formFields = this.renderInputs(this.inputs);
+      const formFields = this.renderFields(this.fields);
 
       if (this.firstRender) {
         this.firstRender = false;
@@ -69,30 +76,23 @@ export class MistForm extends LitElement {
               .checked="${this.jsonOpen}"
               @checked-changed="${e => {
                 this.jsonOpen = e.detail.value;
-                this.shadowRoot.querySelector('#json-view').style = !this
-                  .jsonOpen
-                  ? 'visibility: hidden; height: 0'
-                  : '';
-                this.shadowRoot.querySelector('#mist-form-fields').style = this
-                  .jsonOpen
-                  ? 'visibility: hidden; height: 0'
-                  : '';
-                if (this.jsonOpen) {
-                  this.shadowRoot.querySelector(
-                    '#json-view'
-                  ).value = JSON.stringify(this.value, null, 2);
-                }
-              }}"
+              }}}"
               >Show Json</paper-toggle-button
             >`
           : ''}
-        <ace-editor
+        <mist-form-code-block
           id="json-view"
-          theme="ace/theme/monokai"
-          mode="json"
-          style="visibility: hidden; height: 0"
-        ></ace-editor>
-        <span id="mist-form-fields">${formFields}</span>
+          excludeFromPayload
+          .value=${this.value}
+          .isOpen=${this.jsonOpen}
+        >
+        </mist-form-code-block>
+
+        <span
+          id="mist-form-fields"
+          style="${this.jsonOpen ? 'visibility: hidden; height: 0' : ''}"
+          >${formFields}</span
+        >
 
         <div class="buttons">
           ${this.mistFormHelpers.displayCancelButton(this.data.canClose, this)}
@@ -123,17 +123,18 @@ export class MistForm extends LitElement {
       });
   }
 
-  setupInputs() {
-    this.inputs = util.getInputs(this.data);
+  // Maybe it would be better to have InputElements instead of just inputs. Or maybe this function could be named setupForm
+  setupFields() {
+    this.fields = util.getFields(this.data);
     this.subforms = util.getSubforms(this.data);
-    this.inputs.forEach((input, index) => {
+    this.fields.forEach((input, index) => {
       const contents = input[1];
-      this.inputs[index][1] = this.mistFormHelpers.setInput(contents);
+      this.fields[index][1] = this.mistFormHelpers.setField(contents);
     });
 
     this.subforms.forEach((subform, index) => {
       const contents = subform[1];
-      this.subforms[index][1] = this.mistFormHelpers.setInput(contents);
+      this.subforms[index][1] = this.mistFormHelpers.setField(contents);
     });
   }
 
@@ -192,31 +193,36 @@ export class MistForm extends LitElement {
     this.updateMistFormValue();
   };
 
-  renderInputs(inputs, path, parentProps) {
+  renderFields(fields, path, parentProps) {
     // Ignore subform, its data was already passed to subform container
-    return inputs.map(input => {
-      const properties = input[1];
-      properties.fieldPath = util.getFieldPath(input, path);
-      properties.key = input[0];
+    return fields.map(field => {
+      const [key] = field;
+      const properties = field[1];
+      properties.fieldPath = util.getFieldPath(field, path);
+      properties.key = key;
       if (properties.format === 'multiRow') {
         const subForm = util.getSubformFromRef(
           this.subforms,
           properties.properties.subform.$ref
         );
+        // rowProps are the props for each row
         const rowProps = subForm.properties;
         properties.rowProps = {};
-        for (const [key, val] of Object.entries(rowProps)) {
-          properties.rowProps[key] = {
+        for (const [rowPropKey, val] of Object.entries(rowProps)) {
+          properties.rowProps[rowPropKey] = {
             ...val,
             key,
-            fieldPath: `${properties.fieldPath}.${val.name || key}`,
+            fieldPath: `${properties.fieldPath}.${val.name || rowPropKey}`,
           };
         }
       }
+      // Initial values are not default values that can be passed in the json.
+      // These are usually loaded when opening form not hardcoded
       const propertiesWithInitialValues = this.mistFormHelpers.attachInitialValue(
         properties,
         parentProps
       );
+
       return this.fieldTemplates.getTemplate(propertiesWithInitialValues);
     });
   }

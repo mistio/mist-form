@@ -130,11 +130,11 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
   }
 
   update(changedProperties) {
-    this.mistForm.dependencyController.updatePropertiesByTarget(this);
     this.style.display = this.props.hidden
       ? 'none'
       : this.props.styles?.outer?.display || '';
     this.fieldPath = this.props.fieldPath;
+    this.mistForm.dependencyController.updatePropertiesByTarget(this.fieldPath);
     super.update(changedProperties);
   }
 

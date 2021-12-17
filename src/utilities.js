@@ -1,6 +1,6 @@
 export const getNestedValueFromPath = (path, object, defaultValue) =>
   path
-    .split(/[\.\[\]\'\"]/)
+    .split(/[.[\]'"]/)
     .filter(p => p)
     .reduce((o, p) => (o ? o[p] : defaultValue), object);
 
@@ -53,14 +53,14 @@ const removeFileNamesFromRefs = data => {
   });
 };
 
-export const getInputs = data => {
+export const getFields = data => {
   const jsonProperties = data.properties;
-  const inputs = Object.keys(jsonProperties).map(key => [
+  const fields = Object.keys(jsonProperties).map(key => [
     key,
     jsonProperties[key],
   ]);
 
-  return removeFileNamesFromRefs(inputs);
+  return removeFileNamesFromRefs(fields);
 };
 
 export const getDefinitions = async data => {
@@ -148,6 +148,7 @@ export const debouncer = function (callback, wait) {
   };
 };
 
+// Currently not used anywhere but might be useful in the future
 export const getValueByFieldPath = (fieldPath, root) => {
   const fieldPathArray = fieldPath.split('.');
   let lastEl = root;

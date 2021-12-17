@@ -9,6 +9,7 @@ import './basicFields/mist-form-radio-group.js';
 import './basicFields/mist-form-text-area.js';
 import './basicFields/mist-form-text-field.js';
 import './basicFields/mist-form-subform.js';
+// These more complicated fields could be loaded dynamically in case they are used
 import './customFields/mist-form-duration-field.js';
 import './customFields/mist-form-multi-row.js';
 import './customFields/custom-field.js';
@@ -18,7 +19,7 @@ export class FieldTemplates extends FieldTemplateHelpers {
     super();
     this.mistForm = mistForm;
     this.valueChangedEvent = valueChangedEvent;
-    this.inputFields = [
+    this.fields = [
       'mist-form-dropdown',
       'mist-form-text-area',
       'mist-form-text-field',

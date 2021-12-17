@@ -1,24 +1,50 @@
 import * as util from './utilities.js';
+// TODO: I should be able to pass an event listener that listens for external changes and updates fields
+// This is useful for updating dropdown options dynamically when they change
+
 // When setting dependency paths, you should use the key of a field and not it's name
 // If the name is different from the key it's used for the final value property
 
-async function updateProp(element, prop, value) {
-  const values = prop ? { [prop]: value } : value;
-  if (!element || value === undefined) {
-    return;
+// TODO: Remove duplicate code from the updateProperties functions
+
+// TODO: replace with real function that compares stuff
+const propsUnchanged = (props, element, values) =>
+  props.every(
+    key => JSON.stringify(element.props[key]) === JSON.stringify(values[key])
+  );
+// This can probably be done in a better way
+const getLevel = dependsOn => {
+  let level;
+  dependsOn.split('').every((el, index) => {
+    const isDot = el === '.';
+    if (!isDot) {
+      level = index;
+    }
+    return isDot;
+  });
+  return level;
+};
+
+const getNewValue = async (func, condition, formValues) => {
+  const { dependsOn } = condition;
+  const dependencyValues = util.getNestedValueFromPath(dependsOn, formValues);
+  if (dependencyValues === undefined) {
+    return undefined;
   }
+  const newValue = await func.func(dependencyValues, dependsOn, formValues);
+  return newValue;
+};
 
-  element.props = { ...element.props, ...values };
-  if (prop === 'value') {
-    element.value = value;
-  }
+const getAbsolutePath = (level, dependsOn, fieldPath) =>
+  level > 0
+    ? `${fieldPath
+        .split('.')
+        .slice(0, -1 * level)
+        .join('.')}.${dependsOn.slice(level)}`
+    : dependsOn;
 
-  // Since I wait for the element to complete update, maybe I could set priorities.
-  // Parent elements should have bigger priority than their children to avoid losing data on re rendering
-  //
-  await element.updateComplete;
-}
-
+const getValues = (condition, newValue) =>
+  condition.prop ? { [condition.prop]: newValue } : newValue;
 export class DependencyController {
   constructor(mistForm) {
     this.conditionMap = [];
@@ -55,23 +81,12 @@ export class DependencyController {
         // Not sure if this working 100%
         // I need to check
         dependsOnArray.forEach(dependsOn => {
-          let level;
-          // This is weird, I need to refactor
-          const isRelative = dependsOn.split('').some((el, index) => {
-            const isNotDot = el !== '.';
-            level = isNotDot ? index : level;
-            return isNotDot;
-          });
-
-          const absoluteDependsOn =
-            level > 0
-              ? `${props.fieldPath
-                  .split('.')
-                  .slice(0, -1 * level)
-                  .join('.')}.${dependsOn.slice(level)}`
-              : dependsOn;
           const condition = {
-            dependsOn: absoluteDependsOn,
+            dependsOn: getAbsolutePath(
+              getLevel(dependsOn),
+              dependsOn,
+              props.fieldPath
+            ),
             target: props.fieldPath,
             prop,
             func,
@@ -90,74 +105,52 @@ export class DependencyController {
 
   async updatePropertiesFromConditions(fieldPath) {
     // Debounce this function
-    let formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
+    const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
       dep => dep.dependsOn === fieldPath
     );
-    // if (conditions.length) {
+
     for (const condition of conditions) {
       const element = this.elementReferencesByFieldPath[condition.target];
-      if (element.hidden) {
-        break;
-      }
-      const dependencyValues = this.getDependencyValues(condition, formValues);
-      const func = this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ];
-      if (func) {
-        const isPromise = func && func.type === 'promise';
-        const newValue = isPromise
-          ? await func.func(dependencyValues, condition.dependsOn, formValues)
-          : func.func(dependencyValues, condition.dependsOn, formValues);
-        // Don't do any updates if function returns undefined
-        //  formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
-        updateProp(
-          element,
-          condition.prop,
-          newValue,
-          util.getNestedValueFromPath(condition.target, formValues)
-        );
-        // this.mistForm.updateMistFormValue();
-      } else {
-        console.error('Dependency function not found for: ', condition);
+      if (!element.hidden) {
+        const dependencyFunction = this.getDependencyFunction(condition);
+        if (dependencyFunction) {
+          const newValue = await getNewValue(
+            dependencyFunction,
+            condition,
+            formValues
+          );
+          // Don't do any updates if function returns undefine
+          this.updateProp(condition.target, condition.prop, newValue);
+        } else {
+          console.error('Dependency function not found for: ', condition);
+        }
       }
     }
-    //  }
   }
 
-  async updatePropertiesByTarget(element) {
+  async updatePropertiesByTarget(fieldPath) {
     if (!this.mistForm.shadowRoot) {
       return;
     }
+    const element = this.elementReferencesByFieldPath[fieldPath];
     const formValues = this.mistForm.getValuesfromDOM(this.mistForm.shadowRoot);
     const conditions = this.conditionMap.filter(
-      dep => dep.target === element.fieldPath
+      dep => dep.target === fieldPath
     );
     for (const condition of conditions) {
-      const dependencyValues = this.getDependencyValues(condition, formValues);
-      if (dependencyValues === undefined) {
-        return;
-      }
-
-      const func = this.mistForm.dynamicDataNamespace.conditionals[
-        condition.func
-      ];
-      if (func) {
-        const isPromise = func && func.type === 'promise';
-        const newValue = isPromise
-          ? await func.func(dependencyValues, condition.dependsOn, formValues)
-          : func.func(dependencyValues, condition.dependsOn, formValues); // also pass old value here
-        const values = condition.prop
-          ? { [condition.prop]: newValue }
-          : newValue;
-        const props = Object.keys(values);
-        // TODO: replace with real function that compares stuff
-        const propsUnchanged = props.every(
-          key =>
-            JSON.stringify(element.props[key]) === JSON.stringify(values[key])
+      const dependencyFunction = this.getDependencyFunction(condition);
+      if (dependencyFunction) {
+        const newValue = await getNewValue(
+          dependencyFunction,
+          condition,
+          formValues
         );
+        const values = getValues(condition, newValue);
+        const props = Object.keys(values);
+
         // Undefined gets returned from func when you don't want to update
-        if (propsUnchanged || newValue === undefined) {
+        if (propsUnchanged(props, element, values) || newValue === undefined) {
           return;
         }
         props.forEach(prop => {
@@ -170,8 +163,23 @@ export class DependencyController {
     }
   }
 
-  getDependencyValues = (dependency, formValues) => {
-    const source = dependency.dependsOn;
-    return util.getNestedValueFromPath(source, formValues);
-  };
+  async updateProp(fieldPath, prop, value) {
+    const element = this.elementReferencesByFieldPath[fieldPath];
+    const values = prop ? { [prop]: value } : value;
+    if (!element || value === undefined) {
+      return;
+    }
+
+    element.props = { ...element.props, ...values };
+    if (prop === 'value') {
+      element.value = value;
+    }
+
+    // Since I wait for the element to complete update, maybe I could set priorities.
+    // Parent elements should have bigger priority than their children to avoid losing data on re rendering
+    await element.updateComplete;
+  }
+
+  getDependencyFunction = condition =>
+    this.mistForm.dynamicDataNamespace.conditionals[condition.func];
 }

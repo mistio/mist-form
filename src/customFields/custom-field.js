@@ -26,6 +26,7 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
     return css``;
   }
+
   // TODO: Check if value clearing works
   constructor() {
     super();
@@ -74,14 +75,16 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   }
 
   update(changedProperties) {
-    if (!changedProperties.has('value')) {
-      this.mistForm.dependencyController.updatePropertiesByTarget(this);
-    }
-
     this.style.display = this.props.hidden
       ? 'none'
       : this.props.styles?.outer?.display || '';
     this.fieldPath = this.props.fieldPath;
+    if (!changedProperties.has('value')) {
+      this.mistForm.dependencyController.updatePropertiesByTarget(
+        this.fieldPath
+      );
+    }
+
     super.update(changedProperties);
   }
 

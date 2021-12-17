@@ -20,9 +20,9 @@ export class MistFormHelpers {
       .setDisabled(!this.mistForm.allFieldsValid);
   }
 
+  // Initial values are values that are passed to mist-form, not default values defined in the schema
   attachInitialValue(props, parentProps) {
     const _props = { ...props };
-    // const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
     const fieldPath =
       parentProps && parentProps.omitTitle
         ? _props.fieldPath.split('.').splice(-2, 1).join('.')
@@ -45,41 +45,6 @@ export class MistFormHelpers {
       }
     }
     return _props;
-  }
-
-  getValuesFromDOMByFieldPath(root) {
-    if (!root) {
-      return {};
-    }
-    let formValues = {};
-    const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
-    nodeList.forEach(node => {
-      const inputName = node.name;
-      const notExcluded = !node.hasAttribute('excludefrompayload');
-      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
-        const domValues = node.getValue();
-        if (!util.valueNotEmpty(domValues)) {
-          return {};
-        }
-        if (node.props.omitTitle) {
-          formValues = { ...formValues, ...domValues };
-        } else {
-          formValues[inputName] = domValues;
-        }
-      } else if (notExcluded) {
-        if (util.valueNotEmpty(node.value)) {
-          // If the input has a value of undefined and wasn't required, don't add it
-          const inputValue = util.formatInputValue(node);
-          formValues = { ...formValues, [inputName]: inputValue };
-        }
-      }
-      return false;
-    });
-    if (root.flatten) {
-      formValues = Object.values(formValues).flat(1);
-    }
-
-    return formValues;
   }
 
   getValuesfromDOM(root, byName) {
@@ -118,7 +83,7 @@ export class MistFormHelpers {
     return formValues;
   }
 
-  setInput(contents) {
+  setField(contents) {
     const _contents = { ...contents };
 
     if (_contents.format !== 'subformContainer') {
