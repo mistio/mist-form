@@ -262,7 +262,34 @@
 			"value": true,
 			"type": "boolean",
 			"hideLabel": true
+		  },
+		  "subformInMultirowContainer": {
+			"name": "subform_in_multirow",
+			"id": "subform_in_multirow",
+			"type": "object",
+			"format": "subformContainer",
+			"hasToggle": false,
+			"omitTitle": true,
+			"excludeFromPayload": true,
+			"properties": {
+			  "subform": {
+				"$ref": "#/definitions/subformInMultirowSubform"
+			  }
+			}
 		  }
+		}
+	  },
+	  "subformInMultirowSubform": {
+		"id": "subform_in_multirow_subform",
+		"type": "object",
+		"format": "subform",
+		"properties": {
+			"test": {
+				"name": "test",
+				"id": "test",
+				"label": "Test",
+				"type": "string"
+			  }
 		}
 	  },
 	  "expirationConstraints": {

@@ -141,6 +141,10 @@ describe('Field constraints', () => {
               .find('input')
               .clear({ force: true })
               .type('Value3', { force: true });
+            cy.get('#test')
+              .find('input')
+              .clear({ force: true })
+              .type('Test', { force: true });
           });
       });
     cy.wait(1000);
@@ -151,7 +155,7 @@ describe('Field constraints', () => {
       expect(el.value).to.deep.equal({
         field: [
           { name: 'Field2', cloud: 'cloudId3', show: false },
-          { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3' },
+          { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3', test: 'Test' },
         ],
       });
     });

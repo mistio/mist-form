@@ -55,8 +55,9 @@ export class MistFormHelpers {
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
       const inputName = node.name;
-      const notExcluded = !node.hasAttribute('excludefrompayload');
-      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
+      const excluded = node.hasAttribute('excludefrompayload');
+      if (excluded) { return; }
+      if (node.tagName === 'MIST-FORM-SUBFORM') {
         const domValues = node.getValue();
         if (!util.valueNotEmpty(domValues)) {
           return {};
@@ -66,14 +67,13 @@ export class MistFormHelpers {
         } else {
           formValues[inputName] = domValues;
         }
-      } else if (notExcluded) {
+      } else {
         if (util.valueNotEmpty(node.value)) {
           // If the input has a value of undefined and wasn't required, don't add it
           const inputValue = util.formatInputValue(node);
           formValues = { ...formValues, [inputName]: inputValue };
         }
       }
-      return false;
     });
     if (root.flatten) {
       formValues = Object.values(formValues).flat(1);
@@ -91,8 +91,10 @@ export class MistFormHelpers {
     const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
     nodeList.forEach(node => {
       const inputName = node.name;
-      const notExcluded = !node.hasAttribute('excludefrompayload');
-      if (node.tagName === 'MIST-FORM-SUBFORM' && notExcluded) {
+      if (node.hasAttribute('excludefrompayload')) {
+        return false;
+      }
+      if (node.tagName === 'MIST-FORM-SUBFORM') {
         const domValues = node.getValue(byName);
         if (!util.valueNotEmpty(domValues)) {
           return {};
@@ -102,12 +104,10 @@ export class MistFormHelpers {
         } else {
           formValues[inputName] = domValues;
         }
-      } else if (notExcluded) {
-        if (util.valueNotEmpty(node.value)) {
-          // If the input has a value of undefined and wasn't required, don't add it
-          const inputValue = util.formatInputValue(node);
-          formValues = { ...formValues, [inputName]: inputValue };
-        }
+      } else if (util.valueNotEmpty(node.value)) {
+        // If the input has a value of undefined and wasn't required, don't add it
+        const inputValue = node.tagName === 'MIST-FORM-MULTI-ROW' ? node.getValue(byName) : util.formatInputValue(node);
+        formValues = { ...formValues, [inputName]: inputValue };
       }
       return false;
     });
