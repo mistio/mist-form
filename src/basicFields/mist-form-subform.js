@@ -94,9 +94,6 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       tabIndex !== undefined
         ? `${this.props.fieldPath}[${[tabIndex]}]`
         : this.props.fieldPath;
-    // const parentPath = this.props.omitTitle
-    //   ? path.split('.').slice(0, -1).join('.')
-    //   : path;
     const parentPath = path;
     return parentPath;
   }
@@ -160,7 +157,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     super.update(changedProperties);
   }
 
-  // TODO: check how excludeFromPayload works in subform vs omitTitle.
+  // TODO: check how excludeFromPayload works in subform vs omitNameFromPayload.
   render() {
     const hasTabs = this.props.properties.tabs;
     const label = !this.props.hasToggle ? this.props.label : '';

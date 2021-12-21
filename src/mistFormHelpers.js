@@ -24,7 +24,7 @@ export class MistFormHelpers {
   attachInitialValue(props, parentProps) {
     const _props = { ...props };
     const fieldPath =
-      parentProps && parentProps.omitTitle
+      parentProps && parentProps.omitNameFromPayload
         ? _props.fieldPath.split('.').splice(-2, 1).join('.')
         : _props.fieldPath;
 
@@ -62,7 +62,7 @@ export class MistFormHelpers {
         if (!util.valueNotEmpty(domValues)) {
           return {};
         }
-        if (node.props.omitTitle && byName) {
+        if (node.props.omitNameFromPayload && byName) {
           formValues = { ...formValues, ...domValues };
         } else {
           formValues[inputName] = domValues;
