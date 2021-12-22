@@ -7,7 +7,7 @@ import { mistFormStyles } from './styles/mistFormStyles.js';
 import './customFields/mist-form-code-block.js';
 // Loading schemas from multiple files is supported. For now, the subforms need unique names.
 // TODO: Check json schema  if duplicate names are allowed as long as they are in different schemas
-// TODO: Updae to Lit 2. I haven't updated until now because Lit 2 doesn't support spreadProps, but spreadProps can be replaced
+// TODO: Update to Lit 2. I haven't updated until now because Lit 2 doesn't support spreadProps, but spreadProps can be replaced
 // Idea for the future: Dependencies can be handled with a Finite State Machine
 export class MistForm extends LitElement {
   static get properties() {

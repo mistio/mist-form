@@ -15,14 +15,27 @@ npm i @mistio/mist-form
 ```
 
 ## Usage
+Mist form is based on paper elements https://www.webcomponents.org/collection/PolymerElements/paper-elements. You need to import the components you need depending on which fields you'll be using.
 
 ```html
 <script type="module">
   import '@mistio/mist-form/mist-form.js';
 </script>
 
-<mist-form></mist-form>
+<mist-form id=${id} .src=${jsonUrl} .dynamicDataNamespace=${constraintsData}>
+          <div id="mist-form-custom">
+            <paper-slider mist-form-type="paperSlider" editable></paper-slider>
+            <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color" mist-form-value-change="color-picker-selected"></paper-swatch-picker>
+          </div>
+</mist-form>
 ```
+`src`: The url of the json file you want to load
+`dynamicDataNamespace`: Functions and data you want to pass
+
+See demos for examples of how to pass data.
+
+Put custom elements in a div with id `"mist-form-custom"`
+
 Look at the demos for examples on how to use `<mist-form>`
 
 ## Linting with ESLint, Prettier, and Types
@@ -113,6 +126,31 @@ You can also see other form demos:
 
 ## Dependencies
 
+Dependencies can be added between fields
+
+```
+			"deps": [
+			  {
+				"prop": "hidden", // The property affected
+				"func": "hidePaperSlider", // The function or promise you want to run
+				"dependsOn": ".hidePaperSlider" // The field that triggers the dependency. The path can start with a dot and be relative, or absolute
+			  }
+			]
+```
+You can add multiple dependencies for a field.
+
+## Paths
+Each field has a path following the subform structure. You can see this by inspecting a field and looking at the `fieldPath` property.
+
+
+## Custom web components
+You can pass custom web components. Properties you can pass
+
+`mist-form-type`:  Necessary to define component name from json
+`mist-form-value-change`: The name of the value change event. Default is value-change
+`mist-form-validate`: The name of the validate function. Default is validate
+`mist-form-value-prop`: The name of the property that returns the value. Default is value
+`mist-form-value-path`: If the value is returned from an event, this is the path of the value in the returned object.
 
 ## Styling
 

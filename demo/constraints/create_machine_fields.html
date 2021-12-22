@@ -57,7 +57,6 @@
 
       const jsonUrl = 'create_machine_fields.json';
       const id = 'test-mist-form';
-      const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       const locations = {
         cloudId1: [{
@@ -114,7 +113,7 @@
       };
 
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
+        html`<mist-form id=${id} .src=${jsonUrl} .dynamicDataNamespace=${constraintsData}>
           <div id="mist-form-custom">
             <paper-slider mist-form-type="paperSlider" editable></paper-slider>
             <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color" mist-form-value-change="color-picker-selected"></paper-swatch-picker>

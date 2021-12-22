@@ -42,11 +42,10 @@
 
       const jsonUrl = 'constraints_with_custom.json';
       const id = 'test-mist-form';
-      const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       const initialValues = {field:{"cloud1":23,"cloud2":52}};
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .initialValues=${initialValues}>
+        html`<mist-form id=${id} .src=${jsonUrl} .initialValues=${initialValues}>
           <div id="mist-form-custom">
             <paper-slider slot="customElement" max-markers=10  mist-form-type="paperSlider"
               editable>
