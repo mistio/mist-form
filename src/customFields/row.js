@@ -45,7 +45,7 @@ class MistFormRow extends LitElement {
 
       :host(.inline) {
         display: grid;
-        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        grid-template-columns: 2fr 4fr 4fr 30px 4fr 30px;
         align-items: center;
       }
 
@@ -68,6 +68,7 @@ class MistFormRow extends LitElement {
   constructor() {
     super();
     this.value = {};
+    this.valueByName = {};
   }
 
   validate() {
@@ -81,7 +82,7 @@ class MistFormRow extends LitElement {
     } else {
       delete this.value[name];
     }
-
+    this.valueByName = this.parent.mistForm.getValuesfromDOM(this.shadowRoot, true);
     this.parent.valueChanged(e);
   }
 
@@ -122,6 +123,8 @@ class MistFormRow extends LitElement {
   }
 
   render() {
+    // TODO: Inital values of subforms in row should be attached
+    // Possible issue: Path not being set properly
     const isNumbered = this.parent.props.numbered;
     const row = Object.keys(this.rowProps).map(key => {
       const prop = { ...this.rowProps[key] };

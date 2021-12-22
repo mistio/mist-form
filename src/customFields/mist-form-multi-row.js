@@ -51,7 +51,7 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
 
       :host .row-header {
         display: grid;
-        grid-template-columns: 2fr 4fr 4fr 30px 30px;
+        grid-template-columns: 2fr 4fr 4fr 30px 4fr 30px;
         gap: 10px;
         font-weight: bold;
       }
@@ -66,13 +66,6 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     this.value = [...this.value, {}];
   }
 
-  // validate() {
-  //   // Check that all fields have a name
-  //   // const noFieldsEmpty = this.value.every(field => field.name);
-  //   // return noFieldsEmpty;
-  //   return true;
-  // }
-
   createRow(index, value) {
     return html`<mist-form-row
       .value=${value}
@@ -85,15 +78,10 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
     ></mist-form-row>`;
   }
 
-  getValue() {
-    const value = [];
+  getValue(byName) {
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
-
-    rows.forEach(row => {
-      value.push(row.value);
-    });
-
-    return value;
+    const val = Array.from(rows).map(row => byName ? row.valueByName : row.value);
+    return val;
   }
 
   updateRowIndexes(indexToRemove) {

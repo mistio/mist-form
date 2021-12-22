@@ -269,8 +269,7 @@
 			"type": "object",
 			"format": "subformContainer",
 			"hasToggle": false,
-
-			"excludeFromPayload": true,
+			"omitNameFromPayload": true,
 			"properties": {
 			  "subform": {
 				"$ref": "#/definitions/subformInMultirowSubform"
