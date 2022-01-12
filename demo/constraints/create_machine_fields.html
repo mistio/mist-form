@@ -57,8 +57,21 @@
 
       const jsonUrl = 'create_machine_fields.json';
       const id = 'test-mist-form';
-      const method = 'POST';
       const submitUrl = 'api/v1/clouds';
+      const locations = {
+        cloudId1: [{
+                  id: 'location1',
+                  title: 'Location 1'
+              }],
+        cloudId2: [{
+                  id: 'location2',
+                  title: 'Location 2'
+              }],
+        cloudId3: [{
+                  id: 'location3',
+                  title: 'Location 3'
+              }]
+      }
       const constraintsData = {
           dynamicData: {
               clouds: {
@@ -88,37 +101,19 @@
                   },
               },
               clearData: {
-                  func: cloudId => ''
+                  func: () => ''
               },
               clearDataSlider: {
-                  func: cloudId => 0
+                  func: () => 0
               },
               getLocations: {
-                  func: cloudId => {
-                      if (cloudId === 'cloudId1') {
-                          return [{
-                              id: 'location1',
-                              title: 'Location 1'
-                          }]
-                      } else if (cloudId === 'cloudId2') {
-                          return [{
-                              id: 'location2',
-                              title: 'Location 2'
-                          }]
-                      } else if (cloudId === 'cloudId3') {
-                          return [{
-                              id: 'location3',
-                              title: 'Location 3'
-                          }]
-                      }
-
-                  }
+                  func: cloudId => locations[cloudId]
               }
           }
       };
 
       render(
-        html`<mist-form id=${id} .src=${jsonUrl} .method=${method} .dynamicDataNamespace=${constraintsData}>
+        html`<mist-form id=${id} .src=${jsonUrl} .dynamicDataNamespace=${constraintsData}>
           <div id="mist-form-custom">
             <paper-slider mist-form-type="paperSlider" editable></paper-slider>
             <paper-swatch-picker mist-form-type="colorSwatch" mist-form-value-prop="color" mist-form-value-change="color-picker-selected"></paper-swatch-picker>

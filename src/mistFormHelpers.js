@@ -20,11 +20,11 @@ export class MistFormHelpers {
       .setDisabled(!this.mistForm.allFieldsValid);
   }
 
+  // Initial values are values that are passed to mist-form, not default values defined in the schema
   attachInitialValue(props, parentProps) {
     const _props = { ...props };
-    // const valueFieldPath = util.fieldPathToValuePath(_props.fieldPath, this.mistForm);
     const fieldPath =
-      parentProps && parentProps.omitTitle
+      parentProps && parentProps.omitNameFromPayload
         ? _props.fieldPath.split('.').splice(-2, 1).join('.')
         : _props.fieldPath;
 
@@ -47,41 +47,6 @@ export class MistFormHelpers {
     return _props;
   }
 
-  getValuesFromDOMByFieldPath(root) {
-    if (!root) {
-      return {};
-    }
-    let formValues = {};
-    const nodeList = this.fieldTemplates.getFirstLevelChildren(root);
-    nodeList.forEach(node => {
-      const inputName = node.name;
-      const excluded = node.hasAttribute('excludefrompayload');
-      if (excluded) { return; }
-      if (node.tagName === 'MIST-FORM-SUBFORM') {
-        const domValues = node.getValue();
-        if (!util.valueNotEmpty(domValues)) {
-          return {};
-        }
-        if (node.props.omitTitle) {
-          formValues = { ...formValues, ...domValues };
-        } else {
-          formValues[inputName] = domValues;
-        }
-      } else {
-        if (util.valueNotEmpty(node.value)) {
-          // If the input has a value of undefined and wasn't required, don't add it
-          const inputValue = util.formatInputValue(node);
-          formValues = { ...formValues, [inputName]: inputValue };
-        }
-      }
-    });
-    if (root.flatten) {
-      formValues = Object.values(formValues).flat(1);
-    }
-
-    return formValues;
-  }
-
   getValuesfromDOM(root, byName) {
     if (!root) {
       return {};
@@ -99,7 +64,7 @@ export class MistFormHelpers {
         if (!util.valueNotEmpty(domValues)) {
           return {};
         }
-        if (node.props.omitTitle && byName) {
+        if (node.props.omitNameFromPayload && byName) {
           formValues = { ...formValues, ...domValues };
         } else {
           formValues[inputName] = domValues;
@@ -118,7 +83,7 @@ export class MistFormHelpers {
     return formValues;
   }
 
-  setInput(contents) {
+  setField(contents) {
     const _contents = { ...contents };
 
     if (_contents.format !== 'subformContainer') {

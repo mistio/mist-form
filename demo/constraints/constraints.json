@@ -2,7 +2,7 @@
 	"type": "object",
 	"format": "form",
 	"id": "constraints-form",
-	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"label": "Constraints",
 	"description": "Constraints form",
 	"submitButtonLabel": "Add",
@@ -56,7 +56,7 @@
 		"type": "object",
 		"format": "subformContainer",
 		"hasToggle": true,
-		"omitTitle": true,
+		"omitNameFromPayload": true,
 		"properties": {
 		  "subform": {
 			"$ref": "#/definitions/fieldConstraints"
@@ -224,7 +224,7 @@
 	  "fieldElementSubform": {
 		"id": "field_element_subform",
 		"type": "object",
-		"format": "rowDefinition",
+		"format": "subform",
 		"properties": {
 		  "cloud": {
 			"label": "Cloud",
@@ -269,8 +269,7 @@
 			"type": "object",
 			"format": "subformContainer",
 			"hasToggle": false,
-			"omitTitle": true,
-			"excludeFromPayload": true,
+			"omitNameFromPayload": true,
 			"properties": {
 			  "subform": {
 				"$ref": "#/definitions/subformInMultirowSubform"

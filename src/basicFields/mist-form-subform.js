@@ -81,6 +81,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     this.isOpen = this.props.fieldsVisible || !this.props.hasToggle;
   }
 
+  // TODO: Make this a getter so I can use it instead of value everywhere.
   getValue(byName) {
     return this.mistForm.getValuesfromDOM(
       this.shadowRoot.querySelector('.subform-container'),
@@ -93,16 +94,13 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
       tabIndex !== undefined
         ? `${this.props.fieldPath}[${[tabIndex]}]`
         : this.props.fieldPath;
-    // const parentPath = this.props.omitTitle
-    //   ? path.split('.').slice(0, -1).join('.')
-    //   : path;
     const parentPath = path;
     return parentPath;
   }
 
-  getSubformInputs(ref, tabIndex) {
+  getSubformFields(ref, tabIndex) {
     const subForm = util.getSubformFromRef(this.mistForm.subforms, ref);
-    const subFormInputs = Object.keys(subForm.properties).map(key => [
+    const subFormFields = Object.keys(subForm.properties).map(key => [
       key,
       {
         ...subForm.properties[key],
@@ -110,24 +108,24 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
         parent: this,
       },
     ]);
-    return this.mistForm.renderInputs(
-      subFormInputs,
+    return this.mistForm.renderFields(
+      subFormFields,
       this.getParentPath(tabIndex),
       this.props
     );
   }
 
-  setupInputs() {
+  setupFields() {
     // If subform
     if (this.props.properties.subform) {
-      this.props.inputs = this.getSubformInputs(
+      this.props.inputs = this.getSubformFields(
         this.props.properties.subform.$ref
       );
       // If tabbed
     } else if (this.props.properties.tabs) {
       this.props.inputs = this.props.properties.tabs.enum.map((tab, index) => ({
         label: tab.label,
-        inputs: this.getSubformInputs(tab && tab.$ref, index),
+        inputs: this.getSubformFields(tab && tab.$ref, index),
       }));
     }
     // If tabbed, this.props.inputs is an Array
@@ -146,11 +144,11 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     ${this.props.inputs.find(input => input.label === this.selectedTab).inputs}`;
   }
 
-  getInputs = hasTabs =>
+  getFields = hasTabs =>
     hasTabs ? html`${this.getTabs()}` : html`${this.props.inputs}`;
 
   update(changedProperties) {
-    this.setupInputs();
+    this.setupFields();
     this.excludeFromPayload = !this.isOpen;
     this.mistForm.dependencyController.updatePropertiesByTarget(this);
     this.style.display = this.props.hidden
@@ -160,6 +158,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
     super.update(changedProperties);
   }
 
+  // TODO: check how excludeFromPayload works in subform vs omitNameFromPayload.
   render() {
     const hasTabs = this.props.properties.tabs;
     const label = !this.props.hasToggle ? this.props.label : '';
@@ -196,7 +195,7 @@ class MistFormSubform extends elementBoilerplateMixin(LitElement) {
             >${this.props.label}</paper-toggle-button
           >`
         : ''}
-      ${this.isOpen ? this.getInputs(hasTabs) : ''}
+      ${this.isOpen ? this.getFields(hasTabs) : ''}
     </div>`;
   }
 }

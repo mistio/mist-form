@@ -17,6 +17,8 @@ export const elementBoilerplateMixin = superClass =>
       this.name = this.props.name;
       this.fieldPath = this.props.fieldPath;
       this.excludeFromPayload = this.props.excludeFromPayload;
+      // TODO: Check if I can add element references in the main mistform file
+      // Maybe I can add an event here that is captured by mistForm and adds the reference?
       this.mistForm.dependencyController.addElementReference(this);
       this.debouncedEventChange = debouncer(e => this.valueChanged(e), 400);
     }

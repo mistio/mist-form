@@ -16,11 +16,10 @@ describe('Field clearing test', () => {
             .eq(1)
             .click({ force: true });
 
-            cy.get('paper-dropdown-menu').then($el => {
-              const el = $el[0]; // get the DOM element from the jquery element
-              expect(el.value).to.equal('Cloud 1');
-            });
-
+          cy.get('paper-dropdown-menu').then($el => {
+            const el = $el[0]; // get the DOM element from the jquery element
+            expect(el.value).to.equal('Cloud 1');
+          });
         });
         cy.get('#location').within(() => {
           cy.get('paper-dropdown-menu').click();
@@ -39,12 +38,13 @@ describe('Field clearing test', () => {
         cy.get('mist-form-checkbox#show').find('paper-checkbox').click();
         cy.paperTextAreaType('#message', 'Message');
 
-        cy.get('#paper_slider').find('paper-slider').then($el => {
-          for(let i=0;i<20;i++) {
-            $el[0].increment();
-          }
-        })
-
+        cy.get('#paper_slider')
+          .find('paper-slider')
+          .then($el => {
+            for (let i = 0; i < 20; i++) {
+              $el[0].increment();
+            }
+          });
       });
   });
 
@@ -60,7 +60,7 @@ describe('Field clearing test', () => {
           name: 'test',
           show: true,
           msg: 'Message',
-          slider: 20
+          slider: 20,
         },
       });
     });
@@ -77,10 +77,10 @@ describe('Field clearing test', () => {
             .eq(2)
             .click({ force: true });
 
-            cy.get('paper-dropdown-menu').then($el => {
-              const el = $el[0]; // get the DOM element from the jquery element
-              expect(el.value).to.equal('Cloud 2');
-            });
+          cy.get('paper-dropdown-menu').then($el => {
+            const el = $el[0]; // get the DOM element from the jquery element
+            expect(el.value).to.equal('Cloud 2');
+          });
         });
       });
   });
@@ -89,7 +89,9 @@ describe('Field clearing test', () => {
     cy.get('mist-form').find('.submit-btn').click();
     cy.get('mist-form').then($el => {
       const el = $el[0]; // get the DOM element from the jquery element
-      expect(el.value).to.deep.equal({ machine: { cloud: 'cloudId2', slider: 0 } });
+      expect(el.value).to.deep.equal({
+        machine: { cloud: 'cloudId2', slider: 0 },
+      });
     });
   });
 });

@@ -61,7 +61,7 @@
 	  "fieldElementSubform":{
 		"id":"field_element_subform",
 		"type":"object",
-		"format":"rowDefinition",
+		"format":"subform",
 		"properties":{
 		  "cloud":{
 			"label":"Default",

@@ -31,7 +31,7 @@ export class FieldTemplateHelpers {
     const newRoot = root.querySelector('#mist-form-fields') || root;
     return newRoot
       ? [...newRoot.children].filter(
-          child => !child.hidden && child.matches(this.inputFields)
+          child => !child.hidden && child.matches(this.fields)
         )
       : [];
   };

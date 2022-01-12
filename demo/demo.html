@@ -46,13 +46,11 @@
       };
       const jsonUrl = 'space-camp-application.json';
       const id = 'test-mist-form';
-      const method = 'POST';
       const submitUrl = 'api/v1/clouds';
       render(
         html`<mist-form
           id=${id}
           .src=${jsonUrl}
-          .method=${method}
           .dynamicDataNamespace=${dynaData}
         >
           <iron-ajax
