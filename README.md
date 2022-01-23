@@ -1,12 +1,14 @@
 # \<mist-form>
 
-A web component to create a form from a json schema using web components.
-Properties can be grouped and reused in subforms. Properties and subforms can be split in multiple files.
-Create a form from a json schema.
-*Explain how you can add new fields*
+A web component that renders a form described by a [JSON Schema](https://json-schema.org/).
 
-*Add supported json schema version to readme*
-This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+Properties can be grouped and reused in subforms. Properties and subforms can be split in multiple files.
+
+Supported json schema versions:
+ - 2019-09
+ - 2020-12
+
+This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendations.
 
 ## Installation
 
@@ -16,14 +18,7 @@ npm i @mistio/mist-form
 
 ## Imports
 
-Mist form is based on paper elements https://www.webcomponents.org/collection/PolymerElements/paper-elements. You need to import the components you need depending on which fields you'll be using.
-Usual imports are:
 
-```js
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-```
 
 This is for the form's buttons to show, the json toggle button, and the spinner when form components are loading.
 
@@ -35,30 +30,6 @@ import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/iron-selector/iron-selector.js';
 ```
 
-For `inputs` or `text`:
-
-```js
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-```
-
-For `sliders`:
-
-```js
-import '@polymer/paper-input/paper-slider.js';
-```
-
-For `checkboxes`:
-
-```js
-import '@polymer/paper-input/paper-checkbox.js';
-```
-
-And for `radio buttons`:
-
-```js
-import '@polymer/paper-radio-group/paper-radio-group.js';
-```
 
 If the form is not working or responding as intended most likely an import is missing.
 
@@ -74,14 +45,8 @@ be used like axios, or just a pure fetch.
   <script type="module">
     import { html, render } from 'lit-html';
     import '@polymer/paper-styles/demo-pages.js';
-    import '@polymer/paper-button/paper-button.js';
-    import '@polymer/paper-spinner/paper-spinner.js';
     import '@polymer/iron-ajax/iron-ajax.js';
 
-    import '@polymer/paper-input/paper-input.js';
-    import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-    import '@polymer/paper-item/paper-item.js';
-    import '@polymer/paper-listbox/paper-listbox.js';
     import '@polymer/paper-toggle-button/paper-toggle-button.js';
     import '@polymer/paper-slider/paper-slider.js'
     import '../../mist-form.js';
@@ -179,16 +144,14 @@ field type should be used and the `type` the type of the value held within, this
         "id":"name",
         "type": "string",
         "name": "Name"
-        },
-        "tickets":{
-          "label":"Tickets",
-          "id":"tickets",
-          "type": "string",
-          "format":"number",
-          "name": "Tickets",
-          "minimum": 1,
-          "value": "1"
-        }
+      },
+      "tickets":{
+        "label":"Tickets",
+        "id":"tickets",
+        "type": "number",
+        "name": "Tickets",
+        "minimum": 1,
+        "value": "1"
       }
     }
   }

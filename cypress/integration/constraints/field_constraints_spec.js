@@ -155,7 +155,13 @@ describe('Field constraints', () => {
       expect(el.value).to.deep.equal({
         field: [
           { name: 'Field2', cloud: 'cloudId3', show: false },
-          { cloud: 'cloudId2', name: 'Field3', show: true, value: 'Value3', test: 'Test' },
+          {
+            cloud: 'cloudId2',
+            name: 'Field3',
+            show: true,
+            value: 'Value3',
+            test: 'Test',
+          },
         ],
       });
     });

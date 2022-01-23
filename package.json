@@ -6,8 +6,6 @@
   "bundleDependencies": false,
   "dependencies": {
     "@open-wc/lit-helpers": "^0.3.11",
-    "lit-element": "^2.2.1",
-    "lit-html": "^1.1.2",
     "@polymer/iron-ajax": "^3.0.1",
     "@polymer/iron-icons": "^3.0.1",
     "@polymer/iron-selector": "^3.0.1",
@@ -18,13 +16,17 @@
     "@polymer/paper-input": "^3.2.1",
     "@polymer/paper-item": "^3.0.1",
     "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/paper-radio-button": "^3.0.1",
     "@polymer/paper-radio-group": "^3.0.1",
     "@polymer/paper-slider": "^3.0.1",
     "@polymer/paper-spinner": "^3.0.2",
     "@polymer/paper-styles": "^3.0.1",
     "@polymer/paper-swatch-picker": "^3.0.1",
     "@polymer/paper-toggle-button": "^3.0.1",
-    "ace-custom-element": "^1.6.5"
+    "ace-custom-element": "^1.6.5",
+    "fast-equals": "^2.0.4",
+    "lit-element": "^2.2.1",
+    "lit-html": "^1.1.2"
   },
   "deprecated": false,
   "description": "Webcomponent mist-form following open-wc recommendations",
@@ -47,7 +49,10 @@
   },
   "eslintConfig": {
     "rules": {
-      "func-names": ["error", "never"],
+      "func-names": [
+        "error",
+        "never"
+      ],
       "no-console": [
         1,
         {
@@ -60,7 +65,9 @@
           ]
         }
       ],
-      "array-callback-return": "off"
+      "array-callback-return": "off",
+      "cypress/no-unnecessary-waiting": "off",
+      "no-await-in-loop": "warn"
     },
     "extends": [
       "@open-wc/eslint-config",
@@ -111,5 +118,5 @@
     "test:cypress": "cypress open",
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
-  "version": "0.5.4"
+  "version": "0.6.0"
 }

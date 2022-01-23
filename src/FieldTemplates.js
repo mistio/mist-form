@@ -1,3 +1,4 @@
+import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { FieldTemplateHelpers } from './FieldTemplateHelpers.js';
@@ -98,6 +99,28 @@ export class FieldTemplates extends FieldTemplateHelpers {
       .props="${props}"
       .mistForm=${this.mistForm}
       .helpText=${this.helpText}
+      style=${styleMap(props.styles && props.styles.outer)}
+      part="mist-form-text-field"
+    ></mist-form-text-field>`;
+
+  number = props =>
+    html`<mist-form-text-field
+      id="${props.id}"
+      .props="${props}"
+      .mistForm=${this.mistForm}
+      .helpText=${this.helpText}
+      type="number"
+      style=${styleMap(props.styles && props.styles.outer)}
+      part="mist-form-text-field"
+    ></mist-form-text-field>`;
+
+  integer = props =>
+    html`<mist-form-text-field
+      id="${props.id}"
+      .props="${props}"
+      .mistForm=${this.mistForm}
+      .helpText=${this.helpText}
+      type="integer"
       style=${styleMap(props.styles && props.styles.outer)}
       part="mist-form-text-field"
     ></mist-form-text-field>`;

@@ -23,16 +23,7 @@
       import '@polymer/paper-styles/shadow.js';
       import '@polymer/paper-styles/demo-pages.js';
       import '@polymer/paper-styles/color.js';
-      import '@polymer/paper-input/paper-input.js';
-      import '@polymer/paper-input/paper-textarea.js';
-      import '@polymer/paper-button/paper-button.js';
 
-      import '@polymer/paper-item/paper-item.js';
-      import '@polymer/paper-radio-group/paper-radio-group.js';
-      import '@polymer/paper-listbox/paper-listbox.js';
-      import '@polymer/paper-checkbox/paper-checkbox.js';
-      import '@polymer/paper-toggle-button/paper-toggle-button.js';
-      import '@polymer/paper-spinner/paper-spinner.js';
       import '@polymer/iron-ajax/iron-ajax.js';
       import '@polymer/paper-icon-button/paper-icon-button.js';
       import '@polymer/iron-icons/iron-icons.js';
@@ -58,10 +49,9 @@
             .url="${submitUrl}"
             .contentType="application/json"
             .submit=${this}
+            method="POST"
             @mist-form-request=${function (e) {
-              this.params = JSON.stringify(e.detail.params);
-              console.log("JSON.parse ", JSON.parse(this.params));
-              console.log("this params ", this.params)
+              this.body = e.detail.payload;
               this.generateRequest();
             }}
             @response=${() => {

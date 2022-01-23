@@ -6,21 +6,21 @@ import * as util from '../utilities.js';
 // 2. mist-form-value-change: The name of the value change event. Default is value-change
 // 3. mist-form-validate: The name of the validate function. Default is validate
 // 4.  mist-form-value-prop: The name of the property that returns the value. Default is value
-const getValueChangeName = el =>
+const getValueChangeName = el => el ?
   el.attributes['mist-form-value-change'] &&
-  el.attributes['mist-form-value-change'].value;
+  el.attributes['mist-form-value-change'].value : '';
 
-const getValidateName = el =>
+const getValidateName = el => el ?
   el.attributes['mist-form-validate'] &&
-  el.attributes['mist-form-validate'].value;
+  el.attributes['mist-form-validate'].value : '';
 
-const getValueProp = el =>
+const getValueProp = el => el ?
   el.attributes['mist-form-value-prop'] &&
-  el.attributes['mist-form-value-prop'].value;
+  el.attributes['mist-form-value-prop'].value : '';
 
-const getValuePath = el =>
+const getValuePath = el => el ?
   el.attributes['mist-form-value-path'] &&
-  el.attributes['mist-form-value-path'].value;
+  el.attributes['mist-form-value-path'].value : '';
 
 class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
   static get styles() {
@@ -60,8 +60,9 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
     this.validateName = getValidateName(prototype) || this.validateName;
     this.valueProp = getValueProp(prototype) || this.valueProp;
     this.valuePath = getValuePath(prototype);
-    this.customElement = prototype.cloneNode();
-
+    if (prototype) {
+      this.customElement = prototype.cloneNode();
+    }
     this.addEventListener(this.valueChangeName, e => {
       this.valueChanged(e);
     });
@@ -90,6 +91,7 @@ class MistFormCustomField extends elementBoilerplateMixin(LitElement) {
 
   render() {
     // super.render();
+    if (!this.customElement) return '';
     for (const [key, val] of Object.entries(this.props)) {
       if (key === this.valueProp) {
         this.customElement[key] = this.value !== undefined ? this.value : val;

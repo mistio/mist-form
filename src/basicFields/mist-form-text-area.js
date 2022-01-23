@@ -1,3 +1,4 @@
+import '@polymer/paper-input/paper-textarea.js';
 import { LitElement, html } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -23,14 +24,32 @@ class MistFormTextArea extends elementBoilerplateMixin(LitElement) {
     return html`<paper-textarea
         class="${this.props.classes || ''} mist-form-input"
         always-float-label
-        ...="${spreadProps(util.getConvertedProps(this.props))}"
-        .value="${this.value !== undefined ? this.value : this.props.value}"
+        ...="${spreadProps(this.convertProps(this.props))}"
+        .value="${this.convertValue()}"
         .label="${util.getLabel(this.props)}"
         @value-changed=${this.debouncedEventChange}
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
       ></paper-textarea
       >${this.helpText(this.props)}`;
+  }
+
+  convertValue() {
+    let value = this.value !== undefined ? this.value : this.props.value;
+    return value;
+  }
+
+  convertProps(props) {
+    const newProps = {
+      ...props,
+      max: props.maximum,
+      min: props.minimum,
+      multiple: props.multipleOf,
+    };
+    ['maximum', 'minimum', 'format', 'multipleOf'].forEach(
+      e => delete newProps[e]
+    );
+    return newProps;
   }
 }
 

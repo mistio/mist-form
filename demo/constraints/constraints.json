@@ -86,9 +86,8 @@
 		  "min": {
 			"label": "Min size",
 			"id": "min",
-			"type": "string",
-			"format": "number",
-			"value": "",
+			"type": "integer",
+			"value": 1,
 			"minimum": 1,
 			"autoValidate": true,
 			"helpText": "A minimum of 1 is required"
@@ -96,9 +95,8 @@
 		  "max": {
 			"label": "Max size",
 			"id": "max",
-			"type": "string",
-			"format": "number",
-			"value": "",
+			"type": "integer",
+			"value": 1,
 			"minimum": 1,
 			"autoValidate": true,
 			"helpText": "A minimum of 1 is required."
@@ -179,8 +177,7 @@
 			"label": "Max run rate for your team",
 			"name": "max_team_run_rate",
 			"id": "cost_max_team_run_rate",
-			"type": "string",
-			"format": "number",
+			"type": "integer",
 			"value": 1,
 			"minimum": 1,
 			"autoValidate": true,
@@ -191,8 +188,7 @@
 			"label": "Max run rate for your entire organization",
 			"name": "max_total_run_rate",
 			"id": "cost_max_total_run_rate",
-			"type": "string",
-			"format": "number",
+			"type": "integer",
 			"value": 1,
 			"minimum": 1,
 			"autoValidate": true,

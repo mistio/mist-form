@@ -82,7 +82,10 @@ class MistFormRow extends LitElement {
     } else {
       delete this.value[name];
     }
-    this.valueByName = this.parent.mistForm.getValuesfromDOM(this.shadowRoot, true);
+    this.valueByName = this.parent.mistForm.getValuesfromDOM(
+      this.shadowRoot,
+      true
+    );
     this.parent.valueChanged(e);
   }
 

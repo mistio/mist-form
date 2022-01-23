@@ -1,3 +1,5 @@
+import '@polymer/paper-checkbox/paper-checkbox.js';
+
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';

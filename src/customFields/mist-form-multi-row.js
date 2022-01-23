@@ -1,3 +1,5 @@
+import '@polymer/paper-button/paper-button.js';
+
 import { LitElement, html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -80,7 +82,9 @@ class MultiRow extends elementBoilerplateMixin(LitElement) {
 
   getValue(byName) {
     const rows = this.shadowRoot.querySelectorAll('mist-form-row');
-    const val = Array.from(rows).map(row => byName ? row.valueByName : row.value);
+    const val = Array.from(rows).map(row =>
+      byName ? row.valueByName : row.value
+    );
     return val;
   }
 

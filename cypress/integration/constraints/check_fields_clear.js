@@ -41,7 +41,7 @@ describe('Field clearing test', () => {
         cy.get('#paper_slider')
           .find('paper-slider')
           .then($el => {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 20; i += 1) {
               $el[0].increment();
             }
           });

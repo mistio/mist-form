@@ -1,3 +1,4 @@
+import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { LitElement, html, css } from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import * as util from '../utilities.js';

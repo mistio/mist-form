@@ -74,10 +74,10 @@ describe('Size constraints', () => {
       const el = $el[0]; // get the DOM element from the jquery element
       expect(el.value).to.deep.equal({
         size: {
-          cpu: { show: true },
-          ram: { show: true },
-          disk: { show: true },
-          swap_disk: { show: true },
+          cpu: { min:1, max:1, show: true },
+          ram: { min:1, max:1, show: true },
+          disk: { min:1, max:1, show: true },
+          swap_disk: { min:1, max:1, show: true },
         },
       });
     });

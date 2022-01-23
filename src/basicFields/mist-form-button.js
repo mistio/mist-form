@@ -1,3 +1,4 @@
+import '@polymer/paper-button/paper-button.js';
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -41,7 +42,7 @@ class MistFormButton extends elementBoilerplateMixin(LitElement) {
       class="${this.props.classes || ''} btn-block"
       raised
       @tap="${this.valueChanged}"
-      ...="${spreadProps(util.getConvertedProps(this.props))}"
+      ...="${spreadProps(this.props)}"
       .disabled=${this.disabled}
       fieldPath="${this.props.fieldPath}"
       style=${styleMap(this.props.styles && this.props.styles.inner)}

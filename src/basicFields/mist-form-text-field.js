@@ -1,3 +1,4 @@
+import '@polymer/paper-input/paper-input.js';
 import { LitElement, html, css } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -43,8 +44,8 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
         class="${this.props.classes || ''} mist-form-input"
         @value-changed=${this.debouncedEventChange}
         always-float-label
-        ...="${spreadProps(util.getConvertedProps(this.props))}"
-        .value="${this.value !== undefined ? this.value : this.props.value}"
+        ...="${spreadProps(this.convertProps(this.props))}"
+        .value="${this.convertValue()}"
         .label="${util.getLabel(this.props)}"
         fieldPath="${this.props.fieldPath}"
         style=${styleMap(this.props.styles && this.props.styles.inner)}
@@ -57,6 +58,30 @@ class MistFormTextField extends elementBoilerplateMixin(LitElement) {
         >${this.props.suffix}</span
       >`}
       ${this.helpText(this.props)}`;
+  }
+
+  convertValue() {
+    let value = this.value !== undefined ? this.value : this.props.value;
+    if (this.props.type === 'number') {
+      value = Number(value);
+    } else if (this.props.type === 'integer') {
+      value = parseInt(value)
+    }
+    return value;
+  }
+
+  convertProps(props) {
+    const newProps = {
+      ...props,
+      max: props.maximum,
+      min: props.minimum,
+      type: props.type.replace('integer','number') || 'string',
+      multiple: props.multipleOf,
+    };
+    ['maximum', 'minimum', 'format', 'multipleOf'].forEach(
+      e => delete newProps[e]
+    );
+    return newProps;
   }
 }
 
