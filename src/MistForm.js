@@ -1,160 +1,232 @@
-import { html, LitElement } from 'lit-element';
-import { FieldTemplates } from './FieldTemplates.js';
-import { DependencyController } from './DependencyController.js';
-import * as util from './utilities.js';
-import { MistFormHelpers } from './mistFormHelpers.js';
-import { mistFormStyles } from './styles/mistFormStyles.js';
-import './customFields/mist-form-code-block.js';
-// Loading schemas from multiple files is supported. For now, the subforms need unique names.
-// TODO: Check json schema  if duplicate names are allowed as long as they are in different schemas
-// TODO: Update to Lit 2. I haven't updated until now because Lit 2 doesn't support spreadProps, but spreadProps can be replaced
-// Idea for the future: Dependencies can be handled with a Finite State Machine
+import { html, css, LitElement } from 'lit';
+import '@vaadin/form-layout';
+import '@vaadin/button';
+import './types/string.js';
+import './types/number.js';
+import './types/integer.js';
+import './types/boolean.js';
+import './types/array.js';
+import './types/object.js';
+
+
 export class MistForm extends LitElement {
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        color: var(--mist-form-text-color, #000);
+      }
+      ${!this.subform && css`
+        vaadin-form-layout {
+          margin-bottom: 16px !important;
+        }`}
+
+    `;
+  }
+
   static get properties() {
     return {
-      src: { type: String },
-      data: { type: Object },
-      dataError: { type: Object },
+      subform: { type: Boolean, reflect: true },
+      valid: { type: Boolean, reflect: true },
+      dialog: { type: Boolean, reflect: true, value: false },
+      url: { type: String, reflect: true },
+      jsonSchema: { type: Object },
+      uiSchema: { type: Object },
+      spec: { type: Object },
+      specError: { type: Object },
       formError: { type: String },
-      initialValues: { type: Object },
-      jsonOpen: { type: Boolean },
+      formData: { type: Object },
     };
   }
 
-  static get styles() {
-    return mistFormStyles;
-  }
-
-  // Lifecycle Methods
   constructor() {
     super();
-    this.allFieldsValid = true;
-    this.value = {};
-    this.firstRender = true; // Why do I use this? Can't I used firstUpdated?
-    this.fieldTemplates = new FieldTemplates(
-      this,
-      this.dispatchValueChangedEvent
-    );
-    this.dependencyController = new DependencyController(this);
-    this.mistFormHelpers = new MistFormHelpers(this, this.fieldTemplates);
-    this.getValuesfromDOM = this.mistFormHelpers.getValuesfromDOM.bind(
-      this.mistFormHelpers
-    );
-    this.jsonOpen = false;
+    this.valid = true;
   }
 
-  // Runs the first time after render. Part of the lit lifecycle
-  firstUpdated() {
-    this.getJSON(this.src);
-    // Transform initial values is a function than can be passed as a prop in mist-form
-    // TODO: add example in docs
-    if (this.transformInitialValues) {
-      this.initialValues = this.transformInitialValues(this.initialValues);
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('field-value-changed', this._handleValueChanged);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('field-value-changed', this._handleValueChanged);
+    super.disconnectedCallback();
+  }
+
+
+  updated(changedProperties) {
+    console.log(`updated(). changedProps: `, changedProperties);
+
+    if (changedProperties.has('url')) {
+      if (this.url) {
+        this.loadSpec(this.url);
+      }  
+    }
+    
+    if (changedProperties.has('jsonSchema')) {
+      // get the old value here
+      // const oldValue = changedProperties.get("jsonSchema");
+      // new value is
+      const newValue = this.jsonSchema;
+      this.spec = JSON.parse(JSON.stringify(newValue));
+      this.validate();
+    }
+    
+    if (changedProperties.has('formData')) {
+      this.shadowRoot.querySelectorAll('.mist-form-field').forEach(el => {
+        if (this.formData) {
+          el.formData = this.formData[el.id];
+        }
+      });
+      this.validate();
     }
   }
 
   render() {
-    if (this.data) {
-      // This is used instead of firstUpdate because render runs before firstUpdated and I need to do this before render (or I won't have any fields to render)
-      if (this.firstRender) {
-        this.setupFields();
-      }
-      // The data here will come validated so no checks required
+    if (this.spec) {
+      const formFields = this.renderFields(this.spec);
 
-      const formFields = this.renderFields(this.fields);
-
-      if (this.firstRender) {
-        this.firstRender = false;
-      }
-
-      return html`
-        <div class="mist-header">${this.data.label}</div>
-        ${this.data.showJSON
-          ? html`<paper-toggle-button
-              .name="mist-form-json-toggle"
-              excludeFromPayload
-              .checked="${this.jsonOpen}"
-              @checked-changed="${e => {
-                this.jsonOpen = e.detail.value;
-              }}}"
-              >Show Json</paper-toggle-button
-            >`
-          : ''}
-        <mist-form-code-block
-          id="json-view"
-          excludeFromPayload
-          .value=${this.value}
-          .isOpen=${this.jsonOpen}
-        >
-        </mist-form-code-block>
-
-        <span
-          id="mist-form-fields"
-          style="${this.jsonOpen ? 'visibility: hidden; height: 0' : ''}"
-          >${formFields}</span
-        >
-
-        <div class="buttons">
-          ${this.mistFormHelpers.displayCancelButton(this.data.canClose, this)}
-          ${this.mistFormHelpers.displaySubmitButton(this)}
-        </div>
+      const footer = this.subform ? html`` : html`
+        <vaadin-horizontal-layout theme="spacing">
+            ${this.dialog && this.displayCancelButton(this.spec.canClose, this)}
+            ${this.displaySubmitButton(this)}
+            ${!this.dialog && this.displayCancelButton(this.spec.canClose, this) || ''}
+        </vaadin-horizontal-layout>
         <div class="formError">${this.formError}</div>
         <slot name="formRequest"></slot>
       `;
+      const title = this.spec.title ? html`<h1>${this.spec.title}</h1>` : html``;
+      const description = this.spec.description ? html`<p>${this.spec.description}</p>` : html``      
+      return html`
+        <div class="form">
+          ${title}
+          ${description}
+          <vaadin-form-layout .responsiveSteps="${this.responsiveSteps}">
+            <span id="mist-form-fields">${formFields}</span>
+          </vaadin-form-layout>
+          ${footer}
+        </div>
+      `;
     }
-    if (this.dataError) {
+    if (this.specError) {
       return html`We couldn't load the form. Please try again`;
     }
-    return this.fieldTemplates.spinner;
+    return html`<paper-spinner active></paper-spinner>`;
   }
 
-  // "Private" Methods
-  getJSON(url) {
+  renderFields(spec) {
+    let properties = spec.properties || {};
+    return Object.keys(properties).map(propertyId => {
+      const defaultValue = spec.properties[propertyId].value || spec.properties[propertyId].default;
+      const fieldSpec = {
+        jsonSchema: this.resolveDefinitions(spec.properties[propertyId]) || {},
+        uiSchema: this.uiSchema && this.uiSchema[propertyId] || {},
+        formData: this.formData && this.formData[propertyId] || defaultValue
+      };
+      fieldSpec.id = propertyId;
+      if (
+        spec.required &&
+        spec.required.findIndex(x => x === propertyId) > -1
+      ) {
+        fieldSpec.jsonSchema.required = true;
+      }
+      if (this.formData && this.formData[propertyId] !== undefined) {
+        fieldSpec.formData = this.formData[propertyId];
+      }
+      return this.renderField(fieldSpec);
+    });
+  }
+
+  resolveDefinitions(propertySchema) {
+    if (propertySchema && propertySchema["$ref"]) {
+      let [addr, path] = propertySchema['$ref'].split('#'),
+          [_, section, ref] = path.split('/');
+      if (addr) {
+        debugger; // TODO
+      }
+      return {
+        ...propertySchema, ...this.spec[section][ref]
+      }
+    }
+    // if (propertySchema && propertySchema.length) {
+    //   debugger;
+    // }
+    return propertySchema;
+  }
+
+  renderField(fieldSpec) {
+    if (!fieldSpec.jsonSchema) return '';
+    switch(fieldSpec.jsonSchema.type) {
+      case "string":
+        return html`<mist-form-string-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-string-field>`;
+      case "number":
+        return html`<mist-form-number-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-number-field>`;
+      case "integer":
+        return html`<mist-form-integer-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-integer-field>`;
+      case "object":
+        return html`<mist-form-object-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-object-field>`;
+      case "array":
+        return html`<mist-form-array-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-array-field>`;
+      case "boolean":
+        return html`<mist-form-boolean-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-boolean-field>`;
+      case "null":
+        return html`<mist-form-null-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-null-field>`;
+      default:
+        if (fieldSpec.jsonSchema.length)
+          return html`<mist-form-array-field id="${fieldSpec.id}" class="mist-form-field" .spec=${fieldSpec}></mist-form-array-field>`;
+        return html`Invalid field type: ${fieldSpec.type}`
+    }
+  }
+
+  displaySubmitButton() {
+    return html`
+      <vaadin-button
+        class="submit-btn"
+        theme="primary"
+        ?disabled=${!this.valid}
+        @click="${this.submitForm}">
+        ${this.spec.submitButtonLabel || "Submit"}
+      </vaadin-button>`
+  }
+
+  displayCancelButton(canClose = true) {
+    if (!canClose) return html``;
+    return html`
+      <vaadin-button
+        class="cancel-btn"
+        @click="${() => this.dispatchEvent(new CustomEvent('mist-form-cancel'))}">
+        ${this.spec.cancelButtonLabel || "Cancel"}
+      </vaadin-button>`;
+  }
+
+  loadSpec(url) {
     fetch(url)
       .then(response => response.json())
-      .then(async data => {
-        const definitions = await util.getDefinitions(data);
-        this.data = data;
-        this.data.definitions = { ...data.definitions, ...definitions };
+      .then(async spec => {
+        this.jsonSchema = spec.jsonSchema || spec;
+        this.uiSchema = spec.uiSchema || {};
+        this.formData = spec.formData || {};
       })
       .catch(error => {
-        this.dataError = error;
-        console.error('Error loading data:', error);
+        this.specError = error;
+        console.error('Error loading spec:', error);
       });
-  }
-
-  // Maybe it would be better to have InputElements instead of just inputs. Or maybe this function could be named setupForm
-  setupFields() {
-    this.fields = util.getFields(this.data);
-    this.subforms = util.getSubforms(this.data);
-    this.fields.forEach((input, index) => {
-      const contents = input[1];
-      this.fields[index][1] = this.mistFormHelpers.setField(contents);
-    });
-
-    this.subforms.forEach((subform, index) => {
-      const contents = subform[1];
-      this.subforms[index][1] = this.mistFormHelpers.setField(contents);
-    });
   }
 
   submitForm() {
-    const params = this.getValuesfromDOM(this.shadowRoot, true);
-
-    if (Object.keys(params).length === 0) {
+    const payload = this.formData;
+    if (Object.keys(payload).length === 0) {
       this.formError = 'Please insert some data';
-    } else if (this.allFieldsValid) {
+    } else if (this.valid) {
       const slot = this.shadowRoot
         .querySelector('slot[name="formRequest"]')
         .assignedNodes()[0];
-
       const event = new CustomEvent('mist-form-request', {
         detail: {
-          params,
+          payload,
         },
       });
-      this.value = params;
-
       this.dispatchEvent(event);
       if (slot) {
         slot.dispatchEvent(event);
@@ -164,66 +236,45 @@ export class MistForm extends LitElement {
     }
   }
 
-  updateMistFormValue() {
-    this.value = this.getValuesfromDOM(this.shadowRoot, true);
-    const event = new CustomEvent('mist-form-value-changed', {
+  _handleValueChanged(e) {
+    console.debug('_handleValueChanged',e ,this);
+    e.stopPropagation();
+    const eventName = (this.subform ? 'sub' : '') + 'form-data-changed';
+    let formDataChangedEvent = new CustomEvent(eventName, {
       detail: {
-        value: this.value,
+        id: this.spec.id
       },
+      bubbles: true,
+      composed: true
     });
-    this.dispatchEvent(event);
+    this.dispatchEvent(formDataChangedEvent);
   }
-  // Public methods
 
-  dispatchValueChangedEvent = async ({ fieldPath }) => {
-    // Logic:
-    // 1. Find fields that depend on the field that just changed
-    // 2. Change props for the dependant fields
-    // 3. A re-render of those fields should happen automatically
+  responsiveSteps = [
+    // Use one column by default
+    { minWidth: 0, columns: 1 },
+    // Use two columns, if the layout's width exceeds 320px
+    { minWidth: '320px', columns: 2 },
+    // Use three columns, if the layout's width exceeds 500px
+    { minWidth: '500px', columns: 3 },
+  ];
 
-    this.updateComplete.then(() => {
-      // Check field validity
-      this.mistFormHelpers.updateState();
-      // Get the field and update via the field
-      this.dependencyController.updatePropertiesFromConditions(fieldPath);
+  validate() {
+    let valid = true;
+    this.shadowRoot.querySelectorAll('#mist-form-fields > *').forEach((field) => {
+      valid = valid && field.validate();
     });
-
-    const children = this.shadowRoot.querySelectorAll('*');
-    await Promise.all(Array.from(children).map(c => c.updateComplete));
-    this.updateMistFormValue();
-  };
-
-  renderFields(fields, path, parentProps) {
-    // Ignore subform, its data was already passed to subform container
-    return fields.map(field => {
-      const [key] = field;
-      const properties = field[1];
-      properties.fieldPath = util.getFieldPath(field, path);
-      properties.key = key;
-      if (properties.format === 'multiRow') {
-        const subForm = util.getSubformFromRef(
-          this.subforms,
-          properties.properties.subform.$ref
-        );
-        // rowProps are the props for each row
-        const rowProps = subForm.properties;
-        properties.rowProps = {};
-        for (const [rowPropKey, val] of Object.entries(rowProps)) {
-          properties.rowProps[rowPropKey] = {
-            ...val,
-            key,
-            fieldPath: `${properties.fieldPath}.${val.name || rowPropKey}`,
-          };
-        }
-      }
-      // Initial values are not default values that can be passed in the json.
-      // These are usually loaded when opening form not hardcoded
-      const propertiesWithInitialValues = this.mistFormHelpers.attachInitialValue(
-        properties,
-        parentProps
-      );
-
-      return this.fieldTemplates.getTemplate(propertiesWithInitialValues);
-    });
+    console.debug("form validation", valid);
+    this.valid = valid;
+    return valid;
   }
+
+  get domValue() {
+    let ret = {};
+    this.shadowRoot.querySelectorAll('.mist-form-field').forEach(el => {
+      ret[el.id] = el.domValue;
+    })
+    return ret;
+  }
+
 }
