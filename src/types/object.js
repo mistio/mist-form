@@ -1,4 +1,4 @@
-import { html, css, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import {fieldMixin} from './mixin.js';
 
 export class MistFormObjectField extends fieldMixin(LitElement) {
@@ -10,16 +10,19 @@ export class MistFormObjectField extends fieldMixin(LitElement) {
     }
 
     connectedCallback() {
-        super.connectedCallback();
-        this.addEventListener('subform-data-changed', this._handleSubformValueChanged);
-      }
-    
-      disconnectedCallback() {
-        this.removeEventListener('subform-data-changed', this._handleSubformValueChanged);
-        super.disconnectedCallback();
-      }
-    
+      super.connectedCallback();
+      this.addEventListener('subform-data-changed', this._handleSubformValueChanged);
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('subform-data-changed', this._handleSubformValueChanged);
+      super.disconnectedCallback();
+    }
+
     cast(value) {
+        if (value === undefined) {
+          return Object(this.value);
+        }
         return Object(value);
     }
 
@@ -35,18 +38,14 @@ export class MistFormObjectField extends fieldMixin(LitElement) {
         // if (!value && this.spec.uiSchema["ui:emptyValue"]) {
         //   value = this.spec.uiSchema["ui:emptyValue"]
         // }
-        let valueChangedEvent = new CustomEvent('field-value-changed', {
+        const valueChangedEvent = new CustomEvent('field-value-changed', {
           detail: {
             id: this.spec.id,
-            // value: value,
-            // old: this.value
           },
           bubbles: true,
           composed: true
         });
         this.dispatchEvent(valueChangedEvent);
-        // this.spec.formData = value;
-        // this.value = value;
         e.stopPropagation();
     }
 

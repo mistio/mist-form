@@ -1,6 +1,6 @@
 import { html, css, LitElement } from 'lit';
-import {fieldMixin, debouncer} from './mixin.js';
 import {repeat} from 'lit/directives/repeat.js';
+import {fieldMixin} from './mixin.js';
 import '@vaadin/icon';
 import '@vaadin/icons';
 
@@ -29,7 +29,22 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         }
     }
 
+    get domValue() {
+        const ret = [];
+        if (this.spec.jsonSchema.uniqueItems) {
+            this.shadowRoot.querySelector(`#${this.id}-items`).shadowRoot.querySelectorAll('vaadin-checkbox[checked]').forEach((i)=>{ret.push(i.id)});
+            return ret;
+        }
+        this.shadowRoot.querySelectorAll('.mist-form-field').forEach((f) => {
+            ret.push(f.domValue)
+        });
+        return ret;
+    }
+
     cast(value) {
+        if (value === undefined) {
+            return this.cast(this.value);
+        }
         return Array(value);
     }
 
@@ -38,25 +53,10 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         const title = this.spec.jsonSchema.title ? html`<h2>${this.spec.jsonSchema.title}</h2>` : html``;
         const description = this.spec.jsonSchema.description ? html`<p>${this.spec.jsonSchema.description}</p>` : html``
         // Borrowed from https://gist.github.com/iperelivskiy/4110988
-        var hash = function(s) {
-            /* Simple hash function. */
-            var a = 1, c = 0, h, o;
-            if (s) {
-                a = 0;
-                /*jshint plusplus:false bitwise:false*/
-                for (h = s.length - 1; h >= 0; h--) {
-                    o = s.charCodeAt(h);
-                    a = (a<<6&268435455) + o + (o<<14);
-                    c = a & 266338304;
-                    a = c!==0?a^c>>21:a;
-                }
-            }
-            return String(a);
-        };
         let body;
         if (this.spec.jsonSchema.uniqueItems) {
             body = this.parent ? this.parent.renderField({
-                id: this.spec.id + '-items',
+                id: `${this.spec.id  }-items`,
                 jsonSchema: this.parent.resolveDefinitions(this.spec.jsonSchema.items),
                 uiSchema: {...this.spec.uiSchema.items, ...this.spec.uiSchema} || {},
                 formData: this.spec.formData
@@ -64,15 +64,15 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         } else {
             body = html`
                 <ul>
-                ${repeat(this.spec.formData || [], (item) => {hash(JSON.stringify(item))}, (item, index) => html`
+                ${repeat(this.spec.formData || [], (item) => {'item-' + this.hash(JSON.stringify(item))}, (item, index) => html`
                     <li>
                         <div style="display: flex; align-items: baseline;">
                             <div style="flex: 1;">
                             ${this.parent ? this.parent.renderField({
-                                id: hash(JSON.stringify(item)),
+                                id: this.hash(JSON.stringify(item)),
                                 jsonSchema: this.itemSchema(item, index),
                                 uiSchema: this.itemUiSchema(item, index),
-                                formData: this.itemValue(item, index)}) : ''}
+                                formData: item}) : ''}
                             </div>
                             <div style="flex: 1; min-width: 135px; padding-left: 32px;">
                                 ${this.orderable(item, index) ? html`
@@ -94,7 +94,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
                     </li>
                 `)}
                 </ul>
-                ${!this.spec.uiSchema || this.spec.uiSchema["ui:options"] === undefined || this.spec.uiSchema["ui:options"]["addable"] !== false ? html`
+                ${!this.spec.uiSchema || this.spec.uiSchema["ui:options"] === undefined || this.spec.uiSchema["ui:options"].addable !== false ? html`
                 <vaadin-form-layout .responsiveSteps=${this.parent.responsiveSteps}>
                     <div style="display: flex">
                         <div style="flex: 1; min-width: 248px;"></div>
@@ -114,6 +114,22 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
             `
     }
 
+    hash(s) {
+        /* Simple hash function. */
+        let a = 1; let c = 0; let h; let o;
+        if (s) {
+            a = 0;
+            /* jshint plusplus:false bitwise:false */
+            for (h = s.length - 1; h >= 0; h--) {
+                o = s.charCodeAt(h);
+                a = (a<<6&268435455) + o + (o<<14);
+                c = a & 266338304;
+                a = c!==0?a^c>>21:a;
+            }
+        }
+        return String(a);
+    }
+
     itemSchema(item, index) {
         return this.parent.resolveDefinitions(
             (this.spec.jsonSchema.length && this.spec.jsonSchema[index]) || (this.spec.jsonSchema.items.length ? (this.spec.jsonSchema.items[index] || this.spec.jsonSchema.additionalItems) : this.spec.jsonSchema.items))
@@ -124,40 +140,35 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         return {...this.spec.uiSchema.items, ...this.spec.uiSchema} || {}
     }
 
-    itemValue(item, index) {
-        // if (this.spec.jsonSchema.additionalItems && this.spec.jsonSchema.items.length && index >= this.spec.jsonSchema.items.length) {
-        //     debugger;
-        // }
-        return item
-    }
-
     orderable(item, index) {
         if (this.spec && this.spec.jsonSchema && this.spec.jsonSchema.items && this.spec.jsonSchema.items.length && index < this.spec.jsonSchema.items.length) return false;
-        return !this.spec.uiSchema || this.spec.uiSchema["ui:options"] === undefined || this.spec.uiSchema["ui:options"]["orderable"] !== false
+        return !this.spec.uiSchema || this.spec.uiSchema["ui:options"] === undefined || this.spec.uiSchema["ui:options"].orderable !== false
     }
 
     removable(item, index) {
         if (this.spec && this.spec.jsonSchema && this.spec.jsonSchema.items && this.spec.jsonSchema.items.length && index < this.spec.jsonSchema.items.length) return false;
-        return !this.spec.uiSchema || this.spec.uiSchema["ui:options"] === undefined || this.spec.uiSchema["ui:options"]["removable"] !== false
+        return !this.spec.uiSchema || this.spec.uiSchema["ui:options"] === undefined || this.spec.uiSchema["ui:options"].removable !== false
     }
 
-    _add(e) {
-        this.spec.formData = [...this.spec.formData, {}];
+    _add() {
+        const newItem = this.spec.jsonSchema.type === 'array' ? this.spec.jsonSchema.items.default : {};
+        this.spec.formData = [...this.spec.formData || [], newItem];
         this.requestUpdate();
     }
 
     _remove(e, item, index) {
-        let value = this.domValue;
+        const value = this.domValue;
         value.splice(index, 1);
         this.spec = {...this.spec, formData: value};
-        this.shadowRoot.querySelector('#' + hash(JSON.stringify(item))).delete();
+        // let element = this.shadowRoot.querySelector(`#item-${  this.hash(JSON.stringify(item))}`);
+        // if (element && element.remove) element.remove();
         this.performUpdate();
         this.valueChanged(e);    
     }
 
     _up(e, item, index) {
         const array = this.spec.formData;
-        let tmp = array[index-1];
+        const tmp = array[index-1];
         array[index-1] = array[index];
         array[index] = tmp;
         this.requestUpdate();
@@ -165,7 +176,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
 
     _down(e, item, index) {
         const array = this.spec.formData;
-        let tmp = array[index+1];
+        const tmp = array[index+1];
         array[index+1] = array[index];
         array[index] = tmp;
         this.requestUpdate();
@@ -174,20 +185,6 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     parentWidth() {
         const l = this.shadowRoot.querySelector('vaadin-form-layout');
         return l && l.clientWidth || '100px';
-    }
-
-    get domValue() {
-        let ret = [];
-        if (this.spec.jsonSchema.uniqueItems) {
-            let ret = [];
-            this.shadowRoot.querySelector('#'+this.id+'-items').shadowRoot.querySelectorAll('vaadin-checkbox[checked]').forEach((i)=>{ret.push(i.id)});
-            return ret;
-        }
-    
-        this.shadowRoot.querySelectorAll('.mist-form-field').forEach((f) => {
-            ret.push(f.domValue)
-        });
-        return ret;
     }
 
     validate() {

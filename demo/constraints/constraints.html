@@ -62,9 +62,7 @@
         dynamicData: {
         clouds: {
           func: new Promise((resolve) => {
-              resolve(() => {
-                return [{title: 'ALL', id:''}, {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}];
-              });
+              resolve(() => [{title: 'ALL', id:''}, {id:'cloudId1', title:'Cloud 1'}, {id:'cloudId2', title:'Cloud 2'}, {id:'cloudId3', title:'Cloud 3'}]);
           })
         },
         },

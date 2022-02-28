@@ -149,7 +149,7 @@
     },
     "boolean": {
       "default": true,
-      "radio": true,
+      "radio": false,
       "select": true
     },
     "string": {

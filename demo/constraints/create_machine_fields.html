@@ -76,29 +76,25 @@
           dynamicData: {
               clouds: {
                   func: new Promise((resolve) => {
-                      resolve(() => {
-                          return [{
-                              title: 'ALL',
-                              id: ''
-                          }, {
-                              id: 'cloudId1',
-                              title: 'Cloud 1'
-                          }, {
-                              id: 'cloudId2',
-                              title: 'Cloud 2'
-                          }, {
-                              id: 'cloudId3',
-                              title: 'Cloud 3'
-                          }];
-                      });
+                      resolve(() => [{
+                        title: 'ALL',
+                        id: ''
+                    }, {
+                        id: 'cloudId1',
+                        title: 'Cloud 1'
+                    }, {
+                        id: 'cloudId2',
+                        title: 'Cloud 2'
+                    }, {
+                        id: 'cloudId3',
+                        title: 'Cloud 3'
+                    }]);
                   })
               },
           },
           conditionals: {
               nameValid: {
-                  func: cloud => {
-                      return cloud === 'cloudId1' ? '^(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)$' : '^[0-9a-zA-Z-.]+$';
-                  },
+                  func: cloud => cloud === 'cloudId1' ? '^(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)$' : '^[0-9a-zA-Z-.]+$',
               },
               clearData: {
                   func: () => ''

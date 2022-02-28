@@ -58,28 +58,28 @@
     import '@vaadin/list-box';
     import '@vaadin/combo-box';
 
-    let items = [
-      {
-        label: 'Most recent first',
-        value: 'recent',
-      },
-      {
-        label: 'Rating: high to low',
-        value: 'rating-desc',
-      },
-      {
-        label: 'Rating: low to high',
-        value: 'rating-asc',
-      },
-      {
-        label: 'Price: high to low',
-        value: 'price-desc',
-      },
-      {
-        label: 'Price: low to high',
-        value: 'price-asc',
-      },
-    ];
+    const items = [
+  {
+    label: 'Most recent first',
+    value: 'recent',
+  },
+  {
+    label: 'Rating: high to low',
+    value: 'rating-desc',
+  },
+  {
+    label: 'Rating: low to high',
+    value: 'rating-asc',
+  },
+  {
+    label: 'Price: high to low',
+    value: 'price-desc',
+  },
+  {
+    label: 'Price: low to high',
+    value: 'price-asc',
+  },
+];
 
     const presets = [
       {id: 'simple'},
@@ -107,6 +107,7 @@
       {id: 'anyof', title: "Any Of"},
       {id: 'oneof', title: "One Of"},
       {id: 'allof', title: "All Of"},
+      {id: 'ifthenelse', title: "If Then Else"},
       {id: 'nullfields', title: "Null Fields"},
       {id: 'nullable'},
       {id: 'errorschema', title: "Error Schema"},
@@ -121,7 +122,7 @@
         }, wait);
       };
     };
-    export let jsonSchemaEditor, uiSchemaEditor, formDataEditor;
+    let jsonSchemaEditor; let uiSchemaEditor; let formDataEditor;
     loader.init().then(monaco => {
       jsonSchemaEditor = monaco.editor.create(document.querySelector("div#jsonSchema > .editor"), {
         value: JSON.stringify(document.querySelector('mist-form').jsonSchema, null, 2),
@@ -139,7 +140,7 @@
             document.querySelector('mist-form').jsonSchema = data;
           }, 250)
       );
-      document.querySelector('mist-form').addEventListener('json-schema-changed', function(e) {
+      document.querySelector('mist-form').addEventListener('json-schema-changed', (e) => {
         jsonSchemaEditor.setValue(JSON.stringify(e.detail.value, null, 2));
       });
     });
@@ -160,7 +161,7 @@
             document.querySelector('mist-form').uiSchema = JSON.parse(uiSchemaEditor.getValue());
           }, 250)
       );
-      document.querySelector('mist-form').addEventListener('ui-schema-changed', function(e) {
+      document.querySelector('mist-form').addEventListener('ui-schema-changed', (e) => {
         uiSchemaEditor.setValue(JSON.stringify(e.detail.value, null, 2));
       });
     });
@@ -178,8 +179,13 @@
         document.querySelector('mist-form').formData = JSON.parse(formDataEditor.getValue());
         document.querySelector('mist-form').validate();
       });
-      document.querySelector('mist-form').addEventListener('form-data-changed', function(e) {
-        let newVal = JSON.stringify({...JSON.parse(formDataEditor.getValue()), ...this.domValue}, null, 2);
+      document.querySelector('mist-form').addEventListener('form-data-changed', function() {
+        let newVal = this.domValue;
+        if (newVal.length) {
+          newVal = JSON.stringify(newVal, null, 2);
+        } else {
+          newVal = JSON.stringify({...JSON.parse(formDataEditor.getValue()), ...newVal}, null, 2);
+        }
         if (formDataEditor.getValue() !== newVal) {
           formDataEditor.setValue(newVal);
         }
@@ -188,7 +194,7 @@
     });
     function updateTab(e) {
         const preset = e ? e.detail.value : 0;
-        const url = presets[preset].id + '.json';
+        const url = `${presets[preset].id  }.json`;
         fetch(url)
         .then(response => response.json())
         .then(async body => {
@@ -203,7 +209,7 @@
     render(
       html`
         <vaadin-tabs @selected-changed="${updateTab}">
-          ${repeat(presets, item => item, (item, index) => html`<vaadin-tab>${item.title || item.id}</vaadin-tab>`)}
+          ${repeat(presets, item => item, (item) => html`<vaadin-tab>${item.title || item.id}</vaadin-tab>`)}
         </vaadin-tabs>
         <vaadin-split-layout>
           <div id="schemas" class="column">

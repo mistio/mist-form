@@ -30,6 +30,9 @@
         }
       },
       "uiSchema": {
+        "salutation": {
+          "ui:widget": "radio"
+        },
         "firstName": {
           "ui:autofocus": true,
           "ui:emptyValue": "",
@@ -61,6 +64,7 @@
         }
       },
       "formData": {
+        "salutation": "Dr",
         "firstName": "Chuck",
         "lastName": "Norris",
         "age": 75,
