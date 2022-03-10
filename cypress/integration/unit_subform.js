@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable consistent-return */
-describe('Unit Tests', () => {
+describe('Unit Test Subform', () => {
   // ignore chrome ResizeObserver error
   Cypress.on('uncaught:exception', e => {
     if (e.message.includes('ResizeObserver loop limit exceeded')) return false;
