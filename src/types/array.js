@@ -4,6 +4,8 @@ import {fieldMixin} from './mixin.js';
 import '@vaadin/icon';
 import '@vaadin/icons';
 
+/* eslint-disable no-bitwise */
+/* eslint-disable no-plusplus */
 export class MistFormArrayField extends fieldMixin(LitElement) {
     static get styles() {
         return css`
@@ -162,7 +164,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         this.spec = {...this.spec, formData: value};
         // let element = this.shadowRoot.querySelector(`#item-${  this.hash(JSON.stringify(item))}`);
         // if (element && element.remove) element.remove();
-        this.performUpdate();
+        this.requestUpdate();
         this.valueChanged(e);    
     }
 
