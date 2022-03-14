@@ -56,7 +56,8 @@
           "color": {
             "type": "string",
             "title": "color picker",
-            "default": "#151ce6"
+            "default": "#151ce6",
+            "description": "What is your favorite color?"
           }
         }
       },
