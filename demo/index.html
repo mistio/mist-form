@@ -168,26 +168,42 @@
 
     loader.init().then(monaco => {
       formDataEditor = monaco.editor.create(document.querySelector("div#formData > .editor"), {
-        value: JSON.stringify(document.querySelector('mist-form').formData, null, 2),
+        value: '',
         language: 'json',
         automaticLayout: true
       });
-      const formDataValue = formDataEditor.getValue();
-      if (formDataValue)
-        document.querySelector('mist-form').formData = JSON.parse(formDataValue);
-      formDataEditor.onDidChangeModelContent(() => {
-        document.querySelector('mist-form').formData = JSON.parse(formDataEditor.getValue());
-        document.querySelector('mist-form').validate();
-      });
-      document.querySelector('mist-form').addEventListener('form-data-changed', function() {
-        let newVal = this.domValue;
-        if (newVal.length) {
-          newVal = JSON.stringify(newVal, null, 2);
-        } else {
-          newVal = JSON.stringify({...JSON.parse(formDataEditor.getValue()), ...newVal}, null, 2);
+      // const formDataValue = formDataEditor.getValue();
+      // if (formDataValue)
+      //   document.querySelector('mist-form').formData = JSON.parse(formDataValue);
+      formDataEditor.onDidChangeModelContent(debouncer((e) => {
+        // debugger;
+        const newValue = formDataEditor.getValue();
+        try {
+          document.querySelector('mist-form').formData = JSON.parse(newValue);
+        } catch(e) {
+          if (document.querySelector('mist-form').formData !== newValue) {
+            document.querySelector('mist-form').formData = newValue;
+          }
         }
-        if (formDataEditor.getValue() !== newVal) {
-          formDataEditor.setValue(newVal);
+        document.querySelector('mist-form').validate();
+      }, 150));
+      document.querySelector('mist-form').addEventListener('form-data-changed', function(e) {
+        // debugger;
+        let newValue = this.domValue;
+        switch (typeof(newValue)) {
+          case "string":
+            break;
+          case "object":
+            if (newValue.length) {
+              newValue = JSON.stringify(newValue, null, 2);
+            } else {
+              newValue = JSON.stringify({...JSON.parse(formDataEditor.getValue()), ...newValue}, null, 2);
+            }
+            break;
+          default:
+        }
+        if (formDataEditor.getValue() !== newValue) {
+          formDataEditor.setValue(newValue);
         }
       });
       updateTab();
@@ -198,6 +214,10 @@
         fetch(url)
         .then(response => response.json())
         .then(async body => {
+          const form = document.querySelector('mist-form#playground');
+          form.jsonSchema = body.jsonSchema;
+          form.uiSchema = body.uiSchema;
+          form.formData = body.formData;
           if (jsonSchemaEditor) jsonSchemaEditor.setValue(JSON.stringify(body.jsonSchema || body, null, 2));
           if (uiSchemaEditor) uiSchemaEditor.setValue(JSON.stringify(body.uiSchema || {}, null, 2));
           if (formDataEditor) formDataEditor.setValue(JSON.stringify(body.formData || {}, null, 2));
