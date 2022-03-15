@@ -16,7 +16,14 @@ describe('Unit Test Subform', () => {
     });
   });
 
-  it('First field should be disabled', () => {
+  it('First field should not be disabled, after pressing clear btn', () => {
+    cy.get('#playground')
+      .find('#title')
+      .find('vaadin-text-field')
+      .find('#clearButton')
+      .eq(0)
+      .click();
+
     cy.get('#playground')
       .find('#title')
       .find('vaadin-text-field')
@@ -24,6 +31,14 @@ describe('Unit Test Subform', () => {
   });
 
   it('Second field should be disabled', () => {
+    cy.get('#playground')
+      .find('#task')
+      .find('mist-form')
+      .find('#title')
+      .find('vaadin-text-field')
+      .find('#clearButton')
+      .click();
+
     cy.get('#playground')
       .find('#task')
       .find('mist-form')
