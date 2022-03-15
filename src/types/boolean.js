@@ -28,7 +28,7 @@ export class MistFormBooleanField extends fieldMixin(LitElement) {
   }
 
   get items() {
-    if (!this.jsonSchema) return [];
+    if (!this.spec.jsonSchema) return [];
     return [
       {
         value: true,
