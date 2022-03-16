@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@monaco-editor/loader": "^1.2.0",
+    "@polymer/paper-toggle-button": "^3.0.1",
     "@vaadin/button": "^23.0.0",
     "@vaadin/checkbox": "^23.0.0",
     "@vaadin/combo-box": "^23.0.0",

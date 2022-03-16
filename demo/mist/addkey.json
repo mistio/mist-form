@@ -1,0 +1,51 @@
+{
+    "jsonSchema": {
+        "title": "Add key",
+        "description": "Upload or generate an SSH keypair",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+          "action": {
+              "type": "string",
+              "enum": [
+                  "upload",
+                  "generate"
+              ]
+          }
+        },
+        "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "action": {
+                    "const": "upload"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "private": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          ]
+      },
+      "uiSchema": {
+          "private": {
+              "ui:widget": "textarea",
+              "ui:upload": true
+          },
+          "action": {
+              "ui:widget": "radio"
+          }
+      },
+      "formData": {
+          "action": "upload"
+      }
+}
