@@ -56,7 +56,14 @@
           "shipping_address",
           "billing_address",
           "tree"
-        ]
+        ],
+        "billing_address": {
+          "ui:toggles": true,
+          "ui:enabled": false
+        },
+        "shipping_address": {
+          "ui:toggles": true
+        }
       },
       "formData": {
         "billing_address": {

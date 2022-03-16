@@ -1,6 +1,7 @@
 import { html, css, LitElement } from 'lit';
 import '@vaadin/form-layout';
 import '@vaadin/button';
+import '@polymer/paper-toggle-button';
 import './types/string.js';
 import './types/number.js';
 import './types/integer.js';
@@ -31,12 +32,18 @@ export class MistForm extends LitElement {
           margin-bottom: 16px !important;
         }
       `}
+      paper-toggle-button {
+        float: left;
+        margin-top: 6px;
+      }
     `;
   }
 
   static get properties() {
     return {
       subform: { type: Boolean, reflect: true }, // Are we a subform?
+      toggles: { type: Boolean, reflect: true }, // Do we have a toggle button?
+      enabled: { type: Boolean, reflect: true },
       valid: { type: Boolean, reflect: true }, // All fields validated?
       dialog: { type: Boolean, reflect: true, value: false }, // Inside a dialog?
       url: { type: String, reflect: true }, // Spec URL
@@ -53,6 +60,7 @@ export class MistForm extends LitElement {
   constructor() {
     super();
     this.valid = true;
+    this.enabled = true;
   }
 
   connectedCallback() {
@@ -97,7 +105,11 @@ export class MistForm extends LitElement {
         JSON.stringify(changedProperties.get('formData'))
       ) {
         this.shadowRoot.querySelectorAll('.mist-form-field').forEach(el => {
-          if (this.formData && typeof this.formData === 'object') {
+          if (
+            this.formData &&
+            typeof this.formData === 'object' &&
+            el.enabled
+          ) {
             // eslint-disable-next-line no-param-reassign
             el.formData = this.formData[el.id];
           }
@@ -108,6 +120,9 @@ export class MistForm extends LitElement {
   }
 
   render() {
+    if (this.uiSchema && this.uiSchema['ui:enabled'] === false) {
+      this.enabled = false;
+    }
     if (this.jsonSchema) {
       let formFields;
       if (this.jsonSchema.type === 'object') {
@@ -134,16 +149,25 @@ export class MistForm extends LitElement {
             <div class="formError">${this.formError}</div>
             <slot name="formRequest"></slot>
           `;
-      const title = this.jsonSchema.title
-        ? html`<h1>${this.jsonSchema.title}</h1>`
+      const toggler = this.toggles
+        ? html`<paper-toggle-button
+            ?checked=${this.enabled}
+            @checked-changed=${this._toggleChanged}
+          ></paper-toggle-button>`
         : html``;
+      const title = this.jsonSchema.title
+        ? html`<h1>${toggler}${this.jsonSchema.title}</h1>`
+        : html`${toggler}`;
       const description = this.jsonSchema.description
         ? html`<p>${this.jsonSchema.description}</p>`
         : html``;
       return html`
         <div class="form">
           ${title} ${description}
-          <vaadin-form-layout .responsiveSteps="${this.responsiveSteps}">
+          <vaadin-form-layout
+            .responsiveSteps="${this.responsiveSteps}"
+            ?hidden=${!this.enabled}
+          >
             <span id="mist-form-fields">${formFields}</span>
           </vaadin-form-layout>
           ${footer}
@@ -384,6 +408,15 @@ export class MistForm extends LitElement {
       composed: true,
     });
     e.target.dispatchEvent(formDataChangedEvent);
+  }
+
+  _toggleChanged(e) {
+    if (this.enabled !== e.detail.value) {
+      this.enabled = e.detail.value;
+      if (this.uiSchema && this.uiSchema['ui:enabled'] !== undefined) {
+        this.uiSchema['ui:enabled'] = this.enabled;
+      }
+    }
   }
 
   validate() {

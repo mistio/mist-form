@@ -58,30 +58,7 @@
     import '@vaadin/list-box';
     import '@vaadin/combo-box';
 
-    const items = [
-  {
-    label: 'Most recent first',
-    value: 'recent',
-  },
-  {
-    label: 'Rating: high to low',
-    value: 'rating-desc',
-  },
-  {
-    label: 'Rating: low to high',
-    value: 'rating-asc',
-  },
-  {
-    label: 'Price: high to low',
-    value: 'price-desc',
-  },
-  {
-    label: 'Price: low to high',
-    value: 'price-asc',
-  },
-];
-
-    const presets = [
+    let presets = [
       {id: 'simple'},
       {id: 'subform'},
       {id: 'nested'},
@@ -113,6 +90,13 @@
       {id: 'errorschema', title: "Error Schema"},
       {id: 'defaults'},
     ];
+    if (document.location.search.startsWith('?mist')) {
+      presets = [
+        {id: 'mist/addkey', title: "Add key"},
+        {id: 'mist/addcloud', title: "Add cloud"}
+      ]
+    }
+
     export const debouncer = function (callback, wait) {
       let timeout = 1000;
       return (...args) => {

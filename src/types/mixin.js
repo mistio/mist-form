@@ -97,8 +97,23 @@ export const fieldMixin = superClass =>
       return Boolean(this.spec.uiSchema && this.spec.uiSchema['ui:autoselect']);
     }
 
+    get hasToggle() {
+      return Boolean(this.spec.uiSchema && this.spec.uiSchema['ui:toggles']);
+    }
+
     get placeholder() {
       return this.spec.uiSchema && this.spec.uiSchema['ui:placeholder'];
+    }
+
+    get enabled() {
+      if (this.spec.uiSchema && this.spec.uiSchema['ui:enabled'] === false) {
+        return false;
+      }
+      return true;
+    }
+
+    get hasUpload() {
+      return this.spec.uiSchema && this.spec.uiSchema['ui:upload'];
     }
 
     get items() {
@@ -187,29 +202,31 @@ export const fieldMixin = superClass =>
         >
         </vaadin-text-field>`,
         textarea: html` <vaadin-text-area
-          has-controls
-          clear-button-visible
-          ?required="${this.spec.jsonSchema.required}"
-          value="${ifDefined(this.spec.formData)}"
-          label="${this.spec.jsonSchema.title}"
-          helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
-          @value-changed=${this.debouncedEventChange}
-          minlength=${ifDefined(this.spec.jsonSchema.minLength)}
-          maxlength=${ifDefined(this.spec.jsonSchema.maxLength)}
-          pattern=${ifDefined(this.spec.jsonSchema.pattern)}
-          colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          placeholder="${ifDefined(this.placeholder)}"
-          ?autofocus=${this.hasAutoFocus}
-          ?disabled=${this.isDisabled}
-          ?readonly=${this.isReadOnly}
-          ?hidden=${this.isHidden}
-          ?autoselect=${this.hasAutoSelect}
-          .pattern=${this.pattern}
-          .style=${this.css}
-        >
-          ${this.icon || ''}
-        </vaadin-text-area>`,
+            has-controls
+            clear-button-visible
+            ?required="${this.spec.jsonSchema.required}"
+            value="${ifDefined(this.spec.formData)}"
+            label="${this.spec.jsonSchema.title}"
+            helper-text="${ifDefined(this.spec.jsonSchema.description)}"
+            class="${this.spec.classes || ''} mist-form-field"
+            @value-changed=${this.debouncedEventChange}
+            minlength=${ifDefined(this.spec.jsonSchema.minLength)}
+            maxlength=${ifDefined(this.spec.jsonSchema.maxLength)}
+            pattern=${ifDefined(this.spec.jsonSchema.pattern)}
+            colspan=${ifDefined(this.spec.jsonSchema.colspan)}
+            placeholder="${ifDefined(this.placeholder)}"
+            ?autofocus=${this.hasAutoFocus}
+            ?disabled=${this.isDisabled}
+            ?readonly=${this.isReadOnly}
+            ?hidden=${this.isHidden}
+            ?autoselect=${this.hasAutoSelect}
+            .pattern=${this.pattern}
+            .style=${this.css}
+          >
+            ${this.icon || ''} </vaadin-text-area
+          >${this.hasUpload
+            ? html`<input type="file" @change=${this._uploadFile} />`
+            : ``}`,
         checkboxes: html`
           <vaadin-checkbox-group
             label="${this.spec.jsonSchema.title}"
@@ -506,7 +523,7 @@ export const fieldMixin = superClass =>
 
     connectedCallback() {
       super.connectedCallback();
-      this.debouncedEventChange = debouncer(e => this.valueChanged(e), 300);
+      this.debouncedEventChange = debouncer(e => this.valueChanged(e), 100);
     }
 
     valueChanged(e) {
@@ -654,6 +671,18 @@ export const fieldMixin = superClass =>
           break;
         default:
           break;
+      }
+    }
+
+    _uploadFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          this.spec.formData = ev.target.result;
+          this.requestUpdate();
+        }.bind(this);
+        reader.readAsText(file);
       }
     }
   };
