@@ -227,38 +227,56 @@ export const fieldMixin = superClass =>
           >${this.hasUpload
             ? html`<input type="file" @change=${this._uploadFile} />`
             : ``}`,
-        checkboxes: html`
-          <vaadin-checkbox-group
-            label="${this.spec.jsonSchema.title}"
-            @value-changed="${e => {
-              this.value = e.detail.value;
-            }}"
-            class="${this.spec.classes || ''} mist-form-field"
-            ?autofocus=${this.hasAutoFocus}
-            ?disabled=${this.isDisabled}
-            ?readonly=${this.isReadOnly}
-            ?hidden=${this.isHidden}
-            theme="vertical"
-          >
-            ${repeat(
-              this.spec.jsonSchema.enum || [],
-              item => item,
-              item => html`
-                <vaadin-checkbox
-                  id="${item}"
-                  label="${item}"
-                  ?checked=${this.spec.formData &&
-                  this.spec.formData.indexOf(item) !== -1}
-                  @change=${e => {
-                    e.detail = { id: item, value: e.target.checked };
-                    this.debouncedEventChange(e);
-                  }}
-                >
-                </vaadin-checkbox>
-              `
-            )}
-          </vaadin-checkbox-group>
-        `,
+        checkboxes: this.spec.jsonSchema.enum
+          ? html`
+              <vaadin-checkbox-group
+                label="${this.spec.jsonSchema.title}"
+                @value-changed="${e => {
+                  this.value = e.detail.value;
+                }}"
+                class="${this.spec.classes || ''} mist-form-field"
+                ?autofocus=${this.hasAutoFocus}
+                ?disabled=${this.isDisabled}
+                ?readonly=${this.isReadOnly}
+                ?hidden=${this.isHidden}
+                theme="vertical"
+              >
+                ${repeat(
+                  this.spec.jsonSchema.enum || [],
+                  item => item,
+                  item => html`
+                    <vaadin-checkbox
+                      id="${item}"
+                      label="${item}"
+                      ?checked=${this.spec.formData &&
+                      this.spec.formData.indexOf(item) !== -1}
+                      @change=${e => {
+                        e.detail = { id: item, value: e.target.checked };
+                        this.debouncedEventChange(e);
+                      }}
+                    >
+                    </vaadin-checkbox>
+                  `
+                )}
+              </vaadin-checkbox-group>
+            `
+          : html` <vaadin-checkbox
+              has-controls
+              clear-button-visible
+              ?required="${this.spec.jsonSchema.required}"
+              .checked="${this.spec.formData}"
+              label="${ifDefined(this.spec.jsonSchema.title)}"
+              class="${this.spec.classes || ''} mist-form-field"
+              @change=${e => {
+                e.detail = { id: this.spec.id, value: e.target.checked };
+                this.debouncedEventChange(e);
+              }}
+              ?autofocus=${this.hasAutoFocus}
+              ?disabled=${this.isDisabled}
+              ?readonly=${this.isReadOnly}
+              ?hidden=${this.isHidden}
+            >
+            </vaadin-checkbox>`,
         radio: html` <vaadin-radio-group
           ?required="${this.spec.jsonSchema.required}"
           label="${this.spec.jsonSchema.title}"
@@ -284,10 +302,10 @@ export const fieldMixin = superClass =>
           )}
         </vaadin-radio-group>`,
         select: html` <vaadin-select
+          .items="${this.items}"
           .renderer="${this.renderer}"
           ?required="${this.spec.jsonSchema.required}"
-          .items="${this.items}"
-          .value="${this.spec.formData}"
+          .value="${String(this.spec.formData)}"
           label="${this.spec.jsonSchema.title}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
           class="${this.spec.classes || ''} mist-form-field"
@@ -500,6 +518,62 @@ export const fieldMixin = superClass =>
             @change=${this.debouncedEventChange}
           />
         `,
+        range: html`
+          <p>${this.spec.jsonSchema.title}</p>
+          <input
+            type="range"
+            ?required="${this.spec.jsonSchema.required}"
+            class="${this.spec.classes || ''} mist-form-field"
+            .value=${this.cast(this.spec.formData)}
+            @change=${this.debouncedEventChange}
+            ?autofocus=${this.hasAutoFocus}
+            ?disabled=${this.isDisabled}
+            ?readonly=${this.isReadOnly}
+            ?hidden=${this.isHidden}
+            max="${ifDefined(this.spec.jsonSchema.maximum)}"
+            min="${ifDefined(this.spec.jsonSchema.minimum)}"
+            step="${ifDefined(this.step)}"
+          />
+          <span>${this.spec.jsonSchema.description}</span>
+        `,
+        integer: html` <vaadin-integer-field
+          has-controls
+          clear-button-visible
+          ?required="${this.spec.jsonSchema.required}"
+          value="${ifDefined(this.value)}"
+          label="${ifDefined(this.spec.jsonSchema.title)}"
+          max="${ifDefined(this.spec.jsonSchema.maximum)}"
+          min="${ifDefined(this.spec.jsonSchema.minimum)}"
+          step=${ifDefined(this.step)}
+          helper-text="${ifDefined(this.spec.jsonSchema.description)}"
+          class="${this.spec.classes || ''} mist-form-field"
+          @value-changed=${this.debouncedEventChange}
+          placeholder="${ifDefined(this.placeholder)}"
+          ?autofocus=${this.hasAutoFocus}
+          ?disabled=${this.isDisabled}
+          ?readonly=${this.isReadOnly}
+          ?hidden=${this.isHidden}
+        >
+        </vaadin-integer-field>`,
+        number: html` <vaadin-number-field
+          has-controls
+          clear-button-visible
+          ?required="${this.spec.jsonSchema.required}"
+          value="${ifDefined(this.spec.formData)}"
+          label="${ifDefined(this.spec.jsonSchema.title)}"
+          max="${ifDefined(this.spec.jsonSchema.maximum)}"
+          min="${ifDefined(this.spec.jsonSchema.minimum)}"
+          step=${ifDefined(this.step)}
+          helper-text="${ifDefined(this.spec.jsonSchema.description)}"
+          class="${this.spec.classes || ''} mist-form-field"
+          @value-changed=${this.debouncedEventChange}
+          placeholder="${ifDefined(this.placeholder)}"
+          ?autofocus=${this.hasAutoFocus}
+          ?disabled=${this.isDisabled}
+          ?readonly=${this.isReadOnly}
+          ?hidden=${this.isHidden}
+        >
+        </vaadin-number-field>`,
       };
     }
 

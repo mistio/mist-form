@@ -139,12 +139,9 @@ export class MistForm extends LitElement {
         ? html``
         : html`
             <vaadin-horizontal-layout theme="spacing">
-              ${this.dialog &&
-              this.displayCancelButton(this.jsonSchema.canClose, this)}
+              ${this.dialog && this.displayCancelButton()}
               ${this.displaySubmitButton(this)}
-              ${(!this.dialog &&
-                this.displayCancelButton(this.jsonSchema.canClose, this)) ||
-              ''}
+              ${(!this.dialog && this.displayCancelButton()) || ''}
             </vaadin-horizontal-layout>
             <div class="formError">${this.formError}</div>
             <slot name="formRequest"></slot>
@@ -279,7 +276,9 @@ export class MistForm extends LitElement {
 
   renderField(fieldSpec) {
     console.debug('mist-form', this.id, 'rendering field', fieldSpec.id);
-    if (!fieldSpec.jsonSchema) return '';
+    if (!fieldSpec.jsonSchema) {
+      return '';
+    }
     switch (fieldSpec.jsonSchema.type) {
       case 'string':
         return html`<mist-form-string-field
@@ -340,23 +339,28 @@ export class MistForm extends LitElement {
   }
 
   displaySubmitButton() {
+    if (this.uiSchema && this.uiSchema['ui:submit'] === false) return html``;
     return html` <vaadin-button
       class="submit-btn"
       theme="primary"
       ?disabled=${!this.valid}
       @click="${this.submitForm}"
     >
-      ${this.jsonSchema.submitButtonLabel || 'Submit'}
+      ${typeof this.uiSchema['ui:submit'] === 'string'
+        ? this.uiSchema['ui:submit']
+        : 'Submit'}
     </vaadin-button>`;
   }
 
-  displayCancelButton(canClose = true) {
-    if (!canClose) return html``;
+  displayCancelButton() {
+    if (!this.uiSchema || !this.uiSchema['ui:cancel']) return html``;
     return html` <vaadin-button
       class="cancel-btn"
       @click="${() => this.dispatchEvent(new CustomEvent('mist-form-cancel'))}"
     >
-      ${this.jsonSchema.cancelButtonLabel || 'Cancel'}
+      ${typeof this.uiSchema['ui:cancel'] === 'string'
+        ? this.uiSchema['ui:cancel']
+        : 'Cancel'}
     </vaadin-button>`;
   }
 
