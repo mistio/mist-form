@@ -160,6 +160,7 @@
       // if (formDataValue)
       //   document.querySelector('mist-form').formData = JSON.parse(formDataValue);
       formDataEditor.onDidChangeModelContent(debouncer((e) => {
+        if (e.isFlush) return;
         // debugger;
         const newValue = formDataEditor.getValue();
         try {
