@@ -1,0 +1,205 @@
+{
+  "jsonSchema": {
+    "type": "object",
+    "id": "constraints-form",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "title": "Constraints",
+    "description": "Constraints form",
+    "additionalProperties": false,
+    "properties": {
+      "costConstraints": {
+        "$ref": "#/definitions/costConstraints"
+      },
+      "sizeConstraints": {
+        "$ref": "#/definitions/sizeConstraints"
+      },
+      "expirationConstraints": {
+        "$ref": "#/definitions/expirationConstraints"
+      },
+      "fieldConstraints": {
+        "$ref": "#/definitions/fieldConstraints"
+      }
+    },
+    "definitions": {
+      "sizeConstraints": {
+        "type": "object",
+        "title": "Machine sizes",
+        "properties": {
+          "allowed": {
+            "title": "Allowed sizes",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/sizeElementSubform"
+            }
+          },
+          "not_allowed": {
+            "title": "Disallowed sizes",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/sizeElementSubform"
+            }
+          },
+          "cpu": {
+            "title": "Cpu constraints",
+            "$ref": "#/definitions/sizeSubform"
+          },
+          "ram": {
+            "title": "Ram constraints",
+            "$ref": "#/definitions/sizeSubform"
+          },
+          "primary_disk": {
+            "title": "Primary disk constraints",
+            "$ref": "#/definitions/sizeSubform"
+          },
+          "swap_disk": {
+            "title": "Swap disk constraints",
+            "$ref": "#/definitions/sizeSubform"
+          }
+        }
+      },
+      "notify": {
+        "type": "object",
+        "properties": {
+          "default": {
+            "title": "Default",
+            "type": "string",
+            "format": "durationField"
+          },
+          "require": {
+            "title": "Require",
+            "type": "boolean"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          }
+        }
+      },
+      "actions": {
+        "type": "object",
+        "properties": {
+          "available": {
+            "title": "Available actions",
+            "type": "string",
+            "enum": [
+              "destroy",
+              "stop",
+              "undefine"
+            ]
+          },
+          "default": {
+            "title": "Default",
+            "type": "string"
+          }
+        }
+      },
+      "costConstraints": {
+        "type": "object",
+        "title": "Cost quotas",
+        "properties": {
+          "max_team_run_rate": {
+            "title": "Max run rate for team",
+            "type": "number",
+            "value": 1,
+            "minimum": 1,
+            "helpText": "A minimum of 1 $ is required."
+          },
+          "max_total_run_rate": {
+            "title": "Max run rate for organization",
+            "type": "number",
+            "value": 1,
+            "minimum": 1,
+            "helpText": "A minimum of 1 $ is required."
+          }
+        }
+      },
+      "fieldConstraints": {
+        "type": "object",
+        "properties": {
+          "cloud": {
+            "title": "Cloud",
+            "type": "string"
+          },
+          "fieldName": {
+            "title": "Field name",
+            "type": "string"
+          },
+          "fieldValue": {
+            "title": "Field value",
+            "type": "string"
+          },
+          "show": {
+            "title": "Show",
+            "value": true,
+            "type": "boolean"
+          },
+          "subformInMultirowSubform": {
+            "type": "object",
+            "format": "subform",
+            "properties": {
+              "test": {
+                "name": "test",
+                "title": "Test",
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "expirationConstraints": {
+        "title": "Expiration requirements",
+        "type": "object",
+        "properties": {
+          "max": {
+            "name": "max",
+            "title": "Max",
+            "type": "string"
+          },
+          "default": {
+            "title": "Default",
+            "type": "string"
+          },
+          "actions": {
+            "$ref": "#/definitions/actions"
+          },
+          "notify": {
+            "$ref": "#/definitions/notify"
+          }
+        }
+      }
+    }
+  },
+  "uiSchema": {
+    "ui:cancel": "Cancel",
+    "ui:submit": "Add",
+    "costConstraints": {
+      "ui:toggles": true,
+      "ui:enabled": false,
+      "max_team_run_rate": {
+        "ui:suffix": "$/mo",
+        "ui:options": {
+          "style": "width: 200px;"
+        }
+      },
+      "max_total_run_rate": {
+        "ui:suffix": "$/mo",
+        "ui:options": {
+          "style": "width: 200px;"
+        }
+      }
+    },
+    "expirationConstraints": {
+      "ui:toggles": true,
+      "ui:enabled": false
+    },
+    "fieldConstraints": {
+      "ui:toggles": true,
+      "ui:enabled": false
+    },
+    "sizeConstraints": {
+      "ui:toggles": true,
+      "ui:enabled": false
+    }
+  },
+  "formData": {}
+}

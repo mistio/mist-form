@@ -34,7 +34,6 @@ export class MistForm extends LitElement {
       `}
       paper-toggle-button {
         float: left;
-        margin-top: 6px;
       }
     `;
   }
@@ -69,6 +68,10 @@ export class MistForm extends LitElement {
       'field-value-changed',
       debouncer(this._handleValueChanged, 200)
     );
+    this.addEventListener(
+      'validation-changed',
+      debouncer(this._validationChanged, 200)
+    );
     if (!this.responsiveSteps) {
       this.responsiveSteps = [
         // Use one column by default
@@ -83,6 +86,7 @@ export class MistForm extends LitElement {
 
   disconnectedCallback() {
     this.removeEventListener('field-value-changed', this._handleValueChanged);
+    this.removeEventListener('validation-changed', this._validationChanged);
     super.disconnectedCallback();
   }
 
@@ -97,6 +101,9 @@ export class MistForm extends LitElement {
 
     if (changedProperties.has('jsonSchema')) {
       this.validate();
+      this.shadowRoot.querySelectorAll('.mist-form-field').forEach(el => {
+        el.importWidgets();
+      });
     }
 
     if (changedProperties.has('formData') && this.formData !== undefined) {
@@ -126,7 +133,11 @@ export class MistForm extends LitElement {
     if (this.jsonSchema) {
       let formFields;
       if (this.jsonSchema.type === 'object') {
-        formFields = this.renderObject(this.jsonSchema);
+        formFields = this.renderObject(
+          this.jsonSchema,
+          this.uiSchema,
+          this.formData
+        );
       } else {
         formFields = this.renderField({
           jsonSchema: this.jsonSchema,
@@ -165,7 +176,7 @@ export class MistForm extends LitElement {
             .responsiveSteps="${this.responsiveSteps}"
             ?hidden=${!this.enabled}
           >
-            <span id="mist-form-fields">${formFields}</span>
+            <div id="mist-form-fields">${formFields}</div>
           </vaadin-form-layout>
           ${footer}
         </div>
@@ -177,23 +188,25 @@ export class MistForm extends LitElement {
     return html`<paper-spinner active></paper-spinner>`;
   }
 
-  renderObject(obj) {
+  renderObject(obj, uiSchema, formData) {
     const properties = this.computeProperties(obj);
-    Object.keys(this.formData || {}).forEach(k => {
-      if (typeof this.formData === 'object') {
-        if (properties[k] === undefined && this.formData[k]) {
-          delete this.formData[k];
+    Object.keys(formData || {}).forEach(k => {
+      if (typeof formData === 'object') {
+        if (properties[k] === undefined && formData[k]) {
+          // eslint-disable-next-line no-param-reassign
+          delete formData[k];
         }
         if (
           properties[k] &&
           properties[k].enum &&
-          properties[k].enum.indexOf(this.formData[k]) === -1
+          properties[k].enum.indexOf(formData[k]) === -1
         ) {
-          this.formData[k] = '';
+          // eslint-disable-next-line no-param-reassign
+          formData[k] = '';
         }
       }
     });
-    return this.renderFields(properties, obj.required);
+    return this.renderFields(properties, uiSchema, formData, obj.required);
   }
 
   computeProperties(obj) {
@@ -208,7 +221,7 @@ export class MistForm extends LitElement {
       Object.keys(obj.if.properties).forEach(k => {
         if (
           obj.if.properties[k].const &&
-          obj.if.properties[k].const !== this.formData[k]
+          obj.if.properties[k].const !== this.domValue[k]
         ) {
           satisfied = false;
         }
@@ -226,17 +239,15 @@ export class MistForm extends LitElement {
     return properties;
   }
 
-  renderFields(properties, required) {
+  renderFields(properties, uiSchema, formData, required) {
     return Object.keys(properties).map(propertyId => {
       const defaultValue =
         properties[propertyId].value || properties[propertyId].default;
       const fieldSpec = {
         jsonSchema: this.resolveDefinitions(properties[propertyId]) || {},
-        uiSchema: (this.uiSchema && this.uiSchema[propertyId]) || {},
+        uiSchema: (uiSchema && uiSchema[propertyId]) || {},
         formData:
-          (this.formData &&
-            typeof this.formData === 'object' &&
-            this.formData[propertyId]) ||
+          (formData && typeof formData === 'object' && formData[propertyId]) ||
           defaultValue,
       };
       fieldSpec.id = propertyId;
@@ -244,11 +255,11 @@ export class MistForm extends LitElement {
         fieldSpec.jsonSchema.required = true;
       }
       if (
-        this.formData &&
-        typeof this.formData === 'object' &&
-        this.formData[propertyId] !== undefined
+        formData &&
+        typeof formData === 'object' &&
+        formData[propertyId] !== undefined
       ) {
-        fieldSpec.formData = this.formData[propertyId];
+        fieldSpec.formData = formData[propertyId];
       }
       return this.renderField(fieldSpec);
     });
@@ -401,8 +412,9 @@ export class MistForm extends LitElement {
   }
 
   _handleValueChanged(e) {
-    console.debug(this.id, '_handleValueChanged', e);
+    console.debug(this, '_handleValueChanged', e);
     e.stopPropagation();
+    e.target.formData = { ...e.target.formData, ...e.target.domValue };
     const eventName = `${e.target.subform ? 'sub' : ''}form-data-changed`;
     const formDataChangedEvent = new CustomEvent(eventName, {
       detail: {
@@ -412,6 +424,7 @@ export class MistForm extends LitElement {
       composed: true,
     });
     e.target.dispatchEvent(formDataChangedEvent);
+    e.target.validate();
   }
 
   _toggleChanged(e) {
@@ -424,13 +437,30 @@ export class MistForm extends LitElement {
   }
 
   validate() {
+    const valid = this._validate();
+    if (this.valid !== valid) {
+      this.dispatchEvent(
+        new CustomEvent('validation-changed', { detail: { valid } })
+      );
+    }
+    return valid;
+  }
+
+  _validate() {
     let valid = true;
     this.shadowRoot.querySelectorAll('#mist-form-fields > *').forEach(field => {
-      valid = valid && field.validate();
+      const result = field.validate();
+      valid = valid && result;
     });
     console.debug('form validation', valid);
-    this.valid = valid;
     return valid;
+  }
+
+  _validationChanged(e) {
+    if (e.target) {
+      console.debug('validation-changed', e, this);
+      e.target.valid = e.detail.valid;
+    }
   }
 
   get domValue() {

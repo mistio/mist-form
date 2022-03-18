@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-US">
 
 <head>
   <meta charset="utf-8" />
@@ -14,7 +14,7 @@
 
     mist-form {
       padding: 25px;
-      /* width: 100%; */
+      width: 80%;
     }
     div#form {
       width: 60%;
@@ -93,7 +93,8 @@
     if (document.location.search.startsWith('?mist')) {
       presets = [
         {id: 'mist/addkey', title: "Add key"},
-        {id: 'mist/addcloud', title: "Add cloud"}
+        {id: 'mist/addcloud', title: "Add cloud"},
+        {id: 'mist/constraints', title: "Constaints form"}
       ]
     }
 
@@ -118,7 +119,8 @@
         document.querySelector('mist-form').jsonSchema = JSON.parse(jsonSchemaValue);
       jsonSchemaEditor.onDidChangeModelContent(
         debouncer(
-          () => {
+          (e) => {
+            if (e.isFlush) return;
             const data = JSON.parse(jsonSchemaEditor.getValue());
             console.log(jsonSchemaEditor.getValue());
             document.querySelector('mist-form').jsonSchema = data;
@@ -140,7 +142,8 @@
         document.querySelector('mist-form').uiSchema = JSON.parse(uiSchemaValue);
       uiSchemaEditor.onDidChangeModelContent(
         debouncer(
-          () => {
+          (e) => {
+            if (e.isFlush) return;
             console.log(uiSchemaEditor.getValue());
             document.querySelector('mist-form').uiSchema = JSON.parse(uiSchemaEditor.getValue());
           }, 250)
@@ -156,11 +159,8 @@
         language: 'json',
         automaticLayout: true
       });
-      // const formDataValue = formDataEditor.getValue();
-      // if (formDataValue)
-      //   document.querySelector('mist-form').formData = JSON.parse(formDataValue);
       formDataEditor.onDidChangeModelContent(debouncer((e) => {
-        // debugger;
+        if (e.isFlush) return;
         const newValue = formDataEditor.getValue();
         try {
           document.querySelector('mist-form').formData = JSON.parse(newValue);
@@ -169,10 +169,8 @@
             document.querySelector('mist-form').formData = newValue;
           }
         }
-        document.querySelector('mist-form').validate();
       }, 150));
       document.querySelector('mist-form').addEventListener('form-data-changed', function(e) {
-        // debugger;
         let newValue = this.domValue;
         switch (typeof(newValue)) {
           case "string":
