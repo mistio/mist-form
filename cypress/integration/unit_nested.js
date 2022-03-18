@@ -16,9 +16,9 @@ describe('Unit Test Nested', () => {
     });
   });
 
-  it('Delete default items', () => {
-    cy.wait(1000); // wait for the form to render
-    // delete second task
+  it('Delete default tasks', () => {
+    // cy.wait(1000);
+    // delete 2nd default tasks
     cy.get('#playground')
       .find('#tasks')
       .find('ul')
@@ -27,8 +27,8 @@ describe('Unit Test Nested', () => {
       .find('vaadin-button')
       .eq(2)
       .click();
-
-    // delete first task
+    cy.wait(1000);
+    // delete 1st default task
     cy.get('#playground')
       .find('#tasks')
       .find('ul')
@@ -37,8 +37,7 @@ describe('Unit Test Nested', () => {
       .find('vaadin-button')
       .eq(2)
       .click();
-
-    // check that no tasks are present
+    cy.wait(1000);
     cy.get('#playground')
       .find('#tasks')
       .find('ul')
@@ -46,7 +45,7 @@ describe('Unit Test Nested', () => {
       .should('not.exist');
   });
 
-  it('Submit button should be enabled with no items in the list', () => {
+  it('Submit button should be enabled with no items in the list, no items should be present', () => {
     cy.get('#playground')
       .find('.submit-btn')
       .should('not.have.attr', 'disabled');
@@ -55,9 +54,11 @@ describe('Unit Test Nested', () => {
   it('Add new task', () => {
     cy.get('#playground')
       .find('#tasks')
-      .find('vaadin-form-layout')
-      .find('vaadin-button')
-      .click();
+      .find('ul')
+      .find('li')
+      .should('not.exist');
+
+    cy.get('#playground').find('#tasks').find('vaadin-button').click();
   });
 
   it('Submit button should be disabled with empty item', () => {
@@ -68,7 +69,7 @@ describe('Unit Test Nested', () => {
     cy.wait(1000);
     cy.get('#playground').find('#tasks').find('vaadin-button').eq(3).click();
   });
-  /*
+
   it('Fill the first task', () => {
     cy.get('#playground')
       .find('#tasks')
@@ -172,7 +173,7 @@ describe('Unit Test Nested', () => {
       .find('vaadin-checkbox')
       .should('have.attr', 'checked');
   });
-
+  /*
   it('Move second task back up', () => {
     // move down button should be disabled
     cy.get('#playground')
