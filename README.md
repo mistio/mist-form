@@ -36,20 +36,19 @@ As an alternative, pass a url to the JSON Schema. The file may include the UI Sc
 
 ## Sample
 
-Below is a sample html file that renders a simple form. Note the jsonSchema, uiSchema & formData objects that are passed to the form. We are using `iron-ajax` for the post request, but any other component may be used instead.
+Below is a sample html file that renders a simple form. Note the jsonSchema, uiSchema & formData objects that are passed to the form.
 
 ```html
 <!DOCTYPE html>
 <html lang="en-US">
 <body>
-  <div id="demo"></div>
+  <div id="bridgeOfDeath"></div>
   <script type="module">
     import { html, render } from 'lit-html';
-    import '@polymer/iron-ajax/iron-ajax.js';
     import '../../mist-form.js';
 
     const jsonSchema = {
-        "title": "Three questions",
+        "title": "Bridge of death",
         "description": "Must answer me these questions three, 'ere the other side he see.",
         "type": "object",
         "required": [
@@ -72,16 +71,21 @@ Below is a sample html file that renders a simple form. Note the jsonSchema, uiS
             "type": "string",
             "title": "What is your favorite color?"
           },
+          "capital": {
+            "type": "string",
+            "title": "What is the capital of Assyria?",
+            "examples": ["Ashur", "Calah", "Nimrud", "Dur Sharrukin", "Khorsabad", "Nineveh"]
+          },
           "velocity": {
-              "type": "number",
-              "title": "What is the air-speed velocity of an unladen swallow?",
-              "minimum": 2,
-              "maximum": 20
+            "type": "number",
+            "title": "What is the air-speed velocity of an unladen swallow?",
+            "minimum": 2,
+            "maximum": 40
           },
           "origin": {
-              "type": "string",
-              "title": "Specify the swallow's origin",
-              "enum": ["Africa", "Europe"]
+            "type": "string",
+            "title": "Specify the swallow's origin",
+            "enum": ["Africa", "Europe"]
           }
         }
       };
@@ -90,11 +94,19 @@ Below is a sample html file that renders a simple form. Note the jsonSchema, uiS
         "ui:widget": "textarea"
       },
       "color": {
-        "ui:widget": "color"
+        "ui:widget": "color",
+        "ui:options": {
+          "style": "width: 190px;"
+        }
+      },
+      "capital": {
+        "ui:options": {
+          "style": "min-width: 210px;"
+        }
       },
       "velocity": {
         "ui:controls": true,
-        "ui:suffix": "knots",
+        "ui:suffix": "mph",
         "ui:options": {
           "style": "min-width: 350px;"
         }
@@ -104,36 +116,25 @@ Below is a sample html file that renders a simple form. Note the jsonSchema, uiS
     const formData = {
       "name": "Sir Lancelot of Camelot",
       "quest": "To seek the Holy Grail",
-      "color": "blue"
+      "color": "#0000ff",
+      "velocity": 24
     };
-    let submitUrl='/api/v1/three';
-    
+
     render(
-      html`<mist-form .jsonSchema=${jsonSchema} .uiSchema=${uiSchema} .formData=${formData}>
-        <iron-ajax
-          slot="formRequest"
-          id="formAjax"
-          method="POST"
-          handle-as="json"
-          .url="${submitUrl}"
-          .contentType="application/json"
-          .submit=${this}
-          @mist-form-request=${function (e) {
-            this.body = JSON.stringify(e.detail.payload);
-            this.generateRequest();
-          }}
-          @response=${() => {
-            console.log('on response');
-          }}
-          @request=${() => {
-            console.log('on request');
-          }}
-          @error=${() => {
-            console.log('on error');
-          }}
-        ></iron-ajax>
+      html`
+      <mist-form method="GET" action="/demo"
+        .jsonSchema=${jsonSchema} .uiSchema=${uiSchema} .formData=${formData}
+        @response=${() => {
+          console.log('on response');
+        }}
+        @request=${() => {
+          console.log('on request');
+        }}
+        @error=${() => {
+          console.log('on error');
+        }}
       </mist-form> `,
-      document.querySelector('#demo')
+      document.querySelector('#bridgeOfDeath')
     );
   </script>
 </body>
@@ -203,7 +204,6 @@ You can also see other form demos:
 ### Form properties
 
 TODO
-
 
 
 ### Field properties

@@ -1,16 +1,7 @@
 import { html, css, unsafeCSS } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { repeat } from 'lit/directives/repeat.js';
-
-export const debouncer = function (callback, wait) {
-  let timeout = 1000;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(function () {
-      callback.apply(this, args);
-    }, wait);
-  };
-};
+import { debouncer } from '../utils.js';
 
 export const fieldMixin = superClass =>
   class extends superClass {
@@ -32,10 +23,12 @@ export const fieldMixin = superClass =>
         if (field.querySelector('vaadin-item[selected]')) {
           return this.cast(field.querySelector('vaadin-item[selected]').value);
         }
-        field._menuElement.querySelectorAll('vaadin-item').forEach((i, j) => {
-          if (i.getAttribute('value') === field.value)
-            field._menuElement.selected = j;
-        });
+        if (field._menuElement) {
+          field._menuElement.querySelectorAll('vaadin-item').forEach((i, j) => {
+            if (i.getAttribute('value') === field.value)
+              field._menuElement.selected = j;
+          });
+        }
       }
       return this.cast(
         field.value !== undefined ? field.value : field.getAttribute('value')
@@ -214,6 +207,33 @@ export const fieldMixin = superClass =>
           this.spec.uiSchema['ui:options'].class) ||
         ''
       );
+    }
+
+    get pattern() {
+      let ret;
+      if (this.spec.jsonSchema.format === 'email') {
+        ret = '^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$';
+      } else if (this.spec.jsonSchema.format === 'uri') {
+        ret =
+          '^(([a-zA-Z0-9_\\.\\-+])+://)?[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}[:0-9]|[/.])*$';
+      }
+      return this.spec.jsonSchema.pattern || ret;
+    }
+
+    get errors() {
+      const ret = [];
+      if (
+        this.spec.jsonSchema.required &&
+        (this.spec.formData === undefined ||
+          this.spec.formData === this.cast(null))
+      ) {
+        ret.push([this.spec.id, 'is a required property']);
+      }
+      return ret;
+    }
+
+    get payload() {
+      return this.spec.formData;
     }
 
     get renderers() {
@@ -547,20 +567,24 @@ export const fieldMixin = superClass =>
           ${description}
         `,
         color: html` <label class="field">${this.spec.jsonSchema.title}</label>
-          <input
-            type="color"
-            ?required="${this.spec.jsonSchema.required}"
-            class="${this.classes || ''} mist-form-field"
-            .value=${this.cast(this.spec.formData)}
-            @change=${this.debouncedEventChange}
-            ?autofocus=${this.hasAutoFocus}
-            ?disabled=${this.isDisabled}
-            ?readonly=${this.isReadOnly}
-            ?hidden=${this.isHidden}
-            .style=${this.css}
-          />
-          ${description}`,
-        file: html` <label class="field">${this.spec.jsonSchema.title}</label>
+          <div .style=${this.css}>
+            <input
+              type="color"
+              ?required="${this.spec.jsonSchema.required}"
+              class="${this.classes || ''} mist-form-field"
+              .value=${this.cast(this.spec.formData)}
+              @change=${this.debouncedEventChange}
+              ?autofocus=${this.hasAutoFocus}
+              ?disabled=${this.isDisabled}
+              ?readonly=${this.isReadOnly}
+              ?hidden=${this.isHidden}
+              .style=${this.css}
+            />
+            ${description}
+          </div>`,
+        file: html` <label class="field" .style=${this.css}
+            >${this.spec.jsonSchema.title}</label
+          >
           <input
             type="file"
             ?required="${this.spec.jsonSchema.required}"
@@ -648,17 +672,6 @@ export const fieldMixin = superClass =>
       };
     }
 
-    get pattern() {
-      let ret;
-      if (this.spec.jsonSchema.format === 'email') {
-        ret = '^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$';
-      } else if (this.spec.jsonSchema.format === 'uri') {
-        ret =
-          '^(([a-zA-Z0-9_\\.\\-+])+://)?[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}[:0-9]|[/.])*$';
-      }
-      return this.spec.jsonSchema.pattern || ret;
-    }
-
     render() {
       if (!this.spec) return html``;
       if (typeof this.widget === 'function') {
@@ -725,22 +738,64 @@ export const fieldMixin = superClass =>
       switch (this.widget) {
         case 'textarea':
           if (customElements.get('vaadin-text-area') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'textarea',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/text-area').then(() => {
               console.debug('imported vaadin textarea');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'textarea',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
           }
           break;
         case 'checkboxes':
           if (customElements.get('vaadin-checkbox') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'checkbox',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/checkbox').then(() => {
               console.debug('imported vaadin checkbox');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'checkbox',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
           }
           break;
         case 'select':
           if (customElements.get('vaadin-select') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'select',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/select').then(() => {
               console.debug('imported vaadin select');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'select',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
             import('@vaadin/item').then(() => {
               console.debug('imported vaadin item');
@@ -752,72 +807,214 @@ export const fieldMixin = superClass =>
           break;
         case 'combo-box':
           if (customElements.get('vaadin-combo-box') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'combo',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/combo-box').then(() => {
               console.debug('imported vaadin combo box');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'combo',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
           }
           break;
         case 'text-field':
           if (customElements.get('vaadin-text-field') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'text',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/text-field').then(() => {
               console.debug('imported vaadin text-field');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'text',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
           }
           break;
         case 'password':
           if (customElements.get('vaadin-password-field') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'password',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/password-field').then(() => {
               console.debug('imported vaadin password-field');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'password',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
           }
           break;
         case 'email':
           if (customElements.get('vaadin-email-field') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'email',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import('@vaadin/email-field').then(() => {
               console.debug('imported vaadin email-field');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'email',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
             });
           }
           break;
         case 'radio':
           if (customElements.get('vaadin-radio-group') === undefined) {
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'radio',
+                composed: true,
+                bubbles: true,
+              })
+            );
             import(
               '@vaadin/radio-group/theme/material/vaadin-radio-group.js'
-            ).then(console.debug('imported vaadin radio group'));
+            ).then(() => {
+              console.debug('imported vaadin radio group');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'radio',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
+            });
           }
           break;
         case 'number':
           if (customElements.get('vaadin-number-field') === undefined) {
-            import('@vaadin/number-field').then(
-              console.debug('imported vaadin number field')
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'number',
+                composed: true,
+                bubbles: true,
+              })
             );
+            import('@vaadin/number-field').then(() => {
+              console.debug('imported vaadin number field');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'number',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
+            });
           }
           break;
         case 'integer':
           if (customElements.get('vaadin-integer-field') === undefined) {
-            import('@vaadin/integer-field').then(
-              console.debug('imported vaadin integer field')
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'integer',
+                composed: true,
+                bubbles: true,
+              })
             );
+            import('@vaadin/integer-field').then(() => {
+              console.debug('imported vaadin integer field');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'integer',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
+            });
           }
           break;
         case 'datetime':
           if (customElements.get('vaadin-date-time-picker') === undefined) {
-            import('@vaadin/date-time-picker').then(
-              console.debug('imported vaadin datetime picker')
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'datetime',
+                composed: true,
+                bubbles: true,
+              })
             );
+            import('@vaadin/date-time-picker').then(() => {
+              console.debug('imported vaadin datetime picker');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'datetime',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
+            });
           }
           break;
         case 'date':
           if (customElements.get('vaadin-date-picker') === undefined) {
-            import('@vaadin/date-picker').then(
-              console.debug('imported vaadin date picker')
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'date',
+                composed: true,
+                bubbles: true,
+              })
             );
+            import('@vaadin/date-picker').then(() => {
+              console.debug('imported vaadin date picker');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'date',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
+            });
           }
           break;
         case 'time':
           if (customElements.get('vaadin-time-picker') === undefined) {
-            import('@vaadin/time-picker').then(
-              console.debug('imported vaadin time picker')
+            this.parent.dispatchEvent(
+              new CustomEvent('loading', {
+                detail: 'time',
+                composed: true,
+                bubbles: true,
+              })
             );
+            import('@vaadin/time-picker').then(() => {
+              console.debug('imported vaadin time picker');
+              this.parent.dispatchEvent(
+                new CustomEvent('loaded', {
+                  detail: 'time',
+                  composed: true,
+                  bubbles: true,
+                })
+              );
+            });
           }
           break;
         case 'range':

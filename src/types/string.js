@@ -15,10 +15,11 @@ export class MistFormStringField extends fieldMixin(LitElement) {
       css`
         label.field {
           font-weight: 500;
-          display: block;
+          display: inline-flex;
           margin: 16px 0 8px;
           color: rgba(27, 43, 65, 0.69);
           font-family: var(--lumo-font-family);
+          font-size: 14px;
         }
 
         div.helper {

@@ -13,7 +13,8 @@
               "enum": [
                   "upload",
                   "generate"
-              ]
+              ],
+              "omit": true
           }
         },
         "allOf": [

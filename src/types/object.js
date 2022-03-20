@@ -8,6 +8,14 @@ export class MistFormObjectField extends fieldMixin(LitElement) {
     };
   }
 
+  get errors() {
+    return this.shadowRoot.querySelector('mist-form').errors;
+  }
+
+  get payload() {
+    return this.shadowRoot.querySelector('mist-form').payload;
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this.addEventListener(
