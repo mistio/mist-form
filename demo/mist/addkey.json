@@ -28,6 +28,7 @@
               "then": {
                 "properties": {
                   "private": {
+                    "title": "Private key",
                     "type": "string",
                     "required": true
                   }
@@ -39,7 +40,12 @@
       "uiSchema": {
           "private": {
               "ui:widget": "textarea",
-              "ui:upload": true
+              "ui:upload": true,
+              "ui:placeholder": "Paste your private key material",
+              "ui:options": {
+                "style": "font-family:monospace; font-size: 10px; width: 420px; min-height:200px; max-height:400px;"
+            }
+
           },
           "action": {
               "ui:widget": "radio"

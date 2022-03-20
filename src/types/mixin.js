@@ -59,6 +59,20 @@ export const fieldMixin = superClass =>
         : undefined;
     }
 
+    get prefix() {
+      return this.spec && this.spec.uiSchema && this.spec.uiSchema['ui:prefix'];
+    }
+
+    get suffix() {
+      return this.spec && this.spec.uiSchema && this.spec.uiSchema['ui:suffix'];
+    }
+
+    get autocomplete() {
+      return (
+        this.spec && this.spec.uiSchema && this.spec.uiSchema['ui:autocomplete']
+      );
+    }
+
     get parent() {
       let el = this;
       while (el.parentElement) {
@@ -101,6 +115,14 @@ export const fieldMixin = superClass =>
       return Boolean(this.spec.uiSchema && this.spec.uiSchema['ui:toggles']);
     }
 
+    get hasControls() {
+      return Boolean(this.spec.uiSchema && this.spec.uiSchema['ui:controls']);
+    }
+
+    get hasClear() {
+      return Boolean(this.spec.uiSchema && this.spec.uiSchema['ui:clear']);
+    }
+
     get placeholder() {
       return this.spec.uiSchema && this.spec.uiSchema['ui:placeholder'];
     }
@@ -118,8 +140,14 @@ export const fieldMixin = superClass =>
 
     get items() {
       const ret = [];
+      let options;
       if (this.spec.jsonSchema.enum) {
-        this.spec.jsonSchema.enum.forEach((element, index) => {
+        if (typeof this.spec.jsonSchema.enum === 'function') {
+          options = this.spec.jsonSchema.enum(this);
+        } else {
+          options = this.spec.jsonSchema.enum;
+        }
+        options.forEach((element, index) => {
           if (this.spec.jsonSchema.enumNames) {
             ret.push({
               label: this.spec.jsonSchema.enumNames[index],
@@ -133,7 +161,12 @@ export const fieldMixin = superClass =>
           }
         });
       } else if (this.spec.jsonSchema.examples) {
-        this.spec.jsonSchema.examples.forEach(element => {
+        if (typeof this.spec.jsonSchema.examples === 'function') {
+          options = this.spec.jsonSchema.examples(this);
+        } else {
+          options = this.spec.jsonSchema.examples;
+        }
+        options.forEach(element => {
           ret.push({
             label: element,
             value: element,
@@ -147,6 +180,7 @@ export const fieldMixin = superClass =>
       let bgColor = css``;
       let color = css``;
       let hidden = css``;
+      let extra = css``;
       if (this.spec && this.spec.uiSchema && this.spec.uiSchema['ui:options']) {
         if (this.spec.uiSchema['ui:options'].backgroundColor) {
           bgColor = unsafeCSS(
@@ -158,6 +192,9 @@ export const fieldMixin = superClass =>
             `--lumo-body-text-color: ${this.spec.uiSchema['ui:options'].color};`
           );
         }
+        if (this.spec.uiSchema['ui:options'].style) {
+          extra = unsafeCSS(this.spec.uiSchema['ui:options'].style);
+        }
       }
       if (this.widget === 'hidden') {
         hidden = unsafeCSS('display: none;');
@@ -166,7 +203,17 @@ export const fieldMixin = superClass =>
         ${bgColor}
         ${color}
         ${hidden}
+        ${extra}
       `;
+    }
+
+    get classes() {
+      return (
+        (this.spec.uiSchema &&
+          this.spec.uiSchema['ui:options'] &&
+          this.spec.uiSchema['ui:options'].class) ||
+        ''
+      );
     }
 
     get renderers() {
@@ -176,21 +223,21 @@ export const fieldMixin = superClass =>
           : html``;
       return {
         'text-field': html` <vaadin-text-field
-          has-controls
-          clear-button-visible
+          ?has-controls="${this.hasControls}"
+          ?clear-button-visible="${this.hasClear}"
           ?required="${this.spec.jsonSchema.required}"
           value="${ifDefined(this.spec.formData)}"
           label="${this.spec.jsonSchema.title ||
           (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
           ''}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           minlength=${ifDefined(this.spec.jsonSchema.minLength)}
           maxlength=${ifDefined(this.spec.jsonSchema.maxLength)}
           pattern=${ifDefined(this.spec.jsonSchema.pattern)}
           colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          autocomplete=${this.spec.uiSchema['ui:autocomplete']}
+          autocomplete=${this.autocomplete}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?autoselect=${this.hasAutoSelect}
@@ -200,15 +247,17 @@ export const fieldMixin = superClass =>
           .pattern=${this.pattern}
           .style=${this.css}
         >
+          ${this.prefix && html`<div slot="prefix">${this.prefix}</div>`}
+          ${this.suffix && html`<div slot="suffix">${this.suffix}</div>`}
         </vaadin-text-field>`,
         textarea: html` <vaadin-text-area
-            has-controls
-            clear-button-visible
+            ?has-controls="${this.hasControls}"
+            ?clear-button-visible="${this.hasClear}"
             ?required="${this.spec.jsonSchema.required}"
             value="${ifDefined(this.spec.formData)}"
             label="${this.spec.jsonSchema.title}"
             helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             @value-changed=${this.debouncedEventChange}
             minlength=${ifDefined(this.spec.jsonSchema.minLength)}
             maxlength=${ifDefined(this.spec.jsonSchema.maxLength)}
@@ -223,7 +272,9 @@ export const fieldMixin = superClass =>
             .pattern=${this.pattern}
             .style=${this.css}
           >
-            ${this.icon || ''} </vaadin-text-area
+            ${this.icon || ''}
+            ${this.prefix && html`<div slot="prefix">${this.prefix}</div>`}
+            ${this.suffix && html`<div slot="suffix">${this.suffix}</div>`} </vaadin-text-area
           >${this.hasUpload
             ? html`<input type="file" @change=${this._uploadFile} />`
             : ``}`,
@@ -234,7 +285,7 @@ export const fieldMixin = superClass =>
                 @value-changed="${e => {
                   this.value = e.detail.value;
                 }}"
-                class="${this.spec.classes || ''} mist-form-field"
+                class="${this.classes || ''} mist-form-field"
                 ?autofocus=${this.hasAutoFocus}
                 ?disabled=${this.isDisabled}
                 ?readonly=${this.isReadOnly}
@@ -261,12 +312,12 @@ export const fieldMixin = superClass =>
               </vaadin-checkbox-group>
             `
           : html` <vaadin-checkbox
-              has-controls
-              clear-button-visible
+              ?has-controls="${this.hasControls}"
+              ?clear-button-visible="${this.hasClear}"
               ?required="${this.spec.jsonSchema.required}"
               .checked="${this.spec.formData}"
               label="${ifDefined(this.spec.jsonSchema.title)}"
-              class="${this.spec.classes || ''} mist-form-field"
+              class="${this.classes || ''} mist-form-field"
               @change=${e => {
                 e.detail = { id: this.spec.id, value: e.target.checked };
                 this.debouncedEventChange(e);
@@ -275,19 +326,20 @@ export const fieldMixin = superClass =>
               ?disabled=${this.isDisabled}
               ?readonly=${this.isReadOnly}
               ?hidden=${this.isHidden}
-            >
-            </vaadin-checkbox>`,
+              .style=${this.css}
+            ></vaadin-checkbox>`,
         radio: html` <vaadin-radio-group
           ?required="${this.spec.jsonSchema.required}"
           label="${this.spec.jsonSchema.title}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           ?autofocus=${this.hasAutoFocus}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
           value=${this.cast(this.spec.formData)}
+          .style=${this.css}
         >
           ${this.items.map(
             item => html`
@@ -308,7 +360,7 @@ export const fieldMixin = superClass =>
           .value="${String(this.spec.formData)}"
           label="${this.spec.jsonSchema.title}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
@@ -316,6 +368,7 @@ export const fieldMixin = superClass =>
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
           .pattern=${this.pattern}
+          .style=${this.css}
         ></vaadin-select>`,
         'combo-box': html` <vaadin-combo-box
           allow-custom-value
@@ -326,7 +379,7 @@ export const fieldMixin = superClass =>
           .value="${this.spec.formData || ''}"
           label="${this.spec.jsonSchema.title}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
@@ -335,47 +388,49 @@ export const fieldMixin = superClass =>
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
           .pattern=${this.pattern}
+          .style=${this.css}
         ></vaadin-combo-box>`,
-        password: html` <vaadin-password-field
-          has-controls
-          clear-button-visible
+        password: html`<vaadin-password-field
+          ?has-controls="${this.hasControls}"
+          ?clear-button-visible="${this.hasClear}"
           ?required="${this.spec.jsonSchema.required}"
           value="${ifDefined(this.spec.formData)}"
           label="${this.spec.jsonSchema.title ||
           (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
           ''}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           minlength=${ifDefined(this.spec.jsonSchema.minLength)}
           maxlength=${ifDefined(this.spec.jsonSchema.maxLength)}
           pattern=${ifDefined(this.spec.jsonSchema.pattern)}
           colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          autocomplete=${this.spec.uiSchema['ui:autocomplete']}
+          autocomplete=${this.autocomplete}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
           .pattern=${this.pattern}
+          .style=${this.css}
         >
         </vaadin-password-field>`,
         email: html` <vaadin-email-field
-          has-controls
-          clear-button-visible
+          ?has-controls="${this.hasControls}"
+          ?clear-button-visible="${this.hasClear}"
           ?required="${this.spec.jsonSchema.required}"
           value="${ifDefined(this.spec.formData)}"
           label="${this.spec.jsonSchema.title ||
           (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
           ''}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           minlength=${ifDefined(this.spec.jsonSchema.minLength)}
           maxlength=${ifDefined(this.spec.jsonSchema.maxLength)}
           pattern=${ifDefined(this.spec.jsonSchema.pattern)}
           colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          autocomplete=${this.spec.uiSchema['ui:autocomplete']}
+          autocomplete=${this.autocomplete}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?autoselect=${this.hasAutoSelect}
@@ -383,6 +438,7 @@ export const fieldMixin = superClass =>
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
           .pattern=${this.pattern}
+          .style=${this.css}
         >
         </vaadin-email-field>`,
         datetime: html` <vaadin-date-time-picker
@@ -392,16 +448,17 @@ export const fieldMixin = superClass =>
           (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
           ''}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          autocomplete=${this.spec.uiSchema['ui:autocomplete']}
+          autocomplete=${this.autocomplete}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?autoselect=${this.hasAutoSelect}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
+          .style=${this.css}
         ></vaadin-date-time-picker>`,
         date: html` <vaadin-date-picker
           ?required="${this.spec.jsonSchema.required}"
@@ -410,16 +467,17 @@ export const fieldMixin = superClass =>
           (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
           ''}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          autocomplete=${this.spec.uiSchema['ui:autocomplete']}
+          autocomplete=${this.autocomplete}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?autoselect=${this.hasAutoSelect}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
+          .style=${this.css}
         ></vaadin-date-picker>`,
         time: html` <vaadin-time-picker
           ?required="${this.spec.jsonSchema.required}"
@@ -428,29 +486,31 @@ export const fieldMixin = superClass =>
           (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
           ''}"
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           colspan=${ifDefined(this.spec.jsonSchema.colspan)}
-          autocomplete=${this.spec.uiSchema['ui:autocomplete']}
+          autocomplete=${this.autocomplete}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?autoselect=${this.hasAutoSelect}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
+          .style=${this.css}
         ></vaadin-time-picker>`,
         'alt-datetime': html`
           <label class="field">${this.spec.jsonSchema.title}</label>
           <input
             type="datetime-local"
             ?required="${this.spec.jsonSchema.required}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
             ?autofocus=${this.hasAutoFocus}
             ?disabled=${this.isDisabled}
             ?readonly=${this.isReadOnly}
             ?hidden=${this.isHidden}
+            .style=${this.css}
           />
           ${description}
         `,
@@ -459,13 +519,14 @@ export const fieldMixin = superClass =>
           <input
             type="date"
             ?required="${this.spec.jsonSchema.required}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
             ?autofocus=${this.hasAutoFocus}
             ?disabled=${this.isDisabled}
             ?readonly=${this.isReadOnly}
             ?hidden=${this.isHidden}
+            .style=${this.css}
           />
           ${description}
         `,
@@ -474,13 +535,14 @@ export const fieldMixin = superClass =>
           <input
             type="time"
             ?required="${this.spec.jsonSchema.required}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
             ?autofocus=${this.hasAutoFocus}
             ?disabled=${this.isDisabled}
             ?readonly=${this.isReadOnly}
             ?hidden=${this.isHidden}
+            .style=${this.css}
           />
           ${description}
         `,
@@ -488,32 +550,34 @@ export const fieldMixin = superClass =>
           <input
             type="color"
             ?required="${this.spec.jsonSchema.required}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
             ?autofocus=${this.hasAutoFocus}
             ?disabled=${this.isDisabled}
             ?readonly=${this.isReadOnly}
             ?hidden=${this.isHidden}
+            .style=${this.css}
           />
           ${description}`,
         file: html` <label class="field">${this.spec.jsonSchema.title}</label>
           <input
             type="file"
             ?required="${this.spec.jsonSchema.required}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
             ?autofocus=${this.hasAutoFocus}
             ?disabled=${this.isDisabled}
             ?readonly=${this.isReadOnly}
             ?hidden=${this.isHidden}
+            .style=${this.css}
           />
           ${description}`,
         hidden: html`
           <input
             type="hidden"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
           />
@@ -523,7 +587,7 @@ export const fieldMixin = superClass =>
           <input
             type="range"
             ?required="${this.spec.jsonSchema.required}"
-            class="${this.spec.classes || ''} mist-form-field"
+            class="${this.classes || ''} mist-form-field"
             .value=${this.cast(this.spec.formData)}
             @change=${this.debouncedEventChange}
             ?autofocus=${this.hasAutoFocus}
@@ -533,12 +597,13 @@ export const fieldMixin = superClass =>
             max="${ifDefined(this.spec.jsonSchema.maximum)}"
             min="${ifDefined(this.spec.jsonSchema.minimum)}"
             step="${ifDefined(this.step)}"
+            .style=${this.css}
           />
           <span>${this.spec.jsonSchema.description}</span>
         `,
         integer: html` <vaadin-integer-field
-          has-controls
-          clear-button-visible
+          ?has-controls="${this.hasControls}"
+          ?clear-button-visible="${this.hasClear}"
           ?required="${this.spec.jsonSchema.required}"
           value="${ifDefined(this.value)}"
           label="${ifDefined(this.spec.jsonSchema.title)}"
@@ -546,18 +611,21 @@ export const fieldMixin = superClass =>
           min="${ifDefined(this.spec.jsonSchema.minimum)}"
           step=${ifDefined(this.step)}
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
+          .style=${this.css}
         >
+          ${this.prefix && html`<div slot="prefix">${this.prefix}</div>`}
+          ${this.suffix && html`<div slot="suffix">${this.suffix}</div>`}
         </vaadin-integer-field>`,
         number: html` <vaadin-number-field
-          has-controls
-          clear-button-visible
+          ?has-controls="${this.hasControls}"
+          ?clear-button-visible="${this.hasClear}"
           ?required="${this.spec.jsonSchema.required}"
           value="${ifDefined(this.spec.formData)}"
           label="${ifDefined(this.spec.jsonSchema.title)}"
@@ -565,14 +633,17 @@ export const fieldMixin = superClass =>
           min="${ifDefined(this.spec.jsonSchema.minimum)}"
           step=${ifDefined(this.step)}
           helper-text="${ifDefined(this.spec.jsonSchema.description)}"
-          class="${this.spec.classes || ''} mist-form-field"
+          class="${this.classes || ''} mist-form-field"
           @value-changed=${this.debouncedEventChange}
           placeholder="${ifDefined(this.placeholder)}"
           ?autofocus=${this.hasAutoFocus}
           ?disabled=${this.isDisabled}
           ?readonly=${this.isReadOnly}
           ?hidden=${this.isHidden}
+          .style=${this.css}
         >
+          ${this.prefix && html`<div slot="prefix">${this.prefix}</div>`}
+          ${this.suffix && html`<div slot="suffix">${this.suffix}</div>`}
         </vaadin-number-field>`,
       };
     }
@@ -590,8 +661,14 @@ export const fieldMixin = superClass =>
 
     render() {
       if (!this.spec) return html``;
+      if (typeof this.widget === 'function') {
+        return this.widget(this);
+      }
       const rendered = this.renderers[this.widget];
       // if (!rendered) debugger;
+      // if (this.prefix || this.suffix) {
+      //   rendered = html`<span class="prefix">${this.prefix}</span>${rendered}<span class="suffix">${this.suffix}</span>`
+      // }
       return rendered;
     }
 
@@ -601,7 +678,9 @@ export const fieldMixin = superClass =>
     }
 
     valueChanged(e) {
-      console.debug(this.id, 'Updating form field', e.detail);
+      if (e) {
+        console.debug(this.id, 'Updating form field', e.detail);
+      }
       const valueChangedEvent = new CustomEvent('field-value-changed', {
         detail: {
           id: this.spec.id,
@@ -753,8 +832,9 @@ export const fieldMixin = superClass =>
       if (file) {
         const reader = new FileReader();
         reader.onload = function (ev) {
-          this.spec.formData = ev.target.result;
-          this.requestUpdate();
+          this.shadowRoot.querySelector('.mist-form-field').value =
+            ev.target.result;
+          this.valueChanged();
         }.bind(this);
         reader.readAsText(file);
       }

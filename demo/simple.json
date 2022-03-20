@@ -11,7 +11,7 @@
         "properties": {
           "salutation": {
             "type": "string",
-            "enum": ["Mr", "Mrs", "Ms", "Dr", "Whatever"]
+            "enum": ["Mr", "Mrs", "Ms", "Dr", "Ser"]
           },
           "firstName": {
             "type": "string",

@@ -27,6 +27,9 @@ export class MistFormNumberField extends fieldMixin(LitElement) {
 
   get domValue() {
     const field = this.shadowRoot.querySelector('.mist-form-field');
+    if (!field) {
+      return this.spec.formData;
+    }
     return field.value !== undefined
       ? this.cast(field.value)
       : this.cast(field.getAttribute('value'));
@@ -34,9 +37,9 @@ export class MistFormNumberField extends fieldMixin(LitElement) {
 
   cast(value) {
     if (value === undefined) {
-      return Number(this.value);
+      return parseFloat(this.value, 10);
     }
-    return Number(value);
+    return parseFloat(value, 10);
   }
 
   renderer(root) {
