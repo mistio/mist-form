@@ -65,29 +65,29 @@
       {id: 'arrays'},
       {id: 'numbers'},
       {id: 'widgets'},
-      {id: 'ordering'},
+      // {id: 'ordering'},
       {id: 'references'},
-      {id: 'custom'},
+      // {id: 'custom'},
       {id: 'errors'},
       {id: 'examples'},
       {id: 'large'},
       {id: 'datetime', title: "Date & Time"},
-      {id: 'validation'},
+      // {id: 'validation'},
       {id: 'files'},
-      {id: 'single'},
-      {id: 'customarray', title: "Custom Array"},
-      {id: 'customobject', title: "Custom Object"},
-      {id: 'alternatives'},
-      {id: 'propdeps', title: "Property dependencies"},
-      {id: 'schemadeps', title: "Schema dependencies"},
-      {id: 'addprops', title: "Additional Properties"},
-      {id: 'anyof', title: "Any Of"},
-      {id: 'oneof', title: "One Of"},
+      // {id: 'single'},
+      // {id: 'customarray', title: "Custom Array"},
+      // {id: 'customobject', title: "Custom Object"},
+      // {id: 'alternatives'},
+      // {id: 'propdeps', title: "Property dependencies"},
+      // {id: 'schemadeps', title: "Schema dependencies"},
+      // {id: 'addprops', title: "Additional Properties"},
+      // {id: 'anyof', title: "Any Of"},
+      // {id: 'oneof', title: "One Of"},
       {id: 'allof', title: "All Of"},
       {id: 'ifthenelse', title: "If Then Else"},
-      {id: 'nullfields', title: "Null Fields"},
-      {id: 'nullable'},
-      {id: 'errorschema', title: "Error Schema"},
+      // {id: 'nullfields', title: "Null Fields"},
+      // {id: 'nullable'},
+      // {id: 'errorschema', title: "Error Schema"},
       {id: 'defaults'},
     ];
     if (document.location.search.startsWith('?mist')) {
@@ -179,7 +179,9 @@
             if (newValue.length) {
               newValue = JSON.stringify(newValue, null, 2);
             } else {
-              newValue = JSON.stringify({...JSON.parse(formDataEditor.getValue()), ...newValue}, null, 2);
+              const editorValue = formDataEditor.getValue();
+              const existingValue = editorValue ? JSON.parse(editorValue) : {};
+              newValue = JSON.stringify({...existingValue, ...newValue}, null, 2);
             }
             break;
           default:
@@ -235,29 +237,16 @@
           <h3>Rendered form</h3>
           <mist-form
             id="playground"
-          >
-            <iron-ajax
-              slot="formRequest"
-              id="formAjax"
-              url="/api/v1/products"
-              contentType="application/json"
-              .submit=${this}
-              method="POST"
-              handle-as="json"
-              @mist-form-request=${function (e) {
-                this.body = JSON.stringify(e.detail.payload);
-                this.generateRequest();
-              }}
-              @response=${() => {
-                console.log('on response');
-              }}
-              @request=${() => {
-                console.log('on request');
-              }}
-              @error=${() => {
-                console.log('on error');
-              }}
-            ></iron-ajax>
+            action="/api/v2/keys"
+            @response=${() => {
+              console.log('on response');
+            }}
+            @request=${() => {
+              console.log('on request');
+            }}
+            @error=${() => {
+              console.log('on error');
+            }}>
           </mist-form>
           </div>
         </vaadin-split-layout>`,

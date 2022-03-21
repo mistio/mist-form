@@ -48,6 +48,14 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     return ret;
   }
 
+  get payload() {
+    const ret = [];
+    this.shadowRoot.querySelectorAll('.mist-form-field').forEach(f => {
+      ret.push(f.payload);
+    });
+    return ret;
+  }
+
   cast(value) {
     if (value === undefined) {
       return this.cast(this.value);
@@ -259,6 +267,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     array[index - 1] = array[index];
     array[index] = tmp;
     this.requestUpdate();
+    this.valueChanged(e);
   }
 
   _down(e, item, index) {
@@ -267,6 +276,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     array[index + 1] = array[index];
     array[index] = tmp;
     this.requestUpdate();
+    this.valueChanged(e);
   }
 
   parentWidth() {

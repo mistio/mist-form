@@ -19,7 +19,7 @@ export class MistFormBooleanField extends fieldMixin(LitElement) {
       if (field.value === 'false' || !field.value) return false;
       return true;
     }
-    return Boolean(field.checked);
+    return Boolean(field && field.checked);
   }
 
   get widget() {
@@ -41,7 +41,7 @@ export class MistFormBooleanField extends fieldMixin(LitElement) {
   }
 
   cast(value) {
-    if (value === undefined) {
+    if (value === undefined && this.value !== undefined) {
       return this.cast(this.value);
     }
     return Boolean(value);

@@ -2,22 +2,13 @@ import { html, css, LitElement } from 'lit';
 import '@vaadin/form-layout';
 import '@vaadin/button';
 import '@polymer/paper-toggle-button';
+import { debouncer } from './utils.js';
 import './types/string.js';
 import './types/number.js';
 import './types/integer.js';
 import './types/boolean.js';
 import './types/array.js';
 import './types/object.js';
-
-export const debouncer = function (callback, wait) {
-  let timeout = 1000;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(function () {
-      callback.apply(this, args);
-    }, wait);
-  };
-};
 
 export class MistForm extends LitElement {
   static get styles() {
@@ -35,31 +26,90 @@ export class MistForm extends LitElement {
       paper-toggle-button {
         float: left;
       }
+      .formError {
+        color: #d60020;
+        display: inline;
+        margin-left: 16px;
+      }
+      .lds-ripple {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .lds-ripple div {
+        position: absolute;
+        border: 4px solid #555;
+        opacity: 1;
+        border-radius: 50%;
+        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+      }
+      .lds-ripple div:nth-child(2) {
+        animation-delay: -0.5s;
+      }
+      @keyframes lds-ripple {
+        0% {
+          top: 36px;
+          left: 36px;
+          width: 0;
+          height: 0;
+          opacity: 1;
+        }
+        100% {
+          top: 0px;
+          left: 0px;
+          width: 72px;
+          height: 72px;
+          opacity: 0;
+        }
+      }
     `;
   }
 
   static get properties() {
     return {
+      url: { type: String, reflect: true }, // Spec URL
+      jsonSchema: { type: Object }, // JSONSchema spec
+      uiSchema: { type: Object }, // UISchema spec
+      action: { type: String, reflect: true }, // Where to submit data?
+      method: { type: String, reflect: true }, // Request method
       subform: { type: Boolean, reflect: true }, // Are we a subform?
       toggles: { type: Boolean, reflect: true }, // Do we have a toggle button?
       enabled: { type: Boolean, reflect: true },
       valid: { type: Boolean, reflect: true }, // All fields validated?
-      dialog: { type: Boolean, reflect: true, value: false }, // Inside a dialog?
-      url: { type: String, reflect: true }, // Spec URL
-      jsonSchema: { type: Object },
-      uiSchema: { type: Object },
-      spec: { type: Object },
+      dialog: { type: Boolean, reflect: true }, // Inside a dialog?
+      submitting: { type: Boolean, reflect: true }, // Form currently submitting
+      loading: { type: Object }, // Mapping of widgets currently loading
       specError: { type: Object },
       formError: { type: String },
       formData: { type: Object }, // Payload to be submitted
       responsiveSteps: { type: Array }, // Form layout configuration
+      errors: { type: Array },
     };
+  }
+
+  get payload() {
+    const ret = {};
+    const properties = this.computeProperties(this.jsonSchema);
+    Object.keys(properties).forEach(k => {
+      if (properties[k] !== undefined && !properties[k].omit) {
+        ret[k] = this.shadowRoot.querySelector(`.mist-form-field#${k}`).payload;
+      }
+    });
+    return ret;
   }
 
   constructor() {
     super();
     this.valid = true;
     this.enabled = true;
+    this.subform = false;
+    this.dialog = false;
+    this.toggles = false;
+    this.submitting = false;
+    this.loading = {};
+    this.method = 'POST';
+    this.errors = [];
   }
 
   connectedCallback() {
@@ -72,14 +122,16 @@ export class MistForm extends LitElement {
       'validation-changed',
       debouncer(this._validationChanged, 200)
     );
+    this.addEventListener('loading', this._loadingStarted);
+    this.addEventListener('loaded', this._loadingFinished);
     if (!this.responsiveSteps) {
       this.responsiveSteps = [
         // Use one column by default
-        { minWidth: 0, columns: 1 },
+        { minWidth: '0', columns: 1, labelsPosition: 'top' },
         // Use two columns, if the layout's width exceeds 320px
-        { minWidth: '320px', columns: 2 },
+        { minWidth: '320px', columns: 2, labelsPosition: 'top' },
         // Use three columns, if the layout's width exceeds 500px
-        { minWidth: '500px', columns: 3 },
+        { minWidth: '500px', columns: 3, labelsPosition: 'top' },
       ];
     }
   }
@@ -87,6 +139,8 @@ export class MistForm extends LitElement {
   disconnectedCallback() {
     this.removeEventListener('field-value-changed', this._handleValueChanged);
     this.removeEventListener('validation-changed', this._validationChanged);
+    this.removeEventListener('loading', this._loadingStarted);
+    this.removeEventListener('loaded', this._loadingFinished);
     super.disconnectedCallback();
   }
 
@@ -100,6 +154,7 @@ export class MistForm extends LitElement {
     }
 
     if (changedProperties.has('jsonSchema')) {
+      this.submitting = false;
       this.validate();
       this.shadowRoot.querySelectorAll('.mist-form-field').forEach(el => {
         el.importWidgets();
@@ -127,8 +182,22 @@ export class MistForm extends LitElement {
   }
 
   render() {
+    let loader = '';
+    if (Object.keys(this.loading).length > 0) {
+      loader = html`
+        <div class="loading">
+          <div class="lds-ripple">
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      `;
+    }
     if (this.uiSchema && this.uiSchema['ui:enabled'] === false) {
       this.enabled = false;
+    }
+    if (this.specError) {
+      return html`Failed to load the form spec: ${this.specError}`;
     }
     if (this.jsonSchema) {
       let formFields;
@@ -150,12 +219,11 @@ export class MistForm extends LitElement {
         ? html``
         : html`
             <vaadin-horizontal-layout theme="spacing">
-              ${this.dialog && this.displayCancelButton()}
+              ${(this.dialog && this.displayCancelButton()) || ''}
               ${this.displaySubmitButton(this)}
               ${(!this.dialog && this.displayCancelButton()) || ''}
             </vaadin-horizontal-layout>
             <div class="formError">${this.formError}</div>
-            <slot name="formRequest"></slot>
           `;
       const toggler = this.toggles
         ? html`<paper-toggle-button
@@ -171,7 +239,7 @@ export class MistForm extends LitElement {
         : html``;
       return html`
         <div class="form">
-          ${title} ${description}
+          ${title} ${description} ${loader}
           <vaadin-form-layout
             .responsiveSteps="${this.responsiveSteps}"
             ?hidden=${!this.enabled}
@@ -181,9 +249,6 @@ export class MistForm extends LitElement {
           ${footer}
         </div>
       `;
-    }
-    if (this.specError) {
-      return html`We couldn't load the form. Please try again`;
     }
     return html`<paper-spinner active></paper-spinner>`;
   }
@@ -345,7 +410,6 @@ export class MistForm extends LitElement {
           class="mist-form-field"
           .spec=${fieldSpec}
         ></mist-form-string-field>`;
-      // return html`Invalid field type: ${fieldSpec.type}`
     }
   }
 
@@ -354,7 +418,7 @@ export class MistForm extends LitElement {
     return html` <vaadin-button
       class="submit-btn"
       theme="primary"
-      ?disabled=${!this.valid}
+      ?disabled=${!this.valid || this.submitting}
       @click="${this.submitForm}"
     >
       ${typeof this.uiSchema['ui:submit'] === 'string'
@@ -376,38 +440,55 @@ export class MistForm extends LitElement {
   }
 
   loadSpec(url) {
+    this.loading.spec = true;
     fetch(url)
       .then(response => response.json())
       .then(async spec => {
         this.jsonSchema = spec.jsonSchema || spec;
         this.uiSchema = spec.uiSchema || {};
         this.formData = spec.formData || {};
+        delete this.loading.spec;
       })
       .catch(error => {
         this.specError = error;
+        delete this.loading.spec;
         console.error('Error loading spec:', error);
       });
   }
 
   submitForm() {
-    const payload = this.formData;
-    if (Object.keys(payload).length === 0) {
-      this.formError = 'Please insert some data';
-    } else if (this.valid) {
-      const slot = this.shadowRoot
-        .querySelector('slot[name="formRequest"]')
-        .assignedNodes()[0];
-      const event = new CustomEvent('mist-form-request', {
+    const { payload } = this;
+    this.dispatchEvent(
+      new CustomEvent('submit', {
         detail: {
+          action: this.action,
+          method: this.method,
           payload,
         },
+      })
+    );
+    this.submitting = true;
+    if (this.action) {
+      const xhr = new XMLHttpRequest();
+      xhr.addEventListener('load', e => {
+        console.log(e.currentTarget.responseText);
+        this.submitting = false;
+        this.dispatchEvent(
+          new CustomEvent('response', {
+            detail: {
+              status: e.currentTarget.status,
+              statusText: e.currentTarget.statusText,
+              target: e.currentTarget,
+            },
+          })
+        );
+        if (e.currentTarget.status > 299) {
+          this.formError = e.currentTarget.response;
+        }
       });
-      this.dispatchEvent(event);
-      if (slot) {
-        slot.dispatchEvent(event);
-      }
-    } else {
-      this.formError = 'There was a problem with the form';
+      xhr.open(this.method, this.action);
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      xhr.send(JSON.stringify(payload));
     }
   }
 
@@ -448,11 +529,18 @@ export class MistForm extends LitElement {
 
   _validate() {
     let valid = true;
+    const errors = [];
     this.shadowRoot.querySelectorAll('#mist-form-fields > *').forEach(field => {
       const result = field.validate();
       valid = valid && result;
+      if (!result) {
+        field.errors.forEach(err => {
+          errors.push(err);
+        });
+      }
     });
-    console.debug('form validation', valid);
+    console.debug('form validation', valid, errors);
+    this.errors = errors;
     return valid;
   }
 
@@ -461,6 +549,14 @@ export class MistForm extends LitElement {
       console.debug('validation-changed', e, this);
       e.target.valid = e.detail.valid;
     }
+  }
+
+  _loadingStarted(e) {
+    this.loading[e.detail] = true;
+  }
+
+  _loadingFinished(e) {
+    delete this.loading[e.detail];
   }
 
   get domValue() {
