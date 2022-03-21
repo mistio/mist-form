@@ -20,9 +20,10 @@ describe('Unit Test Subform', () => {
     cy.get('#playground')
       .find('#title')
       .find('vaadin-text-field')
-      .find('#clearButton')
       .eq(0)
-      .click();
+      .click()
+      .click()
+      .type('{selectAll}{backspace}');
 
     cy.get('#playground')
       .find('#title')
@@ -36,8 +37,9 @@ describe('Unit Test Subform', () => {
       .find('mist-form')
       .find('#title')
       .find('vaadin-text-field')
-      .find('#clearButton')
-      .click();
+      .click()
+      .click()
+      .type('{selectAll}{backspace}');
 
     cy.get('#playground')
       .find('#task')

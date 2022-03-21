@@ -34,11 +34,8 @@ describe('Unit Tests', () => {
       .should('have.attr', 'value', 'Norris');
 
     cy.get('#playground').find('.submit-btn').should('have.attr', 'disabled');
-
-    cy.get('#playground').find('.cancel-btn').click();
-
-    cy.get('#playground').find('.cancel-btn').should('have.attr', 'focused');
   });
+
   it('Clicking on Mr should change form data', () => {
     cy.get('#playground').find('#salutation').find('input[value="Mr"]').click();
 
@@ -54,16 +51,21 @@ describe('Unit Tests', () => {
     cy.get('#playground')
       .find('#firstName')
       .find('vaadin-text-field')
-      .find('#clearButton')
-      .click();
+      .click()
+      .click()
+      .type('{selectAll}{backspace}');
 
+    cy.wait(500);
     // delete text on lastName
     cy.get('#playground')
       .find('#lastName')
       .find('vaadin-text-field')
-      .find('#clearButton')
-      .click();
+      .click()
+      .click()
+      .click()
+      .type('{selectAll}{backspace}');
 
+    cy.wait(500);
     // check first name invalid
     cy.get('#playground')
       .find('#firstName')
@@ -80,6 +82,8 @@ describe('Unit Tests', () => {
     cy.get('#playground')
       .find('#firstName')
       .find('vaadin-text-field')
+      .click()
+      .click()
       .type('Eis');
 
     cy.get('#playground')
@@ -91,6 +95,8 @@ describe('Unit Tests', () => {
     cy.get('#playground')
       .find('#lastName')
       .find('vaadin-text-field')
+      .click()
+      .click()
       .type('D. Zaster');
 
     cy.get('#playground')
