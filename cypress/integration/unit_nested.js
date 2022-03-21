@@ -81,7 +81,7 @@ describe('Unit Test Nested', () => {
       .find('#title')
       .find('vaadin-text-field')
       .type('Task no 1');
-
+    cy.wait(500);
     cy.get('#playground')
       .find('#tasks')
       .find('ul')
@@ -92,7 +92,7 @@ describe('Unit Test Nested', () => {
       .find('#details')
       .find('vaadin-text-area')
       .type('Details of Task no 1');
-
+    cy.wait(500);
     // click Done
     cy.get('#playground')
       .find('#tasks')
@@ -104,6 +104,7 @@ describe('Unit Test Nested', () => {
       .find('#done')
       .find('input')
       .click();
+    cy.wait(500);
   });
 
   it('Move 1st Task to 2nd', () => {
@@ -173,7 +174,7 @@ describe('Unit Test Nested', () => {
       .find('vaadin-checkbox')
       .should('have.attr', 'checked');
   });
-  /*
+
   it('Move second task back up', () => {
     // move down button should be disabled
     cy.get('#playground')
@@ -315,5 +316,4 @@ describe('Unit Test Nested', () => {
       .find('.submit-btn')
       .should('not.have.attr', 'disabled');
   });
-  */
 });
