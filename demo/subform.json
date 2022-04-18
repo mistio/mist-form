@@ -1,0 +1,53 @@
+{
+    "jsonSchema": {
+        "title": "A single task",
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Task list title"
+          },
+          "task": {
+            "type": "object",
+            "required": [
+            "title"
+            ],
+            "properties": {
+            "title": {
+                "type": "string",
+                "title": "Title",
+                "description": "A sample title"
+            },
+            "details": {
+                "type": "string",
+                "title": "Task details",
+                "description": "Enter the task details"
+            },
+            "done": {
+                "type": "boolean",
+                "title": "Done?",
+                "default": false
+            }
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "task": {
+            "details": {
+                "ui:widget": "textarea"
+            }
+        }
+      },
+      "formData": {
+        "title": "My current task",
+        "task": {
+            "title": "My first task",
+            "details": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "done": true
+          }
+      }
+}

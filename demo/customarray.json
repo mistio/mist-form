@@ -1,0 +1,15 @@
+{
+    "jsonSchema": {
+        "title": "Custom array of strings",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "uiSchema": {},
+      "formData": [
+        "react",
+        "jsonschema",
+        "form"
+      ]
+}
