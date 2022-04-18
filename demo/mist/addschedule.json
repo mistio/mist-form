@@ -1,0 +1,146 @@
+{
+    "jsonSchema": {
+        "title": "Add schedule form",
+        "description": "A form for adding a schedule",
+        "type": "object",
+        "required": [
+            "name",
+            "resource"
+        ],
+        "properties": {
+            "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "Chuck"
+            },
+            "description": {
+            "type": "string",
+            "title": "Description"
+            },
+            "resource": {
+            "type": "string",
+            "title": "Resource",
+            "enum": [
+                "Machine",
+                "Volume",
+                "Network",
+                "Cluster"
+            ]
+            }
+        },
+        "allOf": [
+            {
+            "if": {
+                "properties": {
+                "resource": {
+                    "const": "Machine"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "action": {
+                    "type": "string",
+                    "title": "Action",
+                    "enum": [
+                    "Create",
+                    "Destroy",
+                    "Reboot"
+                    ]
+                }
+                },
+                "required": [
+                "action"
+                ]
+            }
+            },
+            {
+            "if": {
+                "properties": {
+                "resource": {
+                    "const": "Volume"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "action": {
+                    "type": "string",
+                    "title": "Action",
+                    "enum": [
+                    "Delete"
+                    ]
+                }
+                },
+                "required": [
+                "action"
+                ]
+            }
+            },
+            {
+            "if": {
+                "properties": {
+                "resource": {
+                    "const": "Network"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "action": {
+                    "type": "string",
+                    "title": "Action",
+                    "enum": [
+                    "Delete"
+                    ]
+                }
+                },
+                "required": [
+                "action"
+                ]
+            }
+            },
+            {
+            "if": {
+                "properties": {
+                "resource": {
+                    "const": "Cluster"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "action": {
+                    "type": "string",
+                    "title": "Action",
+                    "enum": [
+                    "Delete"
+                    ]
+                }
+                },
+                "required": [
+                "action"
+                ]
+            }
+            }
+        ]
+    },
+    "uiSchema": {
+        "private": {
+            "ui:widget": "textarea",
+            "ui:upload": true,
+            "ui:placeholder": "Paste your private key material",
+            "ui:options": {
+              "style": "font-family:monospace; font-size: 10px; width: 420px; min-height:200px; max-height:400px;"
+          }
+
+        },
+        "action": {
+            "ui:widget": "radio"
+        }
+    },
+    "formData": {
+        "name": "test schedule",
+        "resource": "machine"
+    }
+}
