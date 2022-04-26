@@ -5,7 +5,8 @@
         "type": "object",
         "required": [
             "name",
-            "resource"
+            "resource",
+            "scheduleType"
         ],
         "properties": {
             "name": {
@@ -16,6 +17,15 @@
             "description": {
             "type": "string",
             "title": "Description"
+            },
+            "scheduleType": {
+            "type": "string",
+            "title": "Schedule Type",
+            "enum": [
+                "One Off",
+                "Interval",
+                "Crontab"
+            ]
             },
             "resource": {
             "type": "string",
