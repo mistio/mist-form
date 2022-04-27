@@ -42,6 +42,77 @@
             {
             "if": {
                 "properties": {
+                "scheduleType": {
+                    "const": "One Off"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "scheduleEntry": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Schedule Entry"
+                }
+                },
+                "required": [
+                "scheduleEntry"
+                ]
+            }
+            },
+            {
+            "if": {
+                "properties": {
+                "scheduleType": {
+                    "const": "Interval"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "interval": {
+                    "type": "string",
+                    "title": "Interval"
+                },
+                "period": {
+                    "type":"string",
+                    "title": "Period",
+                    "enum":[
+                        "mins",
+                        "hours",
+                        "days"
+                    ]
+                }
+                },
+                "required": [
+                "interval",
+                "period"
+                ]
+            }
+            },
+            {
+            "if": {
+                "properties": {
+                "scheduleType": {
+                    "const": "Crontab"
+                }
+                }
+            },
+            "then": {
+                "properties": {
+                "crontab": {
+                    "type": "string",
+                    "title": "Crontab"
+                }
+                },
+                "required": [
+                "crontab"
+                ]
+            }
+            },
+            {
+            "if": {
+                "properties": {
                 "resource": {
                     "const": "Machine"
                 }
@@ -57,10 +128,25 @@
                     "Destroy",
                     "Reboot"
                     ]
+                },
+                "selectors": {
+                    "type": "array",
+                    "title": "A multiple choices list",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                        "foo",
+                        "bar",
+                        "fuzz",
+                        "qux"
+                        ]
+                    },
+                    "uniqueItems": true
                 }
                 },
                 "required": [
-                "action"
+                "action",
+                "selectors"
                 ]
             }
             },
@@ -80,10 +166,25 @@
                     "enum": [
                     "Delete"
                     ]
+                },
+                "selectors": {
+                    "type": "array",
+                    "title": "A multiple choices list",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                        "foo",
+                        "bar",
+                        "fuzz",
+                        "qux"
+                        ]
+                    },
+                    "uniqueItems": true
                 }
                 },
                 "required": [
-                "action"
+                "action",
+                "selectors"
                 ]
             }
             },
@@ -103,10 +204,25 @@
                     "enum": [
                     "Delete"
                     ]
+                },
+                "selectors": {
+                    "type": "array",
+                    "title": "A multiple choices list",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                        "foo",
+                        "bar",
+                        "fuzz",
+                        "qux"
+                        ]
+                    },
+                    "uniqueItems": true
                 }
                 },
                 "required": [
-                "action"
+                "action",
+                "selectors"
                 ]
             }
             },
@@ -126,10 +242,25 @@
                     "enum": [
                     "Delete"
                     ]
+                },
+                "selectors": {
+                    "type": "array",
+                    "title": "A multiple choices list",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                        "foo",
+                        "bar",
+                        "fuzz",
+                        "qux"
+                        ]
+                    },
+                    "uniqueItems": true
                 }
                 },
                 "required": [
-                "action"
+                "action",
+                "selectors"
                 ]
             }
             }
@@ -147,6 +278,9 @@
         },
         "action": {
             "ui:widget": "radio"
+        },
+        "selectors": {
+            "ui:widget": "checkboxes"
         }
     },
     "formData": {
