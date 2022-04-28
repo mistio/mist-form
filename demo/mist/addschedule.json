@@ -5,27 +5,32 @@
         "type": "object",
         "required": [
             "name",
+            "enabled",
             "resource",
             "scheduleType"
         ],
         "properties": {
             "name": {
-            "type": "string",
-            "title": "Name",
-            "default": "Chuck"
+                "type": "string",
+                "title": "Name",
+                "default": "Chuck"
             },
             "description": {
-            "type": "string",
-            "title": "Description"
+                "type": "string",
+                "title": "Description"
+            },
+            "enabled" : {
+                "type": "boolean",
+                "title": "Enabled"
             },
             "scheduleType": {
-            "type": "string",
-            "title": "Schedule Type",
-            "enum": [
-                "One Off",
-                "Interval",
-                "Crontab"
-            ]
+                "type": "string",
+                "title": "Schedule Type",
+                "enum": [
+                    "One Off",
+                    "Interval",
+                    "Crontab"
+                ]
             },
             "resource": {
             "type": "string",
@@ -131,7 +136,7 @@
                 },
                 "selectors": {
                     "type": "array",
-                    "title": "A multiple choices list",
+                    "title": "Select Resources",
                     "items": {
                         "type": "string",
                         "enum": [
@@ -169,7 +174,7 @@
                 },
                 "selectors": {
                     "type": "array",
-                    "title": "A multiple choices list",
+                    "title": "Select Resources",
                     "items": {
                         "type": "string",
                         "enum": [
