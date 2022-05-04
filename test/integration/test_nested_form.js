@@ -17,7 +17,7 @@ describe('Unit Test Nested', () => {
   });
 
   it('Delete default tasks', () => {
-    // cy.wait(1000);
+    cy.wait(1000);
     // delete 2nd default tasks
     cy.get('#playground')
       .find('#tasks')
