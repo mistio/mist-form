@@ -21,8 +21,14 @@ describe('Unit Test Numbers', () => {
     cy.get('#playground')
       .find('#number')
       .find('vaadin-number-field')
-      .find('#clearButton')
-      .click();
+      .click()
+      .click()
+      .type('{selectAll}{backspace}');
+
+    cy.get('#playground')
+      .find('#number')
+      .find('vaadin-number-field')
+      .should('have.attr', 'value', 'NaN');
 
     // type in a number
     cy.get('#playground')
@@ -36,82 +42,36 @@ describe('Unit Test Numbers', () => {
       .find('#number')
       .find('vaadin-number-field')
       .should('have.attr', 'value', '8');
-
-    // press the - button
-    cy.get('#playground')
-      .find('#number')
-      .find('vaadin-number-field')
-      .find('vaadin-input-container')
-      .find('div', { includeShadowDom: false })
-      .eq(0)
-      .click();
-
-    cy.get('#playground')
-      .find('#number')
-      .find('vaadin-number-field')
-      .should('have.attr', 'value', '7');
-
-    // press the + button
-    cy.get('#playground')
-      .find('#number')
-      .find('vaadin-number-field')
-      .find('vaadin-input-container')
-      .find('div', { includeShadowDom: false })
-      .eq(2)
-      .click();
-
-    cy.get('#playground')
-      .find('#number')
-      .find('vaadin-number-field')
-      .should('have.attr', 'value', '8');
   });
 
   it('Test integer field', () => {
-    cy.get('#playground')
-      .find('#integer')
-      .find('vaadin-integer-field')
-      .find('vaadin-input-container')
-      .find('div', { includeShadowDom: false })
-      .eq(0)
-      .click();
-
+    // check if it is empty
     cy.get('#playground')
       .find('#integer')
       .find('vaadin-integer-field')
       .find('input', { includeShadowDom: false })
       .invoke('val')
       .should(value => {
-        expect(value).eq('-1');
+        expect(value).eq('');
       });
 
-    // press the clear button -- x
+    // type -12
     cy.get('#playground')
       .find('#integer')
       .find('vaadin-integer-field')
-      .find('#clearButton')
-      .click();
+      .find('input')
+      .click()
+      .click()
+      .type('-12');
 
-    cy.get('#playground')
-      .find('#integer')
-      .find('vaadin-integer-field')
-      .should('not.have.attr', 'has-value');
-
-    // press +
-    cy.get('#playground')
-      .find('#integer')
-      .find('vaadin-integer-field')
-      .find('vaadin-input-container')
-      .find('div', { includeShadowDom: false })
-      .eq(2)
-      .click();
-
+    // check that the value is correct
     cy.get('#playground')
       .find('#integer')
       .find('vaadin-integer-field')
       .find('input', { includeShadowDom: false })
       .invoke('val')
       .should(value => {
-        expect(value).eq('1');
+        expect(value).eq('-12');
       });
   });
 
@@ -124,6 +84,7 @@ describe('Unit Test Numbers', () => {
     cy.get('#playground')
       .find('#numberEnum')
       .find('vaadin-select')
+      .find('vaadin-item')
       .should('have.attr', 'value', '2');
   });
 
