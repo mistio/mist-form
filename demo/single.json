@@ -1,0 +1,8 @@
+{
+    "jsonSchema": {
+        "title": "A single-field form",
+        "type": "string"
+      },
+      "uiSchema": {},
+      "formData": "Initial value"
+}

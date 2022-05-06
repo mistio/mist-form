@@ -1,115 +1,100 @@
 {
+  "name": "mist-form",
+  "description": "A Webcomponent that renders a form defined by a JSONSchema & an optional UISchema spec",
+  "license": "Apache-2.0",
   "author": {
-    "name": "Golfo Vasiliou",
-    "email": "golfo@mist.io"
+    "name": "Dimitris Moraitis",
+    "email": "dimo@mist.io"
   },
-  "bundleDependencies": false,
+  "version": "0.8.0",
+  "keywords": [
+    "jsonschema",
+    "uischema",
+    "form",
+    "mist"
+  ],
+  "main": "index.js",
+  "module": "index.js",
+  "scripts": {
+    "analyze": "cem analyze --litelement",
+    "start": "web-dev-server",
+    "lint": "eslint --ext .js,.html . --ignore-path .gitignore && prettier \"**/*.js\" --check --ignore-path .gitignore",
+    "format": "eslint --ext .js,.html . --fix --ignore-path .gitignore && prettier \"**/*.js\" --write --ignore-path .gitignore",
+    "test": "npx cypress run --browser chrome ; web-test-runner --coverage",
+    "test:watch": "web-test-runner --watch",
+    "storybook": "npm run analyze -- --exclude dist && web-dev-server -c .storybook/server.mjs",
+    "storybook:build": "npm run analyze -- --exclude dist && build-storybook"
+  },
   "dependencies": {
-    "@open-wc/lit-helpers": "^0.3.11",
-    "lit-element": "^2.2.1",
-    "lit-html": "^1.1.2",
+    "@monaco-editor/loader": "^1.2.0",
+    "@polymer/paper-toggle-button": "^3.0.1",
+    "@vaadin/button": "^23.0.0",
+    "@vaadin/checkbox": "^23.0.0",
+    "@vaadin/combo-box": "^23.0.0",
+    "@vaadin/date-picker": "^23.0.0",
+    "@vaadin/date-time-picker": "^23.0.0",
+    "@vaadin/email-field": "^23.0.0",
+    "@vaadin/form-layout": "^23.0.0",
+    "@vaadin/icon": "^23.0.0",
+    "@vaadin/icons": "^23.0.0",
+    "@vaadin/integer-field": "^23.0.0",
+    "@vaadin/item": "^23.0.0",
+    "@vaadin/list-box": "^23.0.0",
+    "@vaadin/number-field": "^23.0.0",
+    "@vaadin/password-field": "^23.0.0",
+    "@vaadin/radio-group": "^23.0.0",
+    "@vaadin/select": "^23.0.0",
+    "@vaadin/split-layout": "^23.0.0",
+    "@vaadin/tabs": "^23.0.0",
+    "@vaadin/text-area": "^23.0.0",
+    "@vaadin/text-field": "^23.0.0",
+    "@vaadin/time-picker": "^23.0.0",
+    "@vaadin/vaadin-form-layout": "^23.0.0",
+    "@vaadin/vaadin-lumo-styles": "^23.0.0",
+    "@vaadin/vaadin-material-styles": "^23.0.0",
+    "lit": "^2.0.2"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.4.17",
+    "@open-wc/eslint-config": "^4.3.0",
+    "@open-wc/testing": "next",
+    "@open-wc/testing-karma": "^4.0.9",
     "@polymer/iron-ajax": "^3.0.1",
-    "@polymer/iron-icons": "^3.0.1",
-    "@polymer/iron-selector": "^3.0.1",
-    "@polymer/paper-button": "^3.0.1",
-    "@polymer/paper-checkbox": "^3.1.0",
-    "@polymer/paper-dropdown-menu": "^3.1.0",
-    "@polymer/paper-icon-button": "^3.0.2",
-    "@polymer/paper-input": "^3.2.1",
-    "@polymer/paper-item": "^3.0.1",
-    "@polymer/paper-listbox": "^3.0.1",
-    "@polymer/paper-radio-group": "^3.0.1",
-    "@polymer/paper-slider": "^3.0.1",
     "@polymer/paper-spinner": "^3.0.2",
     "@polymer/paper-styles": "^3.0.1",
-    "@polymer/paper-swatch-picker": "^3.0.1",
-    "@polymer/paper-toggle-button": "^3.0.1",
-    "ace-custom-element": "^1.6.5"
+    "@web/dev-server": "^0.1.28",
+    "@web/dev-server-storybook": "next",
+    "@web/test-runner": "^0.13.22",
+    "cypress": "^9.5.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.4.1"
   },
-  "deprecated": false,
-  "description": "Webcomponent mist-form following open-wc recommendations",
-  "devDependencies": {
-    "@open-wc/eslint-config": "^2.0.0",
-    "@open-wc/testing": "^3.0.1",
-    "@open-wc/testing-karma": "^4.0.9",
-    "cypress": "^9.1.1",
-    "deepmerge": "^3.2.0",
-    "es-dev-server": "^1.23.0",
-    "eslint": "^6.1.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-cypress": "^2.11.2",
-    "husky": "^1.0.0",
-    "lint-staged": "^10.0.0",
-    "prettier": "^2.0.4"
-  },
-  "directories": {
-    "test": "test"
-  },
+  "customElements": "custom-elements.json",
   "eslintConfig": {
-    "rules": {
-      "func-names": ["error", "never"],
-      "no-console": [
-        1,
-        {
-          "allow": [
-            "info",
-            "warn",
-            "error",
-            "exception",
-            "log"
-          ]
-        }
-      ],
-      "array-callback-return": "off"
-    },
     "extends": [
-      "@open-wc/eslint-config",
-      "eslint-config-prettier",
-      "plugin:cypress/recommended"
+      "@open-wc",
+      "prettier"
     ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid"
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
-  "keywords": [
-    "jsonschema",
-    "form",
-    "mist"
-  ],
-  "license": "Apache-2.0",
+  "vaadin": {
+    "disableUsageStatistics": true
+  },
   "lint-staged": {
     "*.js": [
       "eslint --fix",
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
-  },
-  "main": "index.js",
-  "module": "index.js",
-  "name": "@mistio/mist-form",
-  "prettier": {
-    "singleQuote": true,
-    "arrowParens": "avoid"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@gitlab.ops.mist.io:mistio/mist-form.git"
-  },
-  "scripts": {
-    "format": "npm run format:eslint && npm run format:prettier",
-    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
-    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
-    "lint": "npm run lint:eslint && npm run lint:prettier",
-    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
-    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
-    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
-    "storybook": "start-storybook",
-    "storybook:build": "build-storybook",
-    "test": "karma start --coverage",
-    "test:cypress": "cypress open",
-    "test:watch": "karma start --auto-watch=true --single-run=false"
-  },
-  "version": "0.5.4"
+  }
 }

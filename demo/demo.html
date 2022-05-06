@@ -35,10 +35,8 @@
       const dynaData = {
         getTestData: {
           func: new Promise((resolve) => {
-            setTimeout(function () {
-              resolve(formValues => {
-                return [formValues.title || 'title', formValues.age || 'age'];
-              });
+            setTimeout(() => {
+              resolve(formValues => [formValues.title || 'title', formValues.age || 'age']);
             }, 2500);
           }),
           dependencies: ['title', 'age'],
