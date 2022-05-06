@@ -1,4 +1,5 @@
 {
     "includeShadowDom":true,
-    "watchForFileChanges": false
+    "watchForFileChanges": false,
+    "integrationFolder": "test/integration"
 }
