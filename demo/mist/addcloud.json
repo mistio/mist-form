@@ -1,0 +1,7 @@
+{
+  "jsonSchema": {
+    "$ref": "https://storage.googleapis.com/mist-api-spec/v2/amazon-regions/mist-api-v2.json#/components/schemas/AddCloudRequest"
+  },
+  "uiSchema": {},
+  "formData": {}
+}

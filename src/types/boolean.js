@@ -11,6 +11,7 @@ export class MistFormBooleanField extends fieldMixin(LitElement) {
   get domValue() {
     const field = this.shadowRoot.querySelector('.mist-form-field');
     // if (field.value !== undefined) return Boolean(field.value);
+    if (!field) return undefined;
     if (this.widget === 'select') {
       if (field.value === 'false' || !field.value) return false;
       return true;
