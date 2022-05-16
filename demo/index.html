@@ -68,7 +68,7 @@
       // {id: 'ordering'},
       {id: 'references'},
       // {id: 'custom'},
-      {id: 'errors'},
+      // {id: 'errors'},
       {id: 'examples'},
       {id: 'large'},
       {id: 'datetime', title: "Date & Time"},
@@ -81,8 +81,8 @@
       // {id: 'propdeps', title: "Property dependencies"},
       // {id: 'schemadeps', title: "Schema dependencies"},
       // {id: 'addprops', title: "Additional Properties"},
-      // {id: 'anyof', title: "Any Of"},
-      // {id: 'oneof', title: "One Of"},
+      {id: 'anyof', title: "Any Of"},
+      {id: 'oneof', title: "One Of"},
       {id: 'allof', title: "All Of"},
       {id: 'ifthenelse', title: "If Then Else"},
       // {id: 'nullfields', title: "Null Fields"},
@@ -99,10 +99,12 @@
       ]
     }
 
+    // eslint-disable-next-line func-names
     export const debouncer = function (callback, wait) {
       let timeout = 1000;
       return (...args) => {
         clearTimeout(timeout);
+        // eslint-disable-next-line func-names
         timeout = setTimeout(function () {
           callback.apply(this, args);
         }, wait);
@@ -165,13 +167,14 @@
         const newValue = formDataEditor.getValue();
         try {
           document.querySelector('mist-form').formData = JSON.parse(newValue);
-        } catch(e) {
+        } catch {
           if (document.querySelector('mist-form').formData !== newValue) {
             document.querySelector('mist-form').formData = newValue;
           }
         }
       }, 150));
-      document.querySelector('mist-form').addEventListener('form-data-changed', function(e) {
+      // eslint-disable-next-line func-names
+      document.querySelector('mist-form').addEventListener('form-data-changed', function() {
         let newValue = this.domValue;
         switch (typeof(newValue)) {
           case "string":
@@ -191,7 +194,7 @@
           formDataEditor.setValue(newValue);
         }
       });
-      updateTab();
+      document.querySelector('mist-form').dispatchEvent(new CustomEvent('form-data-changed', {detail: {}, bubbles:true, composed: true}));
     });
     function updateTab(e) {
         const preset = e ? e.detail.value : 0;
@@ -200,9 +203,10 @@
         .then(response => response.json())
         .then(async body => {
           const form = document.querySelector('mist-form#playground');
-          form.jsonSchema = body.jsonSchema;
+          // debugger;
+          form.formData = body.formData || {};
+          form.jsonSchema = body.jsonSchema || body;
           form.uiSchema = body.uiSchema;
-          form.formData = body.formData;
           if (jsonSchemaEditor) jsonSchemaEditor.setValue(JSON.stringify(body.jsonSchema || body, null, 2));
           if (uiSchemaEditor) uiSchemaEditor.setValue(JSON.stringify(body.uiSchema || {}, null, 2));
           if (formDataEditor) formDataEditor.setValue(JSON.stringify(body.formData || {}, null, 2));

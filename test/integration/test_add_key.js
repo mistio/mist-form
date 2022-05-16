@@ -6,7 +6,7 @@ describe('Test Add Key Form', () => {
     if (e.message.includes('ResizeObserver loop limit exceeded')) return false;
   });
 
-  it('Opens playgroung', () => {
+  it('Opens playground', () => {
     cy.visit('http://localhost:8000/demo/?mist');
   });
 

@@ -4,11 +4,13 @@
 
 ## system files
 .DS_Store
-
+.storybook
+/stories
+/storybook-static
 ## npm
 /node_modules/
 /npm-debug.log
-
+/instrumented/
 ## testing
 /coverage/
 

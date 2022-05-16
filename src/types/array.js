@@ -34,12 +34,14 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
   get domValue() {
     const ret = [];
     if (this.spec.jsonSchema.uniqueItems) {
-      this.shadowRoot
-        .querySelector(`#${this.id}-items`)
-        .shadowRoot.querySelectorAll('vaadin-checkbox[checked]')
-        .forEach(i => {
-          ret.push(i.id);
-        });
+      const items = this.shadowRoot.querySelector(`#${this.id}-items`);
+      if (items) {
+        items.shadowRoot
+          .querySelectorAll('vaadin-checkbox[checked]')
+          .forEach(i => {
+            ret.push(i.id);
+          });
+      }
       return ret;
     }
     this.shadowRoot.querySelectorAll('.mist-form-field').forEach(f => {
@@ -71,15 +73,12 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     const description = this.spec.jsonSchema.description
       ? html`<p>${this.spec.jsonSchema.description}</p>`
       : html``;
-    // Borrowed from https://gist.github.com/iperelivskiy/4110988
     let body;
     if (this.spec.jsonSchema.uniqueItems) {
       body = this.parent
         ? this.parent.renderField({
             id: `${this.spec.id}-items`,
-            jsonSchema: this.parent.resolveDefinitions(
-              this.spec.jsonSchema.items
-            ),
+            jsonSchema: this.spec.jsonSchema.items,
             uiSchema:
               { ...this.spec.uiSchema.items, ...this.spec.uiSchema } || {},
             formData: this.spec.formData,
@@ -170,6 +169,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     return html` ${title} ${description} ${body} `;
   }
 
+  // Borrowed from https://gist.github.com/iperelivskiy/4110988
   hash(s) {
     if (!this.jsonSchema) return '';
     /* Simple hash function. */
@@ -191,12 +191,12 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
   }
 
   itemSchema(item, index) {
-    return this.parent.resolveDefinitions(
+    return (
       (this.spec.jsonSchema.length && this.spec.jsonSchema[index]) ||
-        (this.spec.jsonSchema.items.length
-          ? this.spec.jsonSchema.items[index] ||
-            this.spec.jsonSchema.additionalItems
-          : this.spec.jsonSchema.items)
+      (this.spec.jsonSchema.items.length
+        ? this.spec.jsonSchema.items[index] ||
+          this.spec.jsonSchema.additionalItems
+        : this.spec.jsonSchema.items)
     );
   }
 
