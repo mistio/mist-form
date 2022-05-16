@@ -33,7 +33,7 @@ describe('Unit Tests', () => {
       // 'Property dependencies',
       // 'Schema dependencies',
       // 'Additional Properties',
-      // 'Any Of',
+      'Any Of',
       'One Of',
       'All Of',
       'If Then Else',

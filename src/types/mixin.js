@@ -42,6 +42,9 @@ export const fieldMixin = superClass =>
       ) {
         return this.spec.uiSchema['ui:widget'];
       }
+      if (this.spec.jsonSchema && this.spec.jsonSchema['ui:widget']) {
+        return this.spec.jsonSchema['ui:widget'];
+      }
       return '';
     }
 

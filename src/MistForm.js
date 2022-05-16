@@ -362,13 +362,14 @@ export class MistForm extends LitElement {
         }
       } else {
         discriminator = {
+          id: '_discriminator',
           type: 'number',
           enum: ret.oneOf.map((el, i) => i),
           enumNames: ret.oneOf.map((el, i) => el.title || `Option ${i}`),
         };
         ret.discriminator = discriminator;
         if (ret.properties === undefined) ret.properties = {};
-        discriminatorValue = this.domValue && this.domValue[''];
+        discriminatorValue = this.domValue && this.domValue._discriminator;
         if (typeof discriminatorValue === 'string') {
           discriminatorValue = ret.oneOf.findIndex(
             i => i.title === discriminatorValue
@@ -402,17 +403,19 @@ export class MistForm extends LitElement {
         }
       } else {
         discriminator = {
+          id: '_discriminator',
           type: 'array',
+          uniqueItems: true,
+          'ui:widget': 'checkboxes',
           items: {
-            type: 'number',
-            uniqueItems: true,
-            enum: ret.anyOf.map((el, i) => i),
-            enumNames: ret.anyOf.map((el, i) => `Option ${i}`),
+            type: 'string',
+            'ui:widget': 'checkboxes',
+            enum: ret.anyOf.map((el, i) => el.title || i),
           },
         };
         ret.discriminator = discriminator;
         if (ret.properties === undefined) ret.properties = {};
-        discriminatorValue = this.domValue && this.domValue.discriminator;
+        discriminatorValue = this.domValue && this.domValue._discriminator;
         if (typeof discriminatorValue === 'string') {
           discriminatorValue = ret.anyOf.findIndex(
             i => i.title === discriminatorValue
@@ -420,19 +423,25 @@ export class MistForm extends LitElement {
         }
       }
       if (discriminatorValue !== null && discriminator !== undefined) {
-        if (ret.anyOf[discriminatorValue]) {
-          mergeDeep(ret, this.evalSchema(ret.anyOf[discriminatorValue]));
-        } else if (
-          ret.discriminator &&
-          ret.discriminator.mapping &&
-          ret.discriminator.mapping[discriminatorValue]
-        ) {
-          mergeDeep(
-            ret,
-            resolveLocalRef(ret.discriminator.mapping[discriminatorValue], obj)
-          );
-        } else {
-          // debugger;
+        if (discriminatorValue && discriminatorValue.length) {
+          discriminatorValue.forEach(dv => {
+            let index = ret.anyOf.findIndex(el => el.title === dv);
+            if (index === -1) index = dv;
+            if (ret.anyOf[index]) {
+              const schema = this.evalSchema(ret.anyOf[index]);
+              if (schema.title) delete schema.title;
+              mergeDeep(ret, schema);
+            } else if (
+              ret.discriminator &&
+              ret.discriminator.mapping &&
+              ret.discriminator.mapping[index]
+            ) {
+              mergeDeep(
+                ret,
+                resolveLocalRef(ret.discriminator.mapping[index], obj)
+              );
+            }
+          });
         }
       }
       delete ret.anyOf;
@@ -523,9 +532,10 @@ export class MistForm extends LitElement {
         : html``;
       const discriminator = this.evaluatedSchema.discriminator
         ? this.renderField({
+            id: '_discriminator',
             jsonSchema: this.evaluatedSchema.discriminator,
             uiSchema: {},
-            formData: undefined,
+            formData: [],
           })
         : '';
       const title = this.evaluatedSchema.title
