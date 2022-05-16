@@ -2,7 +2,7 @@ import { html, css, LitElement } from 'lit';
 import '@vaadin/form-layout';
 import '@vaadin/button';
 import '@polymer/paper-toggle-button';
-import { debouncer, mergeDeep, resolveLocalRef } from './utils.js';
+import { debouncer, mergeDeep } from './utils.js';
 import './types/string.js';
 import './types/number.js';
 import './types/integer.js';
@@ -304,7 +304,7 @@ export class MistForm extends LitElement {
     if (!obj || typeof obj !== 'object') return obj;
     if (typeof obj.$ref === 'string') {
       refs.push(obj.$ref);
-      const target = resolveLocalRef(obj.$ref, root);
+      const target = this.resolveLocalRef(obj.$ref, root);
       // eslint-disable-next-line
       Object.keys(target).forEach(k => {
         if (k !== '$ref') {
@@ -337,6 +337,18 @@ export class MistForm extends LitElement {
     return obj;
   }
 
+  resolveLocalRef(ref) {
+    const [, path] = ref.split('#');
+    let target = this.resolvedSchema;
+    const pathArray = path.split('/');
+    for (let i = 0; i < pathArray.length; i += 1) {
+      if (pathArray[i] && target[pathArray[i]]) {
+        target = target[pathArray[i]];
+      }
+    }
+    return target;
+  }
+
   evalSchema(obj) {
     if (
       !obj ||
@@ -367,8 +379,8 @@ export class MistForm extends LitElement {
           enum: ret.oneOf.map((el, i) => i),
           enumNames: ret.oneOf.map((el, i) => el.title || `Option ${i}`),
         };
-        ret.discriminator = discriminator;
         if (ret.properties === undefined) ret.properties = {};
+        ret.properties._discriminator = discriminator;
         discriminatorValue = this.domValue && this.domValue._discriminator;
         if (typeof discriminatorValue === 'string') {
           discriminatorValue = ret.oneOf.findIndex(
@@ -376,20 +388,22 @@ export class MistForm extends LitElement {
           );
         }
       }
-      if (discriminatorValue !== null && discriminator !== undefined) {
-        if (ret.oneOf[discriminatorValue]) {
-          mergeDeep(ret, this.evalSchema(ret.oneOf[discriminatorValue]));
-        } else if (
+      if (discriminatorValue !== null) {
+        if (
           ret.discriminator &&
           ret.discriminator.mapping &&
           ret.discriminator.mapping[discriminatorValue]
         ) {
           mergeDeep(
             ret,
-            resolveLocalRef(ret.discriminator.mapping[discriminatorValue], obj)
+            this.resolveLocalRef(
+              ret.discriminator.mapping[discriminatorValue],
+              obj
+            )
           );
-        } else {
-          // debugger;
+        }
+        if (ret.oneOf[discriminatorValue]) {
+          mergeDeep(ret, this.evalSchema(ret.oneOf[discriminatorValue]));
         }
       }
       delete ret.oneOf;
@@ -413,8 +427,8 @@ export class MistForm extends LitElement {
             enum: ret.anyOf.map((el, i) => el.title || i),
           },
         };
-        ret.discriminator = discriminator;
         if (ret.properties === undefined) ret.properties = {};
+        ret.properties._discriminator = discriminator;
         discriminatorValue = this.domValue && this.domValue._discriminator;
         if (typeof discriminatorValue === 'string') {
           discriminatorValue = ret.anyOf.findIndex(
@@ -438,7 +452,7 @@ export class MistForm extends LitElement {
             ) {
               mergeDeep(
                 ret,
-                resolveLocalRef(ret.discriminator.mapping[index], obj)
+                this.resolveLocalRef(ret.discriminator.mapping[index], obj)
               );
             }
           });
@@ -530,14 +544,6 @@ export class MistForm extends LitElement {
             @checked-changed=${this._toggleChanged}
           ></paper-toggle-button>`
         : html``;
-      const discriminator = this.evaluatedSchema.discriminator
-        ? this.renderField({
-            id: '_discriminator',
-            jsonSchema: this.evaluatedSchema.discriminator,
-            uiSchema: {},
-            formData: [],
-          })
-        : '';
       const title = this.evaluatedSchema.title
         ? html`<h1>${toggler} ${this.evaluatedSchema.title}</h1>`
         : html`${toggler}`;
@@ -546,7 +552,7 @@ export class MistForm extends LitElement {
         : html``;
       return html`
         <div class="form">
-          ${title} ${description} ${loader} ${discriminator}
+          ${title} ${description} ${loader}
           <vaadin-form-layout
             .responsiveSteps="${this.responsiveSteps}"
             ?hidden=${!this.enabled}
