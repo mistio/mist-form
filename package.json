@@ -1,5 +1,5 @@
 {
-  "name": "mist-form",
+  "name": "@mistio/mist-form",
   "description": "A Webcomponent that renders a form defined by a JSONSchema & an optional UISchema spec",
   "license": "Apache-2.0",
   "author": {
