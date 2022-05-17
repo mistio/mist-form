@@ -29,7 +29,6 @@
               "children": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/node"
                 }
               }
             }
@@ -44,10 +43,6 @@
           "shipping_address": {
             "title": "Shipping address",
             "$ref": "#/definitions/address"
-          },
-          "tree": {
-            "title": "Recursive references",
-            "$ref": "#/definitions/node"
           }
         }
       },

@@ -5,7 +5,7 @@ describe('Unit Tests', () => {
   Cypress.on('uncaught:exception', e => {
     if (e.message.includes('ResizeObserver loop limit exceeded')) return false;
   });
-  it('Opens playgroung', () => {
+  it('Opens playground', () => {
     cy.visit('http://localhost:8000/demo/index.html');
   });
 
@@ -17,16 +17,29 @@ describe('Unit Tests', () => {
       'arrays',
       'numbers',
       'widgets',
+      // 'ordering',
       'references',
-      'errors',
+      // 'custom',
+      // 'errors',
       'examples',
       'large',
       'Date & Time',
+      // 'validation',
       'files',
-      // 'Any Of',
-      // 'One Of',
+      // 'single',
+      // 'Custom Array',
+      // 'Custom Object',
+      // 'alternatives',
+      // 'Property dependencies',
+      // 'Schema dependencies',
+      // 'Additional Properties',
+      'Any Of',
+      'One Of',
       'All Of',
       'If Then Else',
+      // 'Null Fields',
+      // 'nullable',
+      // 'Error Schema',
       'default',
     ];
     cy.get('vaadin-tabs > vaadin-tab').each((item, index) => {

@@ -15,10 +15,9 @@ export const fieldMixin = superClass =>
 
     get domValue() {
       const field = this.shadowRoot.querySelector('.mist-form-field');
-      // if (!field) {
-      //   // debugger;
-      //   return;
-      // }
+      if (!field) {
+        return undefined;
+      }
       if (this.widget === 'select') {
         if (field.querySelector('vaadin-item[selected]')) {
           return this.cast(field.querySelector('vaadin-item[selected]').value);
@@ -42,6 +41,9 @@ export const fieldMixin = superClass =>
         this.spec.uiSchema['ui:widget']
       ) {
         return this.spec.uiSchema['ui:widget'];
+      }
+      if (this.spec.jsonSchema && this.spec.jsonSchema['ui:widget']) {
+        return this.spec.jsonSchema['ui:widget'];
       }
       return '';
     }
@@ -77,6 +79,9 @@ export const fieldMixin = superClass =>
       while (el.host) {
         el = el.host;
       }
+      // if (el.__lookupGetter__('parent')){
+      //   return el;
+      // }
       const { parent } = el;
       return parent || el;
     }
@@ -142,8 +147,15 @@ export const fieldMixin = superClass =>
         }
         options.forEach((element, index) => {
           if (this.spec.jsonSchema.enumNames) {
+            // Non-compliant hack
             ret.push({
               label: this.spec.jsonSchema.enumNames[index],
+              value: String(element),
+            });
+          } else if (this.spec.jsonSchema['x-enumNames']) {
+            // Compliant hack
+            ret.push({
+              label: this.spec.jsonSchema['x-enumNames'][index],
               value: String(element),
             });
           } else {
@@ -215,7 +227,7 @@ export const fieldMixin = superClass =>
         ret = '^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$';
       } else if (this.spec.jsonSchema.format === 'uri') {
         ret =
-          '^(([a-zA-Z0-9_\\.\\-+])+://)?[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}[:0-9]|[/.])*$';
+          '^(([a-zA-Z0-9_\\.\\-+])+://)?[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}([:0-9]|[/.]).*$';
       }
       return this.spec.jsonSchema.pattern || ret;
     }
@@ -692,6 +704,7 @@ export const fieldMixin = superClass =>
 
     valueChanged(e) {
       if (e) {
+        // eslint-disable-next-line no-console
         console.debug(this.id, 'Updating form field', e.detail);
       }
       const valueChangedEvent = new CustomEvent('field-value-changed', {
@@ -702,6 +715,7 @@ export const fieldMixin = superClass =>
         composed: true,
       });
       this.dispatchEvent(valueChangedEvent);
+      e.stopPropagation();
     }
 
     validate() {
@@ -746,6 +760,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/text-area').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin textarea');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -767,6 +782,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/checkbox').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin checkbox');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -788,6 +804,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/select').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin select');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -798,9 +815,11 @@ export const fieldMixin = superClass =>
               );
             });
             import('@vaadin/item').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin item');
             });
             import('@vaadin/list-box').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin list-box');
             });
           }
@@ -815,6 +834,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/combo-box').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin combo box');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -836,6 +856,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/text-field').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin text-field');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -857,6 +878,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/password-field').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin password-field');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -878,6 +900,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/email-field').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin email-field');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -901,6 +924,7 @@ export const fieldMixin = superClass =>
             import(
               '@vaadin/radio-group/theme/material/vaadin-radio-group.js'
             ).then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin radio group');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -922,6 +946,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/number-field').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin number field');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -943,6 +968,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/integer-field').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin integer field');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -964,6 +990,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/date-time-picker').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin datetime picker');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -985,6 +1012,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/date-picker').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin date picker');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -1006,6 +1034,7 @@ export const fieldMixin = superClass =>
               })
             );
             import('@vaadin/time-picker').then(() => {
+              // eslint-disable-next-line no-console
               console.debug('imported vaadin time picker');
               this.parent.dispatchEvent(
                 new CustomEvent('loaded', {
@@ -1028,6 +1057,7 @@ export const fieldMixin = superClass =>
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
+        // eslint-disable-next-line
         reader.onload = function (ev) {
           this.shadowRoot.querySelector('.mist-form-field').value =
             ev.target.result;

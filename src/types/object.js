@@ -18,17 +18,11 @@ export class MistFormObjectField extends fieldMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener(
-      'subform-data-changed',
-      this._handleSubformValueChanged
-    );
+    this.addEventListener('subform-data-changed', this.valueChanged);
   }
 
   disconnectedCallback() {
-    this.removeEventListener(
-      'subform-data-changed',
-      this._handleSubformValueChanged
-    );
+    this.removeEventListener('subform-data-changed', this.valueChanged);
     super.disconnectedCallback();
   }
 
@@ -50,26 +44,28 @@ export class MistFormObjectField extends fieldMixin(LitElement) {
     ></mist-form>`;
   }
 
-  _handleSubformValueChanged(e) {
-    console.debug(this, 'Updating form field', e);
-    // let value = this.cast(e.detail.value);
-    // if (!value && this.spec.uiSchema["ui:emptyValue"]) {
-    //   value = this.spec.uiSchema["ui:emptyValue"]
-    // }
-    const valueChangedEvent = new CustomEvent('field-value-changed', {
-      detail: {
-        id: this.spec.id,
-      },
-      bubbles: true,
-      composed: true,
-    });
-    this.dispatchEvent(valueChangedEvent);
-    e.stopPropagation();
-  }
+  // _handleSubformValueChanged(e) {
+  //   console.debug(this, 'Updating form field', e);
+  //   // let value = this.cast(e.detail.value);
+  //   // if (!value && this.spec.uiSchema["ui:emptyValue"]) {
+  //   //   value = this.spec.uiSchema["ui:emptyValue"]
+  //   // }
+  //   const valueChangedEvent = new CustomEvent('field-value-changed', {
+  //     detail: {
+  //       id: this.spec.id,
+  //     },
+  //     bubbles: true,
+  //     composed: true,
+  //   });
+  //   this.dispatchEvent(valueChangedEvent);
+  //   e.stopPropagation();
+  // }
 
   get domValue() {
     if (!this.enabled) return {};
-    return this.shadowRoot.querySelector('mist-form').domValue;
+    const subform = this.shadowRoot.querySelector('mist-form');
+    if (!subform) return undefined;
+    return subform.domValue;
   }
 }
 customElements.define('mist-form-object-field', MistFormObjectField);

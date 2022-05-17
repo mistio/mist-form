@@ -29,8 +29,8 @@ Add mist-form to the DOM, providing a JSON Schema document. You may also provide
 
 As an alternative, pass a url to the JSON Schema. The file may include the UI Schema & initial form data.
 ```html
-<mist-form .url=${url}>
-
+<mist-form method="POST" action="/api/v2/clouds"
+  url="https://storage.googleapis.com/mist-api-spec/v2/master/mist-api-v2.json#/components/schemas/AddCloudRequest">
 </mist-form>
 ```
 
