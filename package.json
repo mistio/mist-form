@@ -51,8 +51,6 @@
     "@vaadin/text-field": "^23.0.0",
     "@vaadin/time-picker": "^23.0.0",
     "@vaadin/vaadin-form-layout": "^23.0.0",
-    "@vaadin/vaadin-lumo-styles": "^23.0.0",
-    "@vaadin/vaadin-material-styles": "^23.0.0",
     "lit": "^2.0.2",
     "lit-html": "^2.2.3"
   },
