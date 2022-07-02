@@ -14,6 +14,10 @@ export class MistFormNumberField extends fieldMixin(LitElement) {
         vaadin-number-field {
           width: 100%;
         }
+        div[slot='prefix'],
+        div[slot='suffix'] {
+          padding-top: 1px;
+        }
       `,
     ];
   }

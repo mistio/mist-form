@@ -4,108 +4,39 @@
     "id": "constraints-form",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "title": "Constraints",
-    "description": "Constraints form",
+    "description": "Configure additional costraints for this RBAC rule",
     "additionalProperties": false,
     "properties": {
-      "costConstraints": {
+      "cost": {
         "$ref": "#/definitions/costConstraints"
       },
-      "sizeConstraints": {
+      "size": {
         "$ref": "#/definitions/sizeConstraints"
       },
-      "expirationConstraints": {
+      "expiration": {
         "$ref": "#/definitions/expirationConstraints"
       },
-      "fieldConstraints": {
+      "field": {
         "$ref": "#/definitions/fieldConstraints"
       }
     },
     "definitions": {
-      "sizeConstraints": {
-        "type": "object",
-        "title": "Machine sizes",
-        "properties": {
-          "allowed": {
-            "title": "Allowed sizes",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/sizeElementSubform"
-            }
-          },
-          "not_allowed": {
-            "title": "Disallowed sizes",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/sizeElementSubform"
-            }
-          },
-          "cpu": {
-            "title": "Cpu constraints",
-            "$ref": "#/definitions/sizeSubform"
-          },
-          "ram": {
-            "title": "Ram constraints",
-            "$ref": "#/definitions/sizeSubform"
-          },
-          "primary_disk": {
-            "title": "Primary disk constraints",
-            "$ref": "#/definitions/sizeSubform"
-          },
-          "swap_disk": {
-            "title": "Swap disk constraints",
-            "$ref": "#/definitions/sizeSubform"
-          }
-        }
-      },
-      "notify": {
-        "type": "object",
-        "properties": {
-          "default": {
-            "title": "Default",
-            "type": "string",
-            "format": "durationField"
-          },
-          "require": {
-            "title": "Require",
-            "type": "boolean"
-          },
-          "msg": {
-            "title": "Message",
-            "type": "string"
-          }
-        }
-      },
-      "actions": {
-        "type": "object",
-        "properties": {
-          "available": {
-            "title": "Available actions",
-            "type": "string",
-            "enum": [
-              "destroy",
-              "stop",
-              "undefine"
-            ]
-          },
-          "default": {
-            "title": "Default",
-            "type": "string"
-          }
-        }
-      },
       "costConstraints": {
         "type": "object",
         "title": "Cost quotas",
+        "description": "Maximum monthly run rates",
         "properties": {
           "max_team_run_rate": {
-            "title": "Max run rate for team",
+            "title": "This team",
+            "description": "If this value is exceeded, operations that trigger this rule will be denied when they increase the team's run rate",
             "type": "number",
             "value": 1,
             "minimum": 1,
             "helpText": "A minimum of 1 $ is required."
           },
           "max_total_run_rate": {
-            "title": "Max run rate for organization",
+            "title": "Entire organization",
+            "description": "If this value is exceeded, operations that trigger this rule will be denied when they increase the entire organization's run rate",
             "type": "number",
             "value": 1,
             "minimum": 1,
@@ -113,57 +44,207 @@
           }
         }
       },
-      "fieldConstraints": {
+      "sizeConstraints": {
+        "type": "object",
+        "title": "Machine sizes",
+        "description": "Sizing constraints on when creating or resizing machines under this rule",
+        "properties": {
+          "not_allowed": {
+            "title": "Disallowed sizes",
+            "description": "Sizes that will be unavailable for machine provisioning or resizing for a cloud",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/cloudSize"
+            }
+          },
+          "allowed": {
+            "title": "Allowed sizes",
+            "description": "Sizes that will be available for machine provisioning or resizing for a cloud. If no allowed or disallowed sizes are configured for a cloud, then all sizes will be allowed.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/cloudSize"
+            }
+          },
+          "cpu": {
+            "title": "CPU",
+            "description": "Min & max CPU cores when creating or resizing machines under this rule",
+            "$ref": "#/definitions/minMaxShow"
+          },
+          "ram": {
+            "title": "RAM",
+            "description": "Min & max GB's of RAM when creating or resizing machines under this rule",
+            "$ref": "#/definitions/minMaxShow"
+          },
+          "primary_disk": {
+            "title": "Primary disk",
+            "description": "Min & max GB's of primary disk when creating or resizing machines under this rule",
+            "$ref": "#/definitions/minMaxShow"
+          },
+          "swap_disk": {
+            "title": "Swap disk",
+            "descrition": "Min & max GB's of swap when creating or resizing machines under this rule",
+            "$ref": "#/definitions/minMaxShow"
+          }
+        }
+      },
+      "cloudSize": {
         "type": "object",
         "properties": {
           "cloud": {
             "title": "Cloud",
-            "type": "string"
+            "examples": ["AWS", "Azure", "Google Cloud"]
           },
-          "fieldName": {
-            "title": "Field name",
-            "type": "string"
+          "size": {
+            "title": "Machine size",
+            "examples": ["m1.small", "n1.large"]
+          }
+        }
+      },
+      "minMaxShow": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "number",
+            "title": "Minimum size"
           },
-          "fieldValue": {
-            "title": "Field value",
-            "type": "string"
+          "max": {
+            "type": "number",
+            "title": "Maximum size"
           },
-          "show": {
-            "title": "Show",
-            "value": true,
-            "type": "boolean"
-          },
-          "subformInMultirowSubform": {
-            "type": "object",
-            "format": "subform",
-            "properties": {
-              "test": {
-                "name": "test",
-                "title": "Test",
-                "type": "string"
-              }
-            }
+          "visible": {
+            "type": "boolean",
+            "title": "Show field",
+            "default": true
           }
         }
       },
       "expirationConstraints": {
         "title": "Expiration requirements",
+        "description": "Configure default & maximum expiration dates for machines created under this rule",
         "type": "object",
         "properties": {
-          "max": {
-            "name": "max",
-            "title": "Max",
-            "type": "string"
-          },
           "default": {
-            "title": "Default",
-            "type": "string"
+            "title": "Default expiration date",
+            "description": "Relative to machine creation time",
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer"
+              },
+              "unit": {
+                "type": "string",
+                "enum": ["months", "days", "hours", "minutes"],
+                "default": "days"
+              }
+            }
+          },
+          "max": {
+            "title": "Maximum expiration date",
+            "description": "Relative to machine creation time",
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer"
+              },
+              "unit": {
+                "type": "string",
+                "enum": ["months", "days", "hours", "minutes"],
+                "default": "days"
+              }
+            }
           },
           "actions": {
-            "$ref": "#/definitions/actions"
+            "type": "object",
+            "properties": {
+              "available": {
+                "title": "Available expiration actions",
+                "description": "Users can select one of the following actions to be executed when the machine expires",
+                "type": "array",
+                "uniqueItems": "true",
+                "items": {
+                  "type": "string",
+                  "enum": ["stop", "destroy", "undefine"],
+                  "default": ["destroy"]
+                }
+              },
+              "default": {
+                "title": "Default action",
+
+                "type": "string",
+                "default": "destroy",
+                "enum": [
+                  "destroy",
+                  "stop",
+                  "undefine"
+                ]
+              }
+            }
           },
           "notify": {
             "$ref": "#/definitions/notify"
+          }
+        }
+      },
+      "notify": {
+        "title": "Notification email",
+        "description": "Configure default values for pre-expiration notification emails",
+        "type": "object",
+        "properties": {
+          "msg": {
+            "title": "Message to be sent",
+            "type": "string"
+          },
+          "require": {
+            "title": "Make required",
+            "description": "Configure if notification emails are required when setting machine expiration",
+            "type": "boolean"
+          },
+          "default": {
+            "title": "Default time before expiration",
+            "description": "Set the default timing for pre-expiration notification emails",
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer"
+              },
+              "unit": {
+                "type": "string",
+                "enum": ["days", "hours", "minutes"],
+                "default": "hours"
+              }
+            }
+          }
+        }
+      },
+      "fieldConstraints": {
+        "title": "Field visibility & defaults",
+        "description": "Configure fields that should be unavailable when creating or editing resources in specific clouds under this rule",
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cloud": {
+                  "title": "Cloud",
+                  "examples": ["AWS", "Azure", "Google Cloud"]
+                },
+                "fieldName": {
+                  "title": "Field name",
+                  "type": "string"
+                },
+                "show": {
+                  "title": "Show field",
+                  "value": true,
+                  "type": "boolean"
+                },
+                "fieldValue": {
+                  "title": "Default field value",
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -172,34 +253,181 @@
   "uiSchema": {
     "ui:cancel": "Cancel",
     "ui:submit": "Add",
-    "costConstraints": {
+    "cost": {
       "ui:toggles": true,
       "ui:enabled": false,
       "max_team_run_rate": {
-        "ui:suffix": "$/mo",
+        "ui:prefix": "$",
         "ui:options": {
-          "style": "width: 200px;"
+          "style": "width: 150px"
         }
       },
       "max_total_run_rate": {
-        "ui:suffix": "$/mo",
+        "ui:prefix": "$",
         "ui:options": {
-          "style": "width: 200px;"
+          "style": "width: 150px"
         }
       }
     },
-    "expirationConstraints": {
+    "expiration": {
+      "ui:toggles": true,
+      "ui:enabled": false,
+      "actions": {
+        "available": {
+          "ui:widget": "checkboxes"
+        }
+      },
+      "default": {
+        "value": {
+          "ui:options": {
+            "style": "width: 50px"
+          }
+        },
+        "unit": {
+          "ui:options": {
+            "style": "width: 110px"
+          }
+        }
+      },
+      "max": {
+        "value": {
+          "ui:options": {
+            "style": "width: 50px"}
+        },
+        "unit": {
+          "ui:options": {
+            "style": "width: 110px"
+          }
+        }
+      },
+      "notify": {
+        "msg": {
+          "ui:widget": "textarea"
+        },
+        "default": {
+          "value": {
+            "ui:options": {
+              "style": "width: 50px"
+            }
+          },
+          "unit": {
+            "ui:options": {
+              "style": "width: 110px"
+            }
+          }
+        }
+      }
+    },
+    "field": {
       "ui:toggles": true,
       "ui:enabled": false
     },
-    "fieldConstraints": {
-      "ui:toggles": true,
-      "ui:enabled": false
-    },
-    "sizeConstraints": {
+    "size": {
       "ui:toggles": true,
       "ui:enabled": false
     }
   },
-  "formData": {}
+  "formData": {
+    "cost": {
+      "max_team_run_rate": 100,
+      "max_total_run_rate": 500
+    },
+    "size": {
+      "allowed": [
+        {
+          "cloud": "94fcfb3878214479909f8f0ba5e769ee",
+          "size": "efb5ba62533e46718ae358c953f11f3a"
+        },
+        {
+          "cloud": "db19df32e75b4fa79a40ab63963b6b44",
+          "size": {
+            "ram": 1024,
+            "cpu": 2,
+            "disk_primary": 5
+          },
+          "userFriendlyName": "small"
+        },
+        {
+          "cloud": "db19df32e75b4fa79a40ab63963b6b44",
+          "size": {
+            "ram": 1536,
+            "cpu": 3,
+            "disk_primary": 5
+          },
+          "userFriendlyName": "medium"
+        }
+      ],
+      "not_allowed": [
+        {
+          "cloud": "0cad9f6d889d4b8b9078e8f376593818",
+          "size": "1602e854f59041aabbbed3c3a0f070a2"
+        },
+        {
+          "cloud": "0cad9f6d889d4b8b9078e8f376593818",
+          "size": "f42d5bddad5048a29239af761b71564d"
+        }
+      ],
+      "cpu": {
+        "min": 8,
+        "max": 2,
+        "show": true
+      },
+      "ram": {
+        "min": 512,
+        "max": 2048,
+        "show": true
+      },
+      "disk": {
+        "show": true
+      },
+      "swap_disk": {
+        "show": true
+      }
+    },
+    "expiration": {
+      "default": {
+        "value": "1",
+        "unit": "hours"
+      },
+      "max": {
+        "value": "1",
+        "unit": "hours"
+      },
+      "actions": {
+        "available": [
+          "destroy"
+        ],
+        "default": "destroy"
+      },
+      "notify": {
+        "default": {
+          "value": "1",
+          "unit": "hours"
+        },
+        "require": true,
+        "msg": "Machine going down, yo"
+      }
+    },
+    "field": {
+      "fields": [
+        {
+          "cloud": "94fcfb3878214479909f8f0ba5e769ee",
+          "show": false,
+          "name": "location",
+          "value": "fbed5a184ae241039b2012ce5a8b0128"
+        },
+        {
+          "cloud": "db19df32e75b4fa79a40ab63963b6b44",
+          "show": false,
+          "name": "datastore"
+        },
+        {
+          "cloud": "db19df32e75b4fa79a40ab63963b6b44",
+          "show": false,
+          "name": "networks",
+          "value": "9e2eb64c8add417ea2fdd23e7f077881"
+        }
+      ]
+    }
+  }
 }

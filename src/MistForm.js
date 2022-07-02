@@ -17,15 +17,17 @@ export class MistForm extends LitElement {
         display: block;
         color: var(--mist-form-text-color, #000);
       }
-      ${!this.subform &&
-      css`
-        vaadin-form-layout {
-          margin-bottom: 16px !important;
-        }
-      `}
-      paper-toggle-button {
-        float: left;
+
+      vaadin-form-layout {
+        margin-bottom: 16px !important;
       }
+
+      h1,
+      h2,
+      h3 {
+        margin-bottom: 0;
+      }
+
       .formError {
         color: #d60020;
         display: inline;
@@ -94,11 +96,15 @@ export class MistForm extends LitElement {
   get payload() {
     const ret = {};
     const { properties } = this.evaluatedSchema;
-    Object.keys(properties).forEach(k => {
-      if (properties[k] !== undefined && !properties[k].omit) {
-        ret[k] = this.shadowRoot.querySelector(`.mist-form-field#${k}`).payload;
-      }
-    });
+    if (this.enabled) {
+      Object.keys(properties).forEach(k => {
+        if (properties[k] !== undefined && !properties[k].omit) {
+          ret[k] = this.shadowRoot.querySelector(
+            `.mist-form-field#${k}`
+          ).payload;
+        }
+      });
+    }
     return ret;
   }
 
@@ -133,8 +139,8 @@ export class MistForm extends LitElement {
         { minWidth: '0', columns: 1, labelsPosition: 'top' },
         // Use two columns, if the layout's width exceeds 320px
         { minWidth: '320px', columns: 2, labelsPosition: 'top' },
-        // Use three columns, if the layout's width exceeds 500px
-        { minWidth: '500px', columns: 3, labelsPosition: 'top' },
+        // // Use three columns, if the layout's width exceeds 500px
+        // { minWidth: '500px', columns: 3, labelsPosition: 'top' },
       ];
     }
   }
@@ -538,18 +544,16 @@ export class MistForm extends LitElement {
             </vaadin-horizontal-layout>
             <div class="formError">${this.formError}</div>
           `;
-      const toggler = this.toggles
-        ? html`<paper-toggle-button
-            ?checked=${this.enabled}
-            @checked-changed=${this._toggleChanged}
-          ></paper-toggle-button>`
-        : html``;
-      const title = this.evaluatedSchema.title
-        ? html`<h1>${toggler} ${this.evaluatedSchema.title}</h1>`
-        : html`${toggler}`;
-      const description = this.evaluatedSchema.description
-        ? html`<p>${this.evaluatedSchema.description}</p>`
-        : html``;
+
+      const title =
+        this.evaluatedSchema.title && !this.toggles
+          ? (this.subform && html`<h2>${this.evaluatedSchema.title}</h2>`) ||
+            html`<h1>${this.evaluatedSchema.title}</h1>`
+          : html``;
+      const description =
+        this.evaluatedSchema.description && !this.toggles
+          ? html`<p>${this.evaluatedSchema.description}</p>`
+          : html``;
       return html`
         <div class="form">
           ${title} ${description} ${loader}
@@ -740,15 +744,6 @@ export class MistForm extends LitElement {
     e.target.dispatchEvent(formDataChangedEvent);
     e.target.validate();
     e.target.evaluatedSchema = e.target.evalSchema(e.target.dereferencedSchema);
-  }
-
-  _toggleChanged(e) {
-    if (this.enabled !== e.detail.value) {
-      this.enabled = e.detail.value;
-      if (this.uiSchema && this.uiSchema['ui:enabled'] !== undefined) {
-        this.uiSchema['ui:enabled'] = this.enabled;
-      }
-    }
   }
 
   validate() {

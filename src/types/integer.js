@@ -14,6 +14,10 @@ export class MistFormIntegerField extends fieldMixin(LitElement) {
         vaadin-integer-field {
           width: 100%;
         }
+        div[slot='prefix'],
+        div[slot='suffix'] {
+          padding-top: 2px;
+        }
       `,
     ];
   }

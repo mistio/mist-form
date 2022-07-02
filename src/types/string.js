@@ -32,6 +32,10 @@ export class MistFormStringField extends fieldMixin(LitElement) {
           transition: color 0.2s;
           margin: 8px 0;
         }
+        div[slot='prefix'],
+        div[slot='suffix'] {
+          padding-top: 2px;
+        }
       `,
     ];
   }
