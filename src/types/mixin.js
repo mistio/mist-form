@@ -382,6 +382,12 @@ export const fieldMixin = superClass =>
                 label="${item.label}"
                 ?checked=${String(Boolean(this.formData)) ===
                 String(item.value)}
+                @change=${e => {
+                  e.detail = { id: this.spec.id, value: e.target.checked };
+                  setTimeout(() => {
+                    this.debouncedEventChange(e);
+                  }, 300);
+                }}
               >
               </vaadin-radio-button>
             `

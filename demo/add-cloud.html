@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<body>
+  <div id="add-cloud"></div>
+  <script type="module">
+    import { html, render } from 'lit-html';
+    import '../mist-form.js';
+
+    render(
+      html`
+      <mist-form method="POST" action="/api/v2/clouds"
+        url="https://storage.googleapis.com/mist-api-spec/v2/master/mist-api-v2.json#/components/schemas/AddCloudRequest">
+      </mist-form> `,
+      document.querySelector('#add-cloud')
+    );
+  </script>
+</body>
+</html>

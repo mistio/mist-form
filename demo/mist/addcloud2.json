@@ -1,0 +1,4293 @@
+{
+  "components": {
+    "callbacks": {},
+    "examples": {},
+    "headers": {},
+    "links": {},
+    "parameters": {
+      "atParam": {
+        "name": "at",
+        "description": "Limit results by specific datetime. Return resources created before or at, or deleted after or at, given datetime.",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "examples": {
+          "Return resources created before or deleted after `2021-07-21T17:32:28Z`": {
+            "value": "2021-07-21T17:32:28Z"
+          }
+        }
+      }
+    },
+    "requestBodies": {},
+    "responses": {},
+    "schemas": {
+      "MachineState": {
+        "type": "string",
+        "enum": ["running", "starting", "stopping", "stopped", "pending", "suspended", "terminated", "error", "rebooting", "paused", "reconfiguring", "unknown", "updating", "migrating", "normal", "succeeded", "failed"]
+      },
+      "SupportedProviders": {
+        "type": "string",
+        "enum": ["amazon", "azure", "google", "alibaba", "cloudsigma", "equinix", "ibm", "digitalocean", "linode", "rackspace", "maxihost", "vultr", "openstack", "onapp", "vsphere", "vexxhost", "kvm", "lxd", "docker", "kubevirt", "kubernetes", "openshift", "other"]
+      },
+      "ResponseMetadata": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total items matching the query"
+          },
+          "returned": {
+            "type": "integer",
+            "description": "Number of items in response"
+          },
+          "sort": {
+            "type": "string",
+            "description": "Sort order of results"
+          },
+          "start": {
+            "type": "integer",
+            "description": "Index of first response item in total matching items"
+          }
+        }
+      },
+      "ListCloudsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cloud"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetCloudResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Cloud"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Cloud": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/SupportedProviders"
+          },
+          "config": {
+            "type": "object"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          }
+        }
+      },
+      "AddCloudRequest": {
+        "allOf": [{
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the cloud to add"
+            },
+            "provider": {
+              "$ref": "#/components/schemas/SupportedProviders"
+            }
+          },
+          "required": ["name", "provider"]
+        }, {
+          "oneOf": [{
+            "$ref": "#/components/schemas/AmazonCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/AzureCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/GoogleCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/AlibabaCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/CloudSigmaCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/EquinixCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/IbmCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/DigitaloceanCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/LinodeCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/RackspaceCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/MaxihostCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/VultrCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/OpenstackCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/OnappCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/VsphereCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/KvmCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/LxdCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/DockerCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/KubernetesCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/KubevirtCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/OpenshiftCloudRequest"
+          }, {
+            "$ref": "#/components/schemas/OtherCloudRequest"
+          }],
+          "discriminator": {
+            "propertyName": "provider",
+            "mapping": {
+              "amazon": "#/components/schemas/AmazonCloudRequest",
+              "azure": "#/components/schemas/AzureCloudRequest",
+              "google": "#/components/schemas/GoogleCloudRequest",
+              "cloudsigma": "#/components/schemas/CloudSigmaCloudRequest",
+              "alibaba": "#/components/schemas/AlibabaCloudRequest",
+              "equinix": "#/components/schemas/EquinixCloudRequest",
+              "ibm": "#/components/schemas/IbmCloudRequest",
+              "linode": "#/components/schemas/LinodeCloudRequest",
+              "rackspace": "#/components/schemas/RackspaceCloudRequest",
+              "maxihost": "#/components/schemas/MaxihostCloudRequest",
+              "vultr": "#/components/schemas/VultrCloudRequest",
+              "openstack": "#/components/schemas/OpenstackCloudRequest",
+              "onapp": "#/components/schemas/OnappCloudRequest",
+              "vsphere": "#/components/schemas/VsphereCloudRequest",
+              "kvm": "#/components/schemas/KvmCloudRequest",
+              "lxd": "#/components/schemas/LxdCloudRequest",
+              "docker": "#/components/schemas/DockerCloudRequest",
+              "kubernetes": "#/components/schemas/KubernetesCloudRequest",
+              "kubevirt": "#/components/schemas/KubevirtCloudRequest",
+              "openshift": "#/components/schemas/OpenshiftCloudRequest",
+              "other": "#/components/schemas/OtherCloudRequest"
+            }
+          }
+        }],
+        "example": {
+          "name": "my-cloud",
+          "provider": "google",
+          "credentials": {
+            "projectId": "projectId",
+            "privateKey": "privateKey",
+            "email": "email"
+          }
+        }
+      },
+      "EditCloudRequest_anyOf": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Updated name"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["name"]
+      },
+      "EditCloudRequest": {
+        "anyOf": [{
+          "$ref": "#/components/schemas/EditCloudRequest_anyOf"
+        }, {
+          "allOf": [{
+            "type": "object",
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/SupportedProviders"
+              }
+            },
+            "required": ["provider"]
+          }, {
+            "oneOf": [{
+              "$ref": "#/components/schemas/AmazonCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/AzureCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/GoogleCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/AlibabaCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/CloudSigmaCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/EquinixCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/IbmCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/DigitaloceanCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/LinodeCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/RackspaceCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/MaxihostCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/VultrCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/OpenstackCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/OnappCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/VsphereCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/KvmCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/LxdCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/DockerCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/KubernetesCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/KubevirtCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/OpenshiftCloudRequest"
+            }, {
+              "$ref": "#/components/schemas/OtherCloudRequest"
+            }],
+            "discriminator": {
+              "propertyName": "provider",
+              "mapping": {
+                "amazon": "#/components/schemas/AmazonCloudRequest",
+                "azure": "#/components/schemas/AzureCloudRequest",
+                "google": "#/components/schemas/GoogleCloudRequest",
+                "cloudsigma": "#/components/schemas/CloudSigmaCloudRequest",
+                "alibaba": "#/components/schemas/AlibabaCloudRequest",
+                "equinix": "#/components/schemas/EquinixCloudRequest",
+                "ibm": "#/components/schemas/IbmCloudRequest",
+                "linode": "#/components/schemas/LinodeCloudRequest",
+                "rackspace": "#/components/schemas/RackspaceCloudRequest",
+                "maxihost": "#/components/schemas/MaxihostCloudRequest",
+                "vultr": "#/components/schemas/VultrCloudRequest",
+                "openstack": "#/components/schemas/OpenstackCloudRequest",
+                "onapp": "#/components/schemas/OnappCloudRequest",
+                "vsphere": "#/components/schemas/VsphereCloudRequest",
+                "kvm": "#/components/schemas/KvmCloudRequest",
+                "lxd": "#/components/schemas/LxdCloudRequest",
+                "docker": "#/components/schemas/DockerCloudRequest",
+                "kubernetes": "#/components/schemas/KubernetesCloudRequest",
+                "kubevirt": "#/components/schemas/KubevirtCloudRequest",
+                "openshift": "#/components/schemas/OpenshiftCloudRequest",
+                "other": "#/components/schemas/OtherCloudRequest"
+              }
+            }
+          }]
+        }],
+        "example": {
+          "name": "my-renamed-cloud"
+        }
+      },
+      "CloudFeatures": {
+        "type": "object",
+        "description": "The cloud features that should be enabled",
+        "properties": {
+          "compute": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable compute services"
+          },
+          "dns": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable DNS services"
+          },
+          "container": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable container services"
+          }
+        }
+      },
+      "AmazonCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["amazon"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/AmazonCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "AmazonCredentials": {
+        "type": "object",
+        "properties": {
+          "apikey": {
+            "type": "string",
+            "description": "Your AWS API key"
+          },
+          "apisecret": {
+            "type": "string",
+            "description": "Your AWS API secret"
+          },
+          "region": {
+            "type": "string",
+            "description": "Your AWS region"
+          }
+        },
+        "required": ["apikey", "apisecret", "region"]
+      },
+      "AzureCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["azure"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/AzureCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "AzureCredentials": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "description": "Your Azure tenant ID"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "description": "Your Azure subscription ID"
+          },
+          "key": {
+            "type": "string",
+            "description": "Your Azure key"
+          },
+          "secret": {
+            "type": "string",
+            "description": "Your Azure secret"
+          }
+        },
+        "required": ["tenantId", "subscriptionId", "key", "secret"]
+      },
+      "GoogleCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["google"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/GoogleCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "GoogleCredentials": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "The Id of your GCP project"
+          },
+          "privateKey": {
+            "type": "string",
+            "description": "Your GCP private key"
+          },
+          "email": {
+            "type": "string",
+            "description": "Your GCP client email"
+          }
+        },
+        "required": ["projectId", "privateKey", "email"]
+      },
+      "AlibabaCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["alibaba"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/AlibabaCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "AlibabaCredentials": {
+        "type": "object",
+        "properties": {
+          "apikey": {
+            "type": "string",
+            "description": "Your Alibaba Cloud API key"
+          },
+          "apisecret": {
+            "type": "string",
+            "description": "Your Alibaba Cloud API secret"
+          },
+          "region": {
+            "type": "string",
+            "description": "Your Alibaba Cloud region"
+          }
+        },
+        "required": ["apikey", "apisecret", "region"]
+      },
+      "CloudSigmaCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["cloudsigma"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/CloudSigmaCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "CloudSigmaCredentials": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Your CloudSigma username"
+          },
+          "password": {
+            "type": "string",
+            "description": "Your CloudSigma password"
+          },
+          "region": {
+            "type": "string",
+            "description": "Your CloudSigma region"
+          }
+        },
+        "required": ["username", "password", "region"]
+      },
+      "EquinixCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["equinix"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/EquinixCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "EquinixCredentials": {
+        "type": "object",
+        "properties": {
+          "apikey": {
+            "type": "string",
+            "description": "Your Equinix Metal API key"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["apikey"]
+      },
+      "IbmCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["ibm"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/IbmCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "IbmCredentials": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["ibm"]
+          },
+          "username": {
+            "type": "string",
+            "description": "Your IBM Cloud username"
+          },
+          "apikey": {
+            "type": "string",
+            "description": "Your IBM Cloud API key"
+          }
+        },
+        "required": ["apikey"]
+      },
+      "DigitaloceanCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["digitalocean"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/DigitaloceanCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "DigitaloceanCredentials": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Your DigitalOcean API token"
+          }
+        },
+        "required": ["token"]
+      },
+      "LinodeCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["linode"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/LinodeCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "LinodeCredentials": {
+        "type": "object",
+        "properties": {
+          "apikey": {
+            "type": "string",
+            "description": "You Linode API key"
+          }
+        },
+        "required": ["apikey"]
+      },
+      "RackspaceCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["rackspace"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/RackspaceCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "RackspaceCredentials": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["rackspace"]
+          },
+          "username": {
+            "type": "string",
+            "description": "Your Rackspace Cloud username"
+          },
+          "apikey": {
+            "type": "string",
+            "description": "Your Rackspace Cloud API key"
+          },
+          "region": {
+            "type": "string",
+            "description": "Your Rackspace Cloud region"
+          }
+        },
+        "required": ["username", "apikey", "region"]
+      },
+      "MaxihostCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["maxihost"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/MaxihostCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "MaxihostCredentials": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Your Maxihost API token"
+          }
+        },
+        "required": ["token"]
+      },
+      "VultrCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["vultr"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/VultrCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "VultrCredentials": {
+        "type": "object",
+        "properties": {
+          "apikey": {
+            "type": "string",
+            "description": "Your Vultr API key"
+          }
+        },
+        "required": ["apikey"]
+      },
+      "OpenstackCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["openstack"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/OpenstackCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "OpenstackCredentials": {
+        "type": "object",
+        "properties": {
+          "authUrl": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "tenant": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "computeEndpoint": {
+            "type": "string"
+          }
+        },
+        "required": ["user", "password", "authUrl"]
+      },
+      "OnappCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["onapp"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/OnappCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "OnappCredentials": {
+        "type": "object",
+        "properties": {
+          "authUrl": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "apikey": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "verify": {
+            "type": "boolean"
+          }
+        },
+        "required": ["username", "apikey", "host"]
+      },
+      "VsphereCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["vsphere"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/VsphereCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "VsphereCredentials": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "description": "Your vSphere/vCenter host"
+          },
+          "username": {
+            "type": "string",
+            "description": "Your username"
+          },
+          "password": {
+            "type": "string",
+            "description": "Your password"
+          },
+          "ca_cert_file": {
+            "type": "string",
+            "description": "CA certificate"
+          }
+        },
+        "required": ["host", "username", "password"]
+      },
+      "KvmCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["kvm"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/KvmCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "KvmCredentials": {
+        "type": "object"
+      },
+      "LxdCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["lxd"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/LxdCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "LxdCredentials": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "description": "Your LXD host"
+          },
+          "port": {
+            "type": "string",
+            "description": "Your LXD port"
+          },
+          "username": {
+            "type": "string",
+            "description": "Your LXD username"
+          },
+          "password": {
+            "type": "string",
+            "description": "Your LXD password"
+          },
+          "tlsKey": {
+            "type": "string",
+            "description": "Your TLS auth key"
+          },
+          "tlsCert": {
+            "type": "string",
+            "description": "Your TLS auth certificate"
+          },
+          "tlsCaCert": {
+            "type": "string",
+            "description": "Your TLS CA certifcate"
+          },
+          "showAll": {
+            "type": "boolean",
+            "description": "Show all containers, including stopped"
+          }
+        },
+        "required": ["host", "port"]
+      },
+      "DockerCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["docker"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/DockerCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "DockerCredentials": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "description": "Your Docker host"
+          },
+          "port": {
+            "type": "string",
+            "description": "Your Docker port"
+          },
+          "username": {
+            "type": "string",
+            "description": "Your Docker username"
+          },
+          "password": {
+            "type": "string",
+            "description": "Your Docker password"
+          },
+          "tlsKey": {
+            "type": "string",
+            "description": "Your TLS auth key"
+          },
+          "tlsCert": {
+            "type": "string",
+            "description": "Your TLS auth certificate"
+          },
+          "tlsCaCert": {
+            "type": "string",
+            "description": "Your TLS CA certifcate"
+          },
+          "showAll": {
+            "type": "boolean",
+            "description": "Show all containers, including stopped"
+          }
+        },
+        "required": ["host", "port"]
+      },
+      "KubevirtCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["kubevirt"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/KubernetesCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "KubernetesCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["kubernetes"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/KubernetesCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "OpenshiftCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["openshift"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/OpenshiftCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "KubernetesCredentials": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "description": "Your Kubernetes API host"
+          },
+          "port": {
+            "type": "string",
+            "description": "Your Kubernetes API port"
+          },
+          "username": {
+            "type": "string",
+            "description": "Your Kubernetes API username"
+          },
+          "password": {
+            "type": "string",
+            "description": "Your Kubernetes API password"
+          },
+          "token": {
+            "type": "string",
+            "description": "Your Kubernetes API bearer token"
+          },
+          "tlsKey": {
+            "type": "string",
+            "description": "Your TLS auth key"
+          },
+          "tlsCert": {
+            "type": "string",
+            "description": "Your TLS auth certificate"
+          },
+          "tlsCaCert": {
+            "type": "string",
+            "description": "Your TLS CA certifcate"
+          },
+          "showAll": {
+            "type": "boolean",
+            "description": "Show all containers, including stopped"
+          }
+        },
+        "required": ["host", "port"]
+      },
+      "OpenshiftCredentials": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "description": "Your OpenShift API host"
+          },
+          "port": {
+            "type": "string",
+            "description": "Your OpenShift API port"
+          },
+          "username": {
+            "type": "string",
+            "description": "Your OpenShift API username"
+          },
+          "password": {
+            "type": "string",
+            "description": "Your OpenShift API password"
+          }
+        },
+        "required": ["host", "port", "username", "password"]
+      },
+      "OtherCloudRequest": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["other"]
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/OtherCredentials"
+          },
+          "features": {
+            "$ref": "#/components/schemas/CloudFeatures"
+          }
+        },
+        "required": ["provider", "credentials"]
+      },
+      "OtherCredentials": {
+        "type": "object"
+      },
+      "ListClustersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cluster"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetClusterResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Cluster"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "CreateClusterResponse": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          }
+        }
+      },
+      "DestroyClusterResponse": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "cluster": {
+            "type": "string"
+          }
+        }
+      },
+      "Cluster": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ClusterProviders"
+          },
+          "total_nodes": {
+            "type": "integer"
+          },
+          "total_cpus": {
+            "type": "integer"
+          },
+          "total_memory": {
+            "type": "integer"
+          },
+          "location": {
+            "type": "string"
+          },
+          "credentials": {
+            "type": "object"
+          },
+          "config": {
+            "type": "object"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "object"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "last_seen": {
+            "type": "string"
+          },
+          "missing_since": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string"
+          }
+        }
+      },
+      "ClusterProviders": {
+        "type": "string",
+        "enum": ["amazon", "azure", "digitalocean", "google", "kubernetes", "openshift", "linode"],
+        "description": "The cloud provider of the cluster"
+      },
+      "HelmChart": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["helm"]
+          },
+          "repo_url": {
+            "description": "The url of the Helm repository",
+            "type": "string"
+          },
+          "chart_name": {
+            "type": "string"
+          },
+          "release_name": {
+            "type": "string"
+          },
+          "namespace": {
+            "description": "The namespace to install the release on",
+            "type": "string"
+          },
+          "values": {
+            "description": "The contents of a Helm values.yaml file",
+            "type": "string"
+          },
+          "version": {
+            "description": "A version constraint for the chart",
+            "type": "string"
+          }
+        },
+        "required": ["repo_url", "chart_name", "release_name", "type"]
+      },
+      "KubernetesManifest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["manifest"]
+          }
+        },
+        "required": ["type"]
+      },
+      "CreateClusterRequest": {
+        "allOf": [{
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the cluster to create"
+            },
+            "cloud": {
+              "type": "string",
+              "description": "The cloud the cluster belongs to"
+            },
+            "provider": {
+              "$ref": "#/components/schemas/ClusterProviders"
+            },
+            "location": {
+              "type": "string",
+              "description": "Google specific parameter(Required).Name or ID of the location to create the cluster in"
+            },
+            "nodepools": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "nodes": {
+                    "description": "The number of nodes to provision for the cluster. Defaults to 2",
+                    "type": "integer",
+                    "default": 2
+                  },
+                  "size": {
+                    "description": "Name or ID of size to use for the nodes. If not provided, the t3.medium(EKS), e2-medium(GKE) size will be used",
+                    "type": "string"
+                  },
+                  "disk_size": {
+                    "type": "integer",
+                    "description": "Size of the disk attached to each node, specified in GB.",
+                    "default": 20
+                  },
+                  "disk_type": {
+                    "type": "string",
+                    "description": "Type of the disk attached to each node. Defaults to pd-standard(GKE), gp3(EKS)"
+                  },
+                  "preemptible": {
+                    "type": "boolean",
+                    "description": "Google specific parameter.Whether the nodes are created as preemptible machines. Defaults to false"
+                  }
+                }
+              }
+            },
+            "templates": {
+              "type": "array",
+              "items": {
+                "allOf": [{
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["helm", "manifest"]
+                    }
+                  },
+                  "required": ["type"]
+                }, {
+                  "oneOf": [{
+                    "$ref": "#/components/schemas/HelmChart"
+                  }, {
+                    "$ref": "#/components/schemas/KubernetesManifest"
+                  }],
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "helm": "#/components/schemas/HelmChart",
+                      "manifest": "#/components/schemas/KubernetesManifest"
+                    }
+                  }
+                }]
+              }
+            },
+            "waiters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "namespace": {
+                    "type": "string",
+                    "default": "default"
+                  },
+                  "timeout": {
+                    "type": "integer",
+                    "default": 1800
+                  }
+                },
+                "required": ["name", "type"]
+              }
+            }
+          },
+          "required": ["name"]
+        }],
+        "example": {
+          "name": "my-cluster",
+          "provider": "google",
+          "location": "europe-west2-b"
+        }
+      },
+      "ListImagesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetImageResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Image"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "starred": {
+            "type": "boolean"
+          },
+          "os_type": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "object"
+          }
+        }
+      },
+      "CreateMachineRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specify machine name",
+            "example": "DB mirror"
+          },
+          "provider": {
+            "description": "Specify cloud provider",
+            "$ref": "#/components/schemas/SupportedProviders"
+          },
+          "cloud": {
+            "type": "string",
+            "description": "Specify cloud to provision on"
+          },
+          "location": {
+            "description": "Where to provision e.g. region, datacenter, rack",
+            "oneOf": [{
+              "type": "object",
+              "properties": {
+                "prefer": {
+                  "type": "string"
+                }
+              }
+            }, {
+              "type": "string"
+            }]
+          },
+          "size": {
+            "description": "Machine sizing spec e.g. cpu/ram/flavor",
+            "oneOf": [{
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "number",
+                  "description": "Number of cpu cores. On container based providers this value will be used as the cpu limit. Mutually exclusive with 'search'"
+                },
+                "memory": {
+                  "type": "integer",
+                  "description": "Memory size in MBs. On container based providers this value will be used as the memory limit. Mutually exclusive with 'search'"
+                },
+                "search": {
+                  "type": "string",
+                  "description": "Name or ID of the size to select for this machine. Mutually exclusive with 'cpu' and 'memory'"
+                },
+                "prefer": {
+                  "type": "object",
+                  "description": "Optional properties to be used if applicable.",
+                  "properties": {
+                    "cpu_shares": {
+                      "type": "integer",
+                      "description": "Docker specific parameter. An integer value representing this container's relative CPU weight versus other containers"
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "A size name prefix. Used only on providers with standard sizes"
+                    }
+                  }
+                },
+                "accelerators": {
+                  "description": "Google specific parameter",
+                  "type": "object",
+                  "properties": {
+                    "accelerator_type": {
+                      "type": "string",
+                      "description": "Accelerator type to attach to this machine. e.g. 'nvidia-tesla-p100'"
+                    },
+                    "accelerator_count": {
+                      "type": "integer",
+                      "description": "The number of the accelerator cards exposed to this machine"
+                    }
+                  }
+                }
+              }
+            }, {
+              "type": "string",
+              "description": "Name or ID of the size to select for this machine"
+            }],
+            "example": "m1.small"
+          },
+          "image": {
+            "description": "Operating System image to boot from",
+            "oneOf": [{
+              "type": "object"
+            }, {
+              "type": "string",
+              "description": "Name or ID of the image to boot from"
+            }],
+            "example": "Debian"
+          },
+          "net": {
+            "description": "Specify network configuration parameters",
+            "anyOf": [{
+              "$ref": "#/components/schemas/AlibabaNet"
+            }, {
+              "$ref": "#/components/schemas/AmazonNet"
+            }, {
+              "$ref": "#/components/schemas/AzureNet"
+            }, {
+              "$ref": "#/components/schemas/DockerNet"
+            }, {
+              "$ref": "#/components/schemas/EquinixMetalNet"
+            }, {
+              "$ref": "#/components/schemas/GoogleNet"
+            }, {
+              "$ref": "#/components/schemas/KVMNet"
+            }, {
+              "$ref": "#/components/schemas/LinodeNet"
+            }, {
+              "$ref": "#/components/schemas/LXDNet"
+            }, {
+              "$ref": "#/components/schemas/OpenstackNet"
+            }, {
+              "$ref": "#/components/schemas/VSphereNet"
+            }, {
+              "$ref": "#/components/schemas/VultrNet"
+            }]
+          },
+          "key": {
+            "description": "Associate SSH key",
+            "oneOf": [{
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "description": "Name or ID of the SSH key to deploy"
+                },
+                "user": {
+                  "type": "string",
+                  "description": "SSH user, supported on Google"
+                }
+              }
+            }, {
+              "type": "string",
+              "description": "Name or ID of the SSH key to deploy"
+            }]
+          },
+          "disks": {
+            "description": "Configure local disks",
+            "type": "object",
+            "properties": {
+              "disk_size": {
+                "description": "KVM, CloudSigma specific parameter",
+                "type": "integer"
+              },
+              "disk_path": {
+                "description": "KVM specific parameter. Where the VM disk file will be created",
+                "type": "string"
+              }
+            }
+          },
+          "volumes": {
+            "description": "Configure of attached storage volumes, e.g. cloud disks",
+            "anyOf": [{
+              "$ref": "#/components/schemas/AlibabaVolumes"
+            }, {
+              "$ref": "#/components/schemas/AmazonVolumes"
+            }, {
+              "$ref": "#/components/schemas/AzureVolumes"
+            }, {
+              "$ref": "#/components/schemas/CloudSigmaVolumes"
+            }, {
+              "$ref": "#/components/schemas/DigitalOceanVolumes"
+            }, {
+              "$ref": "#/components/schemas/GoogleVolumes"
+            }, {
+              "$ref": "#/components/schemas/LinodeVolumes"
+            }, {
+              "$ref": "#/components/schemas/LXDVolumes"
+            }, {
+              "$ref": "#/components/schemas/OpenstackVolumes"
+            }, {
+              "$ref": "#/components/schemas/VultrVolumes"
+            }]
+          },
+          "fqdn": {
+            "description": "Add DNS A Record that points machine's public IP to this Fully Qualified Domain Name. Zone needs to be managed by a configured Cloud DNS provider",
+            "type": "string"
+          },
+          "cloudinit": {
+            "description": "Run this Cloud Init script on first boot",
+            "type": "string"
+          },
+          "scripts": {
+            "description": "Run post deploy scripts over SSH",
+            "type": "array",
+            "items": {
+              "allOf": [{
+                "type": "object"
+              }, {
+                "oneOf": [{
+                  "$ref": "#/components/schemas/InlineScript"
+                }, {
+                  "$ref": "#/components/schemas/PostDeployScript"
+                }]
+              }]
+            }
+          },
+          "schedules": {
+            "description": "Configure scheduled actions for the provisioned machine",
+            "type": "array",
+            "items": {
+              "allOf": [{
+                "type": "object",
+                "properties": {
+                  "schedule_type": {
+                    "type": "string",
+                    "enum": ["one_off", "crontab", "interval"]
+                  },
+                  "script": {
+                    "$ref": "#/components/schemas/PostDeployScript"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": ["start", "stop", "reboot", "destroy"]
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["schedule_type"]
+              }, {
+                "oneOf": [{
+                  "$ref": "#/components/schemas/OneOffSchedule"
+                }, {
+                  "$ref": "#/components/schemas/CronSchedule"
+                }, {
+                  "$ref": "#/components/schemas/IntervalSchedule"
+                }],
+                "discriminator": {
+                  "propertyName": "schedule_type",
+                  "mapping": {
+                    "one_off": "#/components/schemas/OneOffSchedule",
+                    "crontab": "#/components/schemas/CronSchedule",
+                    "interval": "#/components/schemas/IntervalSchedule"
+                  }
+                }
+              }]
+            }
+          },
+          "tags": {
+            "description": "Assign tags to provisioned machine",
+            "type": "object"
+          },
+          "expiration": {
+            "description": "Configure machine expiration",
+            "$ref": "#/components/schemas/Expiration"
+          },
+          "extra": {
+            "description": "Configure additional parameters",
+            "anyOf": [{
+              "$ref": "#/components/schemas/AzureExtra"
+            }, {
+              "$ref": "#/components/schemas/DockerExtra"
+            }, {
+              "$ref": "#/components/schemas/EquinixMetalExtra"
+            }, {
+              "$ref": "#/components/schemas/GoogleExtra"
+            }, {
+              "$ref": "#/components/schemas/LinodeExtra"
+            }, {
+              "$ref": "#/components/schemas/LXDExtra"
+            }, {
+              "$ref": "#/components/schemas/VSphereExtra"
+            }, {
+              "$ref": "#/components/schemas/VultrExtra"
+            }]
+          },
+          "monitoring": {
+            "description": "Enable monitoring of this machine",
+            "type": "boolean"
+          },
+          "quantity": {
+            "description": "Provision multiple machines of this type",
+            "type": "number"
+          },
+          "template": {
+            "type": "object"
+          },
+          "dry": {
+            "description": "Return provisioning plan and exit without executing it",
+            "type": "boolean"
+          },
+          "save": {
+            "description": "Save provisioning plan as template",
+            "type": "boolean"
+          },
+          "optimize": {
+            "type": "string",
+            "description": "Criteria optimization, e.g \"cost\""
+          }
+        },
+        "required": ["name", "image"]
+      },
+      "EditMachineRequest": {
+        "type": "object",
+        "properties": {
+          "expiration": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "description": "format should be \u03a5\u03a5\u03a5\u03a5-\u039c\u039c-DD HH:MM:SS"
+              },
+              "action": {
+                "type": "string",
+                "enum": ["stop", "destroy"]
+              },
+              "notify": {
+                "type": "integer",
+                "description": "seconds before the expiration date to be notified"
+              }
+            },
+            "required": ["date", "action"]
+          }
+        }
+      },
+      "DockerNet": {
+        "title": "Docker net parameter",
+        "type": "object",
+        "properties": {
+          "port_bindings": {
+            "description": "ContainerPort,HostPort pairs. For example \"80\"/\"80\", \"123/udp\"/\"123\"",
+            "type": "object"
+          }
+        }
+      },
+      "DockerExtra": {
+        "title": "Docker extra parameter",
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "object",
+            "description": "Key, value pairs of environment variables to set inside the container"
+          },
+          "command": {
+            "type": "string",
+            "description": "Command to run specified as a string"
+          }
+        }
+      },
+      "LXDExtra": {
+        "title": "LXD extra parameter",
+        "type": "object",
+        "properties": {
+          "ephemeral": {
+            "type": "boolean",
+            "description": "Whether to destroy the container on shutdown, defaults to False"
+          }
+        }
+      },
+      "LXDNet": {
+        "title": "LXD net parameter",
+        "type": "object",
+        "properties": {
+          "networks": {
+            "description": "An array of network names or IDs to launch the container into",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "LXDVolumes": {
+        "title": "LXD volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of an existing storage volume to attach",
+                "type": "string"
+              },
+              "path": {
+                "description": "Path in the container the storage volume will be attached. e.g. /opt/mydata",
+                "type": "string"
+              }
+            },
+            "required": ["volume", "path"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the storage volume that will be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the storage volume in GBs",
+                "type": "integer"
+              },
+              "path": {
+                "description": "Path in the container the storage volume will be attached. e.g. /opt/mydata",
+                "type": "string"
+              },
+              "pool": {
+                "description": "The storage pool to create the volume into. If not given the default storage pool will be selected",
+                "type": "string"
+              },
+              "filesystem": {
+                "description": "Filesystem of the storage volume, defaults to \"ext4\"",
+                "type": "string"
+              },
+              "mount_options": {
+                "description": "Mount options for block devices,  defaults to \"discard\"",
+                "type": "string"
+              },
+              "security_shifted": {
+                "description": "Whether to enable id shifting overlay (allows attach by multiple isolated instances). Only supported on LXD version 3.16 and up",
+                "type": "boolean"
+              }
+            },
+            "required": ["name", "size", "path"]
+          }]
+        }
+      },
+      "CloudSigmaVolumes": {
+        "title": "CloudSigma volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of an existing volume to attach",
+                "type": "string"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume in GBs",
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": ["name", "size"]
+          }]
+        }
+      },
+      "VSphereExtra": {
+        "title": "VSphere extra parameter",
+        "type": "object",
+        "properties": {
+          "folder": {
+            "description": "Name or ID of the Vsphere folder to place the machine into. Required for Vsphere 6.7",
+            "type": "string"
+          },
+          "datastore": {
+            "description": "Name or ID of a VSphere datastore",
+            "type": "string"
+          }
+        }
+      },
+      "VSphereNet": {
+        "title": "VSphere net parameter",
+        "type": "object",
+        "properties": {
+          "network": {
+            "description": "Name or ID of the network to launch the machine into",
+            "type": "string"
+          }
+        }
+      },
+      "VultrVolumes": {
+        "title": "Vultr volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of an existing volume to attach",
+                "type": "string"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume in GBs",
+                "type": "integer",
+                "minimum": 10
+              }
+            },
+            "required": ["size", "name"]
+          }]
+        }
+      },
+      "VultrNet": {
+        "title": "Vultr net parameter",
+        "type": "object",
+        "properties": {
+          "networks": {
+            "description": "An array of network names or IDs to attach to this machine, invalid for \"Bare Metal\" machines",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ipv6": {
+            "description": "Enable IPv6, defaults to false",
+            "type": "boolean"
+          },
+          "hostname": {
+            "description": "The hostname to use when deploying this machine, defaults to machine name",
+            "type": "string"
+          }
+        }
+      },
+      "VultrExtra": {
+        "title": "Vultr extra parameter",
+        "type": "object",
+        "properties": {
+          "backups": {
+            "description": "Enable automatic backups for the machine, invalid for \"Bare Metal\" & \"Dedicated Cloud\" size types. There is an additional charge depending on the size selected",
+            "type": "boolean"
+          },
+          "ddos_protection": {
+            "description": "Enable DDoS protection, invalid for \"Bare Metal\" size type. There is an additional charge depending on the type of the size selected",
+            "type": "boolean"
+          }
+        }
+      },
+      "AlibabaNet": {
+        "title": "Alibaba net parameter",
+        "type": "object",
+        "properties": {
+          "network": {
+            "description": "Name or ID of an existing network to associate the machine with. If not provided, one existing network will be selected.",
+            "type": "string"
+          },
+          "subnet": {
+            "description": "Name or ID of an existing or new subnet(switch) to launch the machine into. If not provided a default 'mistio' subnet will be created.",
+            "type": "string"
+          },
+          "security_group": {
+            "description": "Name of the security group to assign to the machine. If not provided a default 'mistio' security group will be created.",
+            "type": "string"
+          }
+        }
+      },
+      "AlibabaVolumes": {
+        "title": "Alibaba volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of an existing volume to attach",
+                "type": "string"
+              },
+              "delete_on_termination": {
+                "description": "Delete the volume when the machine is deleted. Defaults to false",
+                "type": "boolean"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume in GBs. The minimum size depends on the volume type",
+                "type": "integer"
+              },
+              "delete_on_termination": {
+                "description": "Delete the volume when the machine is deleted. Defaults to false",
+                "type": "boolean"
+              },
+              "type": {
+                "description": "Type of the volume to create, defaults to 'cloud'",
+                "type": "string",
+                "enum": ["cloud", "cloud_efficiency", "cloud_ssd", "cloud_essd"]
+              }
+            },
+            "required": ["size", "name"]
+          }]
+        }
+      },
+      "OpenstackVolumes": {
+        "title": "Openstack & Vexxhost volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of an existing volume to attach",
+                "type": "string"
+              },
+              "boot": {
+                "description": "Use as boot volume, up to one volume can be used as boot. Defaults to false",
+                "type": "boolean"
+              },
+              "delete_on_termination": {
+                "description": "Delete the volume when the machine is deleted. Defaults to false",
+                "type": "boolean"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "size": {
+                "description": "Size of the volume to be created",
+                "type": "integer",
+                "minimum": 1
+              },
+              "boot": {
+                "description": "Use as boot volume, up to one volume can be used as boot. Defaults to false",
+                "type": "boolean"
+              },
+              "delete_on_termination": {
+                "description": "Delete the  volume when the machine is deleted. Defaults to false",
+                "type": "boolean"
+              }
+            },
+            "required": ["size"]
+          }]
+        }
+      },
+      "OpenstackNet": {
+        "title": "Openstack & Vexxhost net parameter",
+        "type": "object",
+        "properties": {
+          "security_groups": {
+            "description": "Name or Openstack UUID of the security groups to assign to the machine",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "networks": {
+            "description": "Name or ID of the networks to launch the machine into. Required parameter when there are multiple networks defined for the tenant",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "associate_floating_ip": {
+            "description": "Assign a floating IP to the machine, defaults to True for Openstack and False for Vexxhost",
+            "type": "boolean"
+          }
+        }
+      },
+      "AzureVolumes": {
+        "title": "Azure volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of the volume to attach",
+                "type": "string"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume to be created in GBs",
+                "type": "integer"
+              },
+              "caching_type": {
+                "description": "Specifies the caching requirements",
+                "type": "string",
+                "enum": ["None", "ReadOnly", "ReadWrite"]
+              },
+              "storage_account_type": {
+                "description": "Specifies the storage account type for the managed volume. Defaults to `StandardSSD_LRS`",
+                "type": "string",
+                "enum": ["Premium_LRS", "Premium_ZRS", "StandardSSD_LRS", "StandardSSD_ZRS", "Standard_LRS", "UltraSSD_LRS"]
+              }
+            },
+            "required": ["name", "size"]
+          }]
+        }
+      },
+      "AzureNet": {
+        "title": "Azure net parameter",
+        "type": "object",
+        "properties": {
+          "network": {
+            "description": "A new or existing network If not provided a `mist-resource_group-location` network will be used.",
+            "type": "string"
+          }
+        }
+      },
+      "AzureExtra": {
+        "title": "Azure extra parameter",
+        "type": "object",
+        "properties": {
+          "resource_group": {
+            "description": "A new or existing resource group. If not provided a `mist` resource group will be used.",
+            "type": "string"
+          },
+          "storage_account_type": {
+            "description": "Specifies the storage account type for the OS disk. Defaults to `StandardSSD_LRS`",
+            "type": "string",
+            "enum": ["Premium_LRS", "Premium_ZRS", "StandardSSD_LRS", "StandardSSD_ZRS", "Standard_LRS"]
+          },
+          "user": {
+            "description": "The machine username. Defaults to azureuser",
+            "type": "string"
+          },
+          "password": {
+            "description": "The machine password. Only used on Microsoft images",
+            "type": "string"
+          }
+        }
+      },
+      "LinodeExtra": {
+        "title": "Linode extra parameter",
+        "type": "object",
+        "properties": {
+          "root_pass": {
+            "description": "Set root password. If not given a secure password will be generated",
+            "type": "string"
+          }
+        }
+      },
+      "LinodeVolumes": {
+        "title": "Linode volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of the volume to attach",
+                "type": "string"
+              },
+              "persist_across_boots": {
+                "description": "Whether the volume should be attached to node across reboots, defaults to True",
+                "type": "boolean"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume to be created in GBs",
+                "type": "integer"
+              }
+            },
+            "required": ["name", "size"]
+          }]
+        }
+      },
+      "LinodeNet": {
+        "title": "Linode net parameter",
+        "type": "object",
+        "properties": {
+          "private_ip": {
+            "description": "Assign a private IPv4 address, defaults to True",
+            "type": "boolean"
+          }
+        }
+      },
+      "GoogleVolumes": {
+        "title": "Google volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of the volume to attach",
+                "type": "string"
+              },
+              "boot": {
+                "type": "boolean",
+                "description": "Whether this volume should be used as the boot drive. Up to one volume must set this parameter"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created, mandatory on non-boot volumes",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume to be created",
+                "type": "integer",
+                "minimum": 1
+              },
+              "boot": {
+                "type": "boolean",
+                "description": "Whether this volume should be used as the boot drive. Up to one volume must set this parameter"
+              },
+              "type": {
+                "description": "Type of the volume to create, defaults to 'pd-standard'",
+                "type": "string",
+                "enum": ["pd-standard", "pd-ssd"]
+              }
+            },
+            "required": ["size"]
+          }]
+        }
+      },
+      "GoogleNet": {
+        "title": "Google net parameter",
+        "type": "object",
+        "properties": {
+          "network": {
+            "type": "string",
+            "description": "The network to associate with the machine"
+          },
+          "subnetwork": {
+            "type": "string",
+            "description": "The subnetwork resource for this machine"
+          }
+        }
+      },
+      "GoogleExtra": {
+        "title": "Google extra parameter",
+        "type": "object",
+        "properties": {
+          "service_account": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "description": "The email address of the service account.",
+                "type": "string"
+              },
+              "scopes": {
+                "type": "array",
+                "description": "A list of scopes to be made available for this machine.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "EquinixMetalNet": {
+        "title": "Equnix Metal net parameter",
+        "type": "object",
+        "properties": {
+          "ip_addresses": {
+            "description": "Specify addresses to be created with your machine.By default Equinix configures public IPv4, public IPv6, and private IPv4",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address_family": {
+                  "type": "integer",
+                  "description": "Address Family for IP Address(IPv4, IPv6)",
+                  "enum": [4, 6]
+                },
+                "public": {
+                  "type": "boolean",
+                  "description": "Address Type for IP Address"
+                },
+                "cidr": {
+                  "type": "integer",
+                  "description": "Cidr Size for the IP Block created. Valid values depend on the operating system being provisioned. (28..32 for IPv4 addresses, 124..127 for IPv6 addresses)"
+                }
+              },
+              "required": ["address_family", "public", "cidr"]
+            }
+          }
+        }
+      },
+      "EquinixMetalExtra": {
+        "title": "Equnix Metal extra parameter",
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "description": "Project UUID, if not given the first one available will be selected",
+            "type": "string"
+          }
+        }
+      },
+      "DigitalOceanVolumes": {
+        "title": "DigitalOcean volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of the volume to attach",
+                "type": "string"
+              }
+            },
+            "required": ["volume"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "Name of the volume to be created",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume in GBs",
+                "type": "integer"
+              },
+              "filesystem_type": {
+                "description": "The name of the filesystem type to be used on the volume",
+                "type": "string",
+                "enum": ["ext4", "xfs"]
+              }
+            },
+            "required": ["name", "size"]
+          }]
+        }
+      },
+      "AmazonNet": {
+        "title": "Amazon net parameter",
+        "type": "object",
+        "properties": {
+          "security_group": {
+            "description": "Security group to assign to the machine",
+            "type": "string"
+          },
+          "subnet": {
+            "description": "Name or ID of the subnet to launch the machine into",
+            "type": "string"
+          }
+        }
+      },
+      "AmazonVolumes": {
+        "title": "Amazon volumes parameter",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [{
+            "properties": {
+              "volume": {
+                "description": "Name or ID of the volume",
+                "type": "string"
+              },
+              "device": {
+                "description": "The device name (for example, /dev/sdh or xvdh)",
+                "type": "string"
+              }
+            },
+            "required": ["volume", "device"]
+          }, {
+            "properties": {
+              "name": {
+                "description": "The device name (for example, /dev/sdh or xvdh)",
+                "type": "string"
+              },
+              "size": {
+                "description": "Size of the volume in GBs",
+                "type": "integer"
+              },
+              "volume_type": {
+                "type": "string",
+                "enum": ["gp2", "io1", "st1", "sc1", "standard"]
+              },
+              "iops": {
+                "type": "integer",
+                "description": "Number of I/O operations per second"
+              },
+              "delete_on_termination": {
+                "description": "Delete volume when machine is deleted",
+                "type": "boolean"
+              }
+            },
+            "required": ["name", "size"]
+          }]
+        }
+      },
+      "KVMNet": {
+        "title": "KVM net parameter",
+        "type": "object",
+        "properties": {
+          "networks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "network": {
+                  "type": "string",
+                  "description": "Name or ID of the network, if only this field is provided a dynamic IP address will be assigned"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "The IPv4 address to statically assign to the interface"
+                },
+                "gateway": {
+                  "type": "string",
+                  "description": "The IPv4 address for the default Gateway"
+                },
+                "primary": {
+                  "type": "string",
+                  "description": "The primary interface, which will be assigned a routing rule for the default GW"
+                }
+              },
+              "required": ["network"]
+            }
+          },
+          "vnfs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateMachineResponse": {
+        "type": "object",
+        "oneOf": [{
+          "properties": {
+            "jobId": {
+              "type": "string"
+            },
+            "plan": {
+              "type": "object"
+            }
+          }
+        }, {
+          "properties": {
+            "plan": {
+              "type": "object"
+            }
+          }
+        }]
+      },
+      "ListMachinesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Machine"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetMachineResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Machine"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Machine": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "state": {
+            "$ref": "#/components/schemas/MachineState"
+          },
+          "actions": {
+            "type": "object"
+          },
+          "cluster": {
+            "type": "string"
+          },
+          "cores": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "object"
+          },
+          "created": {
+            "type": "string"
+          },
+          "expiration": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "object"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "key_associations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyMachineAssociation"
+            }
+          },
+          "last_seen": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "missing_since": {
+            "type": "string"
+          },
+          "monitoring": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "os_type": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "string"
+          },
+          "ports": {
+            "type": "object"
+          },
+          "private_ips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "probe": {
+            "type": "object"
+          },
+          "public_ips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "size": {
+            "type": "string"
+          },
+          "subnet": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "unreachable_since": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSnapshotResponse": {
+        "type": "object"
+      },
+      "ListSnapshotsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Snapshot"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Snapshot": {
+        "type": "object"
+      },
+      "OneOffSchedule": {
+        "description": "one_off schedule",
+        "title": "OneOff",
+        "type": "object",
+        "properties": {
+          "schedule_type": {
+            "type": "string",
+            "enum": ["one_off"]
+          },
+          "datetime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When one_off schedule should run, e.g 2021-09-22T18:19:28Z"
+          }
+        },
+        "required": ["datetime", "schedule_type"]
+      },
+      "CronSchedule": {
+        "description": "crontab schedule",
+        "title": "Cron",
+        "type": "object",
+        "properties": {
+          "schedule_type": {
+            "type": "string",
+            "enum": ["crontab"]
+          },
+          "minute": {
+            "type": "string"
+          },
+          "hour": {
+            "type": "string"
+          },
+          "day_of_month": {
+            "type": "string"
+          },
+          "month_of_year": {
+            "type": "string"
+          },
+          "day_of_week": {
+            "type": "string"
+          },
+          "start_after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The datetime when schedule should start running, e.g 2021-09-22T18:19:28Z"
+          },
+          "expires": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The datetime when schedule should expire, e.g 2021-09-22T18:19:28Z"
+          },
+          "max_run_count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["schedule_type", "minute", "hour", "day_of_month", "month_of_year", "day_of_week"]
+      },
+      "IntervalSchedule": {
+        "description": "interval schedule",
+        "title": "Interval",
+        "type": "object",
+        "properties": {
+          "schedule_type": {
+            "type": "string",
+            "enum": ["interval"]
+          },
+          "every": {
+            "type": "integer"
+          },
+          "period": {
+            "type": "string",
+            "enum": ["minutes", "hours", "days"]
+          },
+          "start_after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The datetime when schedule should start running, e.g 2021-09-22T18:19:28Z"
+          },
+          "expires": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The datetime when schedule should expire, e.g 2021-09-22T18:19:28Z"
+          },
+          "max_run_count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["schedule_type", "every", "period"]
+      },
+      "InlineScript": {
+        "type": "object",
+        "properties": {
+          "inline": {
+            "type": "string"
+          }
+        },
+        "required": ["inline"]
+      },
+      "PostDeployScript": {
+        "type": "object",
+        "properties": {
+          "script": {
+            "type": "string",
+            "description": "Name or ID of the script to run"
+          },
+          "params": {
+            "type": "string"
+          }
+        },
+        "required": ["script"]
+      },
+      "Expiration": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["stop", "destroy"]
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When machine should expire, e.g 2021-09-22T18:19:28Z"
+          },
+          "notify": {
+            "type": "object",
+            "description": "Notify user before machine expiration",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "period": {
+                "type": "string",
+                "enum": ["minutes", "hours", "days"]
+              }
+            },
+            "required": ["value", "period"]
+          },
+          "notify_msg": {
+            "type": "string"
+          }
+        },
+        "required": ["action", "date"]
+      },
+      "KeyMachineAssociation": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Name or ID of the SSH key"
+          },
+          "machine": {
+            "type": "string",
+            "description": "Name or ID of the machine"
+          },
+          "last_used": {
+            "type": "integer",
+            "description": "Last used time"
+          },
+          "port": {
+            "type": "integer",
+            "description": "SSH port"
+          },
+          "user": {
+            "type": "string",
+            "description": "SSH user"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "Indicates if the SSH user has sudo privileges"
+          }
+        }
+      },
+      "KeyMachineDisassociation": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Name or ID of the SSH key to disassociate"
+          }
+        }
+      },
+      "CreateNetworkRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specify network name",
+            "example": "my-network"
+          },
+          "cloud": {
+            "type": "string",
+            "description": "Specify cloud to provision on",
+            "example": "my-cloud"
+          },
+          "tags": {
+            "description": "Assign tags to provisioned network",
+            "type": "object"
+          },
+          "extra": {
+            "description": "Configure additional parameters, e.g. cidr (EC2 network)",
+            "type": "object"
+          },
+          "template": {
+            "type": "object"
+          },
+          "dry": {
+            "description": "Return provisioning plan and exit without executing it",
+            "type": "boolean"
+          },
+          "save": {
+            "description": "Save provisioning plan as template",
+            "type": "boolean"
+          }
+        },
+        "required": ["name", "cloud"]
+      },
+      "CreateNetworkResponse": {
+        "type": "object",
+        "oneOf": [{
+          "properties": {
+            "jobId": {
+              "type": "string"
+            },
+            "plan": {
+              "type": "object"
+            }
+          }
+        }, {
+          "properties": {
+            "plan": {
+              "type": "object"
+            }
+          }
+        }]
+      },
+      "ListNetworksResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Network"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetNetworkResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Network"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Network": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          }
+        }
+      },
+      "ListSizesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Size"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetSizeResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Size"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Size": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "object"
+          }
+        }
+      },
+      "ListLocationsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Location"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetLocationResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "object"
+          },
+          "parent": {
+            "type": "string"
+          },
+          "location_type": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "available_sizes": {
+            "type": "object"
+          },
+          "available_images": {
+            "type": "object"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "created_by": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateVolumeRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specify volume name",
+            "example": "my-volume"
+          },
+          "provider": {
+            "description": "Specify cloud provider",
+            "$ref": "#/components/schemas/SupportedProviders"
+          },
+          "cloud": {
+            "type": "string",
+            "description": "Specify cloud to provision on",
+            "example": "my-cloud"
+          },
+          "location": {
+            "type": "string",
+            "description": "Where to provision e.g. region, datacenter, rack",
+            "example": "us-central1-a"
+          },
+          "size": {
+            "description": "Volume sizing spec",
+            "type": "integer",
+            "example": 1
+          },
+          "ex_disk_type": {
+            "type": "string",
+            "description": "GCE-specific",
+            "enum": ["pd-standard", "pd-ssd"],
+            "example": "pd-standard"
+          },
+          "ex_volume_type": {
+            "type": "string",
+            "description": "EC2-specific",
+            "enum": ["standard", "io1", "gp2", "sc1", "st1"],
+            "example": "standard"
+          },
+          "ex_iops": {
+            "type": "string",
+            "description": "EC2-specific. Needs to be specified if volume_type='io1'"
+          },
+          "tags": {
+            "description": "Assign tags to provisioned volume",
+            "type": "object"
+          },
+          "extra": {
+            "description": "Configure additional parameters",
+            "type": "object"
+          },
+          "quantity": {
+            "description": "Provision multiple volumes of this type",
+            "type": "integer"
+          },
+          "template": {
+            "type": "object"
+          },
+          "dry": {
+            "description": "Return provisioning plan and exit without executing it",
+            "type": "boolean"
+          },
+          "save": {
+            "description": "Save provisioning plan as template",
+            "type": "boolean"
+          }
+        },
+        "required": ["name", "cloud", "size", "location"]
+      },
+      "CreateVolumeResponse": {
+        "type": "object",
+        "oneOf": [{
+          "properties": {
+            "jobId": {
+              "type": "string"
+            },
+            "plan": {
+              "type": "object"
+            }
+          }
+        }, {
+          "properties": {
+            "plan": {
+              "type": "object"
+            }
+          }
+        }]
+      },
+      "ListVolumesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Volume"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetVolumeResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Volume"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Volume": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "actions": {
+            "type": "object"
+          },
+          "attached_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extra": {
+            "type": "object"
+          },
+          "last_seen": {
+            "type": "string"
+          },
+          "missing_since": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateZoneRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specify zone name/domain (e.g. example.com)"
+          },
+          "cloud": {
+            "type": "string",
+            "description": "Specify cloud to provision on"
+          },
+          "tags": {
+            "description": "Assign tags to provisioned zone",
+            "type": "object"
+          },
+          "extra": {
+            "description": "Configure additional parameters",
+            "type": "object"
+          },
+          "template": {
+            "type": "object"
+          },
+          "dry": {
+            "description": "Return provisioning plan and exit without executing it",
+            "type": "boolean"
+          },
+          "save": {
+            "description": "Save provisioning plan as template",
+            "type": "boolean"
+          }
+        },
+        "required": ["name", "cloud"],
+        "example": {
+          "name": "my-zone",
+          "cloud": "my-cloud"
+        }
+      },
+      "CreateZoneResponse": {
+        "type": "object",
+        "oneOf": [{
+          "properties": {
+            "jobId": {
+              "type": "string"
+            },
+            "plan": {
+              "type": "object"
+            }
+          }
+        }, {
+          "properties": {
+            "plan": {
+              "type": "object"
+            }
+          }
+        }]
+      },
+      "ListZonesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Zone"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetZoneResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Zone"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Zone": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cloud": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          }
+        }
+      },
+      "AddKeyRequest": {
+        "type": "object",
+        "anyOf": [{
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The key's name"
+            },
+            "private": {
+              "type": "string",
+              "description": "The private key"
+            },
+            "certificate": {
+              "type": "string",
+              "description": "The signed public key, when using signed ssh keys"
+            }
+          },
+          "required": ["name", "private"]
+        }, {
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The key's name"
+            },
+            "generate": {
+              "type": "boolean",
+              "description": "Generate a keypair instead of providing one"
+            },
+            "dry": {
+              "description": "Return generated key without actually adding it",
+              "type": "boolean"
+            }
+          },
+          "required": ["name", "generate"]
+        }, {
+          "properties": {
+            "generate": {
+              "type": "boolean",
+              "description": "Generate a keypair instead of providing one"
+            },
+            "dry": {
+              "description": "Return generated key without actually adding it",
+              "type": "boolean"
+            }
+          },
+          "required": ["generate", "dry"]
+        }],
+        "example": {
+          "name": "my-key",
+          "private": "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUp wmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ5 1s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQABAoGAFijko56+qGyN8M0RVyaRAXz++xTqHBLh 3tx4VgMtrQ+WEgCjhoTwo23KMBAuJGSYnRmoBZM3lMfTKevIkAidPExvYCdm5dYq3XToLkkLv5L2 pIIVOFMDG+KESnAFV7l2c+cnzRMW0+b6f8mR1CJzZuxVLL6Q02fvLi55/mbSYxECQQDeAw6fiIQX GukBI4eMZZt4nscy2o12KyYner3VpoeE+Np2q+Z3pvAMd/aNzQ/W9WaI+NRfcxUJrmfPwIGm63il AkEAxCL5HQb2bQr4ByorcMWm/hEP2MZzROV73yF41hPsRC9m66KrheO9HPTJuo3/9s5p+sqGxOlF L0NDt4SkosjgGwJAFklyR1uZ/wPJjj611cdBcztlPdqoxssQGnh85BzCj/u3WqBpE2vjvyyvyI5k X6zk7S0ljKtt2jny2+00VsBerQJBAJGC1Mg5Oydo5NwD6BiROrPxGo2bpTbu/fhrT8ebHkTz2epl U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ 37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ4p0=\n-----END RSA PRIVATE KEY-----"
+        }
+      },
+      "AddKeyResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "private": {
+            "type": "string"
+          },
+          "public": {
+            "type": "string"
+          }
+        }
+      },
+      "ListKeysResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Key"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetKeyResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Key"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Key": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["ssh", "signed_ssh"]
+          }
+        }
+      },
+      "AddScriptRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "my-script"
+          },
+          "script": {
+            "type": "string",
+            "example": "#!/usr/bin/env bash\necho Hello, World!"
+          },
+          "location_type": {
+            "type": "string",
+            "enum": ["inline", "github", "url"],
+            "example": "inline"
+          },
+          "entrypoint": {
+            "type": "string",
+            "example": "entrypoint.sh"
+          },
+          "exec_type": {
+            "type": "string",
+            "enum": ["executable", "ansible"],
+            "example": "executable"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "script", "location_type", "exec_type"]
+      },
+      "RunScriptRequest": {
+        "type": "object",
+        "properties": {
+          "machine": {
+            "type": "string",
+            "example": "my-machine"
+          },
+          "params": {
+            "type": "string",
+            "example": "-v"
+          },
+          "su": {
+            "type": "string",
+            "enum": ["true", "false"],
+            "example": "false"
+          },
+          "env": {
+            "type": "string",
+            "example": "EXAMPLE_VAR=123"
+          },
+          "job_id": {
+            "type": "string",
+            "example": "ab74e2f0b7ae4999b1e4013e20dac418"
+          }
+        },
+        "required": ["machine"]
+      },
+      "RunScriptResponse": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ListScriptsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Script"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetScriptResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Script"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Script": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          }
+        }
+      },
+      "ListRulesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetRuleResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Rule"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "AddRuleRequest": {
+        "type": "object",
+        "properties": {
+          "queries": {
+            "$ref": "#/components/schemas/Queries"
+          },
+          "window": {
+            "$ref": "#/components/schemas/Window"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/Frequency"
+          },
+          "trigger_after": {
+            "$ref": "#/components/schemas/TriggerAfter"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/RuleActions"
+          },
+          "selectors": {
+            "$ref": "#/components/schemas/Selector"
+          },
+          "data_type": {
+            "$ref": "#/components/schemas/DataType"
+          }
+        },
+        "required": ["queries", "window", "frequency", "trigger_after", "actions", "data_type"]
+      },
+      "EditRuleRequest": {
+        "type": "object",
+        "properties": {
+          "queries": {
+            "$ref": "#/components/schemas/Queries"
+          },
+          "window": {
+            "$ref": "#/components/schemas/Window"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/Frequency"
+          },
+          "trigger_after": {
+            "$ref": "#/components/schemas/TriggerAfter"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/RuleActions"
+          },
+          "selectors": {
+            "$ref": "#/components/schemas/Selector"
+          }
+        }
+      },
+      "Rule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "queries": {
+            "type": "object"
+          },
+          "window": {
+            "type": "object"
+          },
+          "frequency": {
+            "type": "object"
+          },
+          "triggered_after": {
+            "type": "object"
+          },
+          "actions": {
+            "type": "object"
+          },
+          "disabled": {
+            "type": "string"
+          },
+          "data_type": {
+            "type": "string"
+          }
+        }
+      },
+      "Query": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "the metric's name, e.g. \"load.shortterm\""
+          },
+          "operator": {
+            "type": "string",
+            "description": "the operator used to compare the computed value with the given\nthreshold\n"
+          },
+          "threshold": {
+            "type": "number",
+            "description": "the value over/under which an alert will be raised"
+          },
+          "aggregation": {
+            "type": "string",
+            "description": "the function to be applied on the computed series. Must be one\nof: all, any, avg\n"
+          }
+        },
+        "required": ["target", "operator", "threshold", "aggregation"]
+      },
+      "Queries": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Query"
+        }
+      },
+      "Window": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "integer",
+            "description": "a positive integer denoting the start of the search window in\nterms of \"now() - start\"\n"
+          },
+          "stop": {
+            "type": "integer",
+            "default": 0,
+            "description": "a positive integer, where stop < start, denoting the end of the\nsearch window. Defaults to now\n"
+          },
+          "period": {
+            "type": "string",
+            "description": "units of time, e.g. \"seconds\""
+          }
+        },
+        "required": ["start", "period"]
+      },
+      "Frequency": {
+        "type": "object",
+        "properties": {
+          "every": {
+            "type": "integer",
+            "description": "a positive integer denoting how often the rule must be evaluated\n"
+          },
+          "period": {
+            "type": "string",
+            "description": "units of time, e.g. \"seconds\""
+          }
+        },
+        "required": ["every", "period"]
+      },
+      "TriggerAfter": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "description": "a positive integer denoting the tolerance period"
+          },
+          "period": {
+            "type": "string",
+            "description": "units of time, e.g. \"seconds\""
+          }
+        },
+        "required": ["offset", "period"]
+      },
+      "RuleAction": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "the action's type: notification, machine_action, command\n"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "a list of user to be notified, denoted by their UUIDs. Can be\nused by a notification action (optional)\n"
+          },
+          "teams": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "a list of teams, denoted by their UUIDs, whose users will be\nnotified. Can be used by a notification action (optional)\n"
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "a list of e-mails to send a notification to. Can be used by a\nnotification action (optional)\n"
+          },
+          "action": {
+            "type": "string",
+            "description": "the action to be performed. Required by machine_action type\n"
+          },
+          "command": {
+            "type": "string",
+            "description": "the command to be executed. Required by the command type\n"
+          }
+        },
+        "required": ["type"]
+      },
+      "RuleActions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RuleAction"
+        }
+      },
+      "Selector": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["machines", "tags"],
+            "description": "one of \"machines\" or \"tags\""
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "a list of UUIDs in case type is \"machines\""
+          },
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "a list of tags in case type is \"tags\""
+          }
+        },
+        "required": ["type"]
+      },
+      "Selectors": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Selector"
+        }
+      },
+      "DataType": {
+        "type": "string",
+        "enum": ["metrics", "logs"],
+        "example": "logs"
+      },
+      "ListOrgsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Org"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetOrgResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Org"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Org": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "clouds_count": {
+            "type": "string"
+          },
+          "teams_count": {
+            "type": "string"
+          },
+          "total_machine_count": {
+            "type": "string"
+          },
+          "created": {
+            "type": "boolean"
+          },
+          "enterprise_plan": {
+            "type": "object"
+          },
+          "selected_plan": {
+            "type": "string"
+          },
+          "last_active": {
+            "type": "string"
+          }
+        }
+      },
+      "ListOrgMembersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Member"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetOrgMemberResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Member"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Member": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "last_login": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "registration_date": {
+            "type": "string"
+          },
+          "pending": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ListOrgTeamsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Team"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Member"
+            }
+          },
+          "members_count": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "policy": {
+            "type": "object"
+          }
+        }
+      },
+      "GetJobResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "logs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Log"
+            }
+          },
+          "error": {
+            "type": "boolean"
+          },
+          "started_at": {
+            "type": "number"
+          },
+          "finished_at": {
+            "type": "number"
+          },
+          "org": {
+            "type": "string"
+          },
+          "machine_id": {
+            "type": "string"
+          },
+          "job_id": {
+            "type": "string"
+          },
+          "cloud_id": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "required": ["logs", "error", "started_at", "finished_at", "org", "job_id", "action"]
+      },
+      "Log": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string"
+          },
+          "org": {
+            "type": "string"
+          }
+        },
+        "required": ["job_id", "org"]
+      },
+      "ListUsersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "last_login": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "registration_date": {
+            "type": "string"
+          }
+        }
+      },
+      "GetDatapointsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Datapoints"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "DatapointsValuesItem": {
+        "anyOf": [{
+          "type": "string"
+        }, {
+          "type": "number"
+        }]
+      },
+      "DatapointsValuesTuple": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DatapointsValuesItem"
+        }
+      },
+      "InstantVector": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "object"
+          },
+          "values": {
+            "$ref": "#/components/schemas/DatapointsValuesTuple"
+          }
+        }
+      },
+      "RangeVector": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "object"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DatapointsValuesTuple"
+            }
+          }
+        }
+      },
+      "Vector": {
+        "type": "object",
+        "oneOf": [{
+          "$ref": "#/components/schemas/InstantVector"
+        }, {
+          "$ref": "#/components/schemas/RangeVector"
+        }]
+      },
+      "Datapoints": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "resultType": {
+                "type": "string"
+              },
+              "result": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Vector"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ListSecretsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Secret"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "GetSecretResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Secret"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMetadata"
+          }
+        }
+      },
+      "Secret": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSecretRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the secret. This is equivalent to the path the secret will be stored in Vault"
+          },
+          "secret": {
+            "type": "object"
+          }
+        },
+        "required": ["name", "secret"]
+      },
+      "EditSecretRequest": {
+        "type": "object",
+        "properties": {
+          "secret": {
+            "type": "object"
+          }
+        },
+        "required": ["secret"]
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      },
+      "CookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session.id"
+      }
+    }
+  },
+  "allOf": [{
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The name of the cloud to add"
+      },
+      "provider": {
+        "$ref": "#/components/schemas/SupportedProviders"
+      }
+    },
+    "required": ["name", "provider"]
+  }, {
+    "oneOf": [{
+      "$ref": "#/components/schemas/AmazonCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/AzureCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/GoogleCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/AlibabaCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/CloudSigmaCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/EquinixCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/IbmCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/DigitaloceanCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/LinodeCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/RackspaceCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/MaxihostCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/VultrCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/OpenstackCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/OnappCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/VsphereCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/KvmCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/LxdCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/DockerCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/KubernetesCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/KubevirtCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/OpenshiftCloudRequest"
+    }, {
+      "$ref": "#/components/schemas/OtherCloudRequest"
+    }],
+    "discriminator": {
+      "propertyName": "provider",
+      "mapping": {
+        "amazon": "#/components/schemas/AmazonCloudRequest",
+        "azure": "#/components/schemas/AzureCloudRequest",
+        "google": "#/components/schemas/GoogleCloudRequest",
+        "cloudsigma": "#/components/schemas/CloudSigmaCloudRequest",
+        "alibaba": "#/components/schemas/AlibabaCloudRequest",
+        "equinix": "#/components/schemas/EquinixCloudRequest",
+        "ibm": "#/components/schemas/IbmCloudRequest",
+        "linode": "#/components/schemas/LinodeCloudRequest",
+        "rackspace": "#/components/schemas/RackspaceCloudRequest",
+        "maxihost": "#/components/schemas/MaxihostCloudRequest",
+        "vultr": "#/components/schemas/VultrCloudRequest",
+        "openstack": "#/components/schemas/OpenstackCloudRequest",
+        "onapp": "#/components/schemas/OnappCloudRequest",
+        "vsphere": "#/components/schemas/VsphereCloudRequest",
+        "kvm": "#/components/schemas/KvmCloudRequest",
+        "lxd": "#/components/schemas/LxdCloudRequest",
+        "docker": "#/components/schemas/DockerCloudRequest",
+        "kubernetes": "#/components/schemas/KubernetesCloudRequest",
+        "kubevirt": "#/components/schemas/KubevirtCloudRequest",
+        "openshift": "#/components/schemas/OpenshiftCloudRequest",
+        "other": "#/components/schemas/OtherCloudRequest"
+      }
+    }
+  }],
+  "example": {
+    "name": "my-cloud",
+    "provider": "google",
+    "credentials": {
+      "projectId": "projectId",
+      "privateKey": "privateKey",
+      "email": "email"
+    }
+  }
+}

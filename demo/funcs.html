@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-GB">
 
 <head>
   <meta charset="utf-8" />
@@ -14,7 +14,7 @@
 
     mist-form {
       padding: 25px;
-      width: 80%;
+      /* width: 100%; */
     }
     div#form {
       width: 60%;
@@ -65,47 +65,42 @@
       {id: 'arrays'},
       {id: 'numbers'},
       {id: 'widgets'},
-      // {id: 'ordering'},
+      {id: 'ordering'},
       {id: 'references'},
-      // {id: 'custom'},
-      // {id: 'errors'},
+      {id: 'custom'},
+      {id: 'errors'},
       {id: 'examples'},
       {id: 'large'},
       {id: 'datetime', title: "Date & Time"},
-      // {id: 'validation'},
+      {id: 'validation'},
       {id: 'files'},
-      // {id: 'single'},
-      // {id: 'customarray', title: "Custom Array"},
-      // {id: 'customobject', title: "Custom Object"},
-      // {id: 'alternatives'},
-      // {id: 'propdeps', title: "Property dependencies"},
-      // {id: 'schemadeps', title: "Schema dependencies"},
-      // {id: 'addprops', title: "Additional Properties"},
+      {id: 'single'},
+      {id: 'customarray', title: "Custom Array"},
+      {id: 'customobject', title: "Custom Object"},
+      {id: 'alternatives'},
+      {id: 'propdeps', title: "Property dependencies"},
+      {id: 'schemadeps', title: "Schema dependencies"},
+      {id: 'addprops', title: "Additional Properties"},
       {id: 'anyof', title: "Any Of"},
       {id: 'oneof', title: "One Of"},
       {id: 'allof', title: "All Of"},
       {id: 'ifthenelse', title: "If Then Else"},
-      // {id: 'nullfields', title: "Null Fields"},
-      // {id: 'nullable'},
-      // {id: 'errorschema', title: "Error Schema"},
+      {id: 'nullfields', title: "Null Fields"},
+      {id: 'nullable'},
+      {id: 'errorschema', title: "Error Schema"},
       {id: 'defaults'},
     ];
     if (document.location.search.startsWith('?mist')) {
       presets = [
-        {id: 'mist/createorg', title: "Create org"},
         {id: 'mist/addkey', title: "Add key"},
-        {id: 'mist/addcloud', title: "Add cloud"},
-        {id: 'mist/constraints', title: "Constaints form"},
-        {id: 'mist/addsecret', title: "Add secret"}
+        {id: 'mist/addcloud', title: "Add cloud"}
       ]
     }
 
-    // eslint-disable-next-line func-names
     export const debouncer = function (callback, wait) {
       let timeout = 1000;
       return (...args) => {
         clearTimeout(timeout);
-        // eslint-disable-next-line func-names
         timeout = setTimeout(function () {
           callback.apply(this, args);
         }, wait);
@@ -123,8 +118,7 @@
         document.querySelector('mist-form').jsonSchema = JSON.parse(jsonSchemaValue);
       jsonSchemaEditor.onDidChangeModelContent(
         debouncer(
-          (e) => {
-            if (e.isFlush) return;
+          () => {
             const data = JSON.parse(jsonSchemaEditor.getValue());
             console.log(jsonSchemaEditor.getValue());
             document.querySelector('mist-form').jsonSchema = data;
@@ -146,8 +140,7 @@
         document.querySelector('mist-form').uiSchema = JSON.parse(uiSchemaValue);
       uiSchemaEditor.onDidChangeModelContent(
         debouncer(
-          (e) => {
-            if (e.isFlush) return;
+          () => {
             console.log(uiSchemaEditor.getValue());
             document.querySelector('mist-form').uiSchema = JSON.parse(uiSchemaEditor.getValue());
           }, 250)
@@ -163,19 +156,23 @@
         language: 'json',
         automaticLayout: true
       });
+      // const formDataValue = formDataEditor.getValue();
+      // if (formDataValue)
+      //   document.querySelector('mist-form').formData = JSON.parse(formDataValue);
       formDataEditor.onDidChangeModelContent(debouncer((e) => {
-        if (e.isFlush) return;
+        // debugger;
         const newValue = formDataEditor.getValue();
         try {
           document.querySelector('mist-form').formData = JSON.parse(newValue);
-        } catch {
+        } catch(e) {
           if (document.querySelector('mist-form').formData !== newValue) {
             document.querySelector('mist-form').formData = newValue;
           }
         }
+        document.querySelector('mist-form').validate();
       }, 150));
-      // eslint-disable-next-line func-names
-      document.querySelector('mist-form').addEventListener('form-data-changed', function() {
+      document.querySelector('mist-form').addEventListener('form-data-changed', function(e) {
+        // debugger;
         let newValue = this.domValue;
         switch (typeof(newValue)) {
           case "string":
@@ -184,18 +181,16 @@
             if (newValue.length) {
               newValue = JSON.stringify(newValue, null, 2);
             } else {
-              const editorValue = formDataEditor.getValue();
-              const existingValue = editorValue ? JSON.parse(editorValue) : {};
-              newValue = JSON.stringify({...existingValue, ...newValue}, null, 2);
+              newValue = JSON.stringify({...JSON.parse(formDataEditor.getValue()), ...newValue}, null, 2);
             }
             break;
           default:
         }
-        if (newValue && formDataEditor.getValue() !== newValue) {
+        if (formDataEditor.getValue() !== newValue) {
           formDataEditor.setValue(newValue);
         }
       });
-      document.querySelector('mist-form').dispatchEvent(new CustomEvent('form-data-changed', {detail: {}, bubbles:true, composed: true}));
+      updateTab();
     });
     function updateTab(e) {
         const preset = e ? e.detail.value : 0;
@@ -204,10 +199,9 @@
         .then(response => response.json())
         .then(async body => {
           const form = document.querySelector('mist-form#playground');
-          // debugger;
-          form.formData = body.formData || {};
-          form.jsonSchema = body.jsonSchema || body;
+          form.jsonSchema = body.jsonSchema;
           form.uiSchema = body.uiSchema;
+          form.formData = body.formData;
           if (jsonSchemaEditor) jsonSchemaEditor.setValue(JSON.stringify(body.jsonSchema || body, null, 2));
           if (uiSchemaEditor) uiSchemaEditor.setValue(JSON.stringify(body.uiSchema || {}, null, 2));
           if (formDataEditor) formDataEditor.setValue(JSON.stringify(body.formData || {}, null, 2));
@@ -243,16 +237,29 @@
           <h3>Rendered form</h3>
           <mist-form
             id="playground"
-            action="/api/v2/keys"
-            @response=${() => {
-              console.log('on response');
-            }}
-            @request=${() => {
-              console.log('on request');
-            }}
-            @error=${() => {
-              console.log('on error');
-            }}>
+          >
+            <iron-ajax
+              slot="formRequest"
+              id="formAjax"
+              url="/api/v1/products"
+              contentType="application/json"
+              .submit=${this}
+              method="POST"
+              handle-as="json"
+              @mist-form-request=${function (e) {
+                this.body = JSON.stringify(e.detail.payload);
+                this.generateRequest();
+              }}
+              @response=${() => {
+                console.log('on response');
+              }}
+              @request=${() => {
+                console.log('on request');
+              }}
+              @error=${() => {
+                console.log('on error');
+              }}
+            ></iron-ajax>
           </mist-form>
           </div>
         </vaadin-split-layout>`,

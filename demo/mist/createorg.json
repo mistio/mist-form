@@ -1,0 +1,11 @@
+{
+    "jsonSchema": {
+        "$ref": "https://storage.googleapis.com/mist-api-spec/v2/auth-spec/mist-api-v2.json#/components/schemas/CreateOrgRequest"
+      },
+      "uiSchema": {
+        "description":{
+            "ui:widget": "textarea"
+        }
+      },
+      "formData": {}
+}

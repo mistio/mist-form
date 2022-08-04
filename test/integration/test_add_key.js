@@ -10,6 +10,12 @@ describe('Test Add Key Form', () => {
     cy.visit('http://localhost:8000/demo/?mist');
   });
 
+  it('Select subform', () => {
+    cy.get('vaadin-tabs > vaadin-tab').then(items => {
+      cy.wrap(items[1]).click().should('have.attr', 'selected');
+    });
+  });
+
   it('Check that all fields are invalid, submit disabled', () => {
     cy.get('#playground')
       .find('#name')

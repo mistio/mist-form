@@ -154,6 +154,12 @@ export class MistForm extends LitElement {
   }
 
   willUpdate(changedProperties) {
+    // Load new spec if url has been updated
+    if (changedProperties.has('url')) {
+      if (this.url) {
+        this.loadSpec(this.url);
+      }
+    }
     // Reset & resolve new schema
     if (changedProperties.has('jsonSchema')) {
       // eslint-disable-next-line func-names
@@ -162,25 +168,9 @@ export class MistForm extends LitElement {
       this.evaluatedSchema = undefined;
       this.formError = '';
       this.resolveSchema();
-    }
-  }
-
-  updated(changedProperties) {
-    // eslint-disable-next-line no-console
-    console.log(`updated(). changedProperties: `, changedProperties);
-    // Load new spec if url has been updated
-    if (changedProperties.has('url')) {
-      if (this.url) {
-        this.loadSpec(this.url);
-      }
-    }
-
-    // Validate fields after jsonSchema spec updated
-    if (changedProperties.has('jsonSchema')) {
       this.submitting = false;
       this.validate();
     }
-
     // Update field values after formData updates
     if (changedProperties.has('formData') && this.formData !== undefined) {
       if (
@@ -200,6 +190,11 @@ export class MistForm extends LitElement {
         this.validate();
       }
     }
+  }
+
+  updated(changedProperties) {
+    // eslint-disable-next-line no-console
+    console.log(`updated(). changedProperties: `, changedProperties);
   }
 
   loadSpec(url) {
@@ -245,6 +240,9 @@ export class MistForm extends LitElement {
     } else {
       this.dereferencedSchema = this.resolveLocalRefs(this.resolvedSchema);
       this.evaluatedSchema = this.evalSchema(this.dereferencedSchema);
+      setTimeout(() => {
+        this.requestUpdate();
+      }, 100);
     }
   }
 
