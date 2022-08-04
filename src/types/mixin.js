@@ -287,7 +287,9 @@ export const fieldMixin = superClass =>
             ?clear-button-visible="${this.hasClear}"
             ?required="${this.spec.jsonSchema.required}"
             value="${ifDefined(this.spec.formData)}"
-            label="${this.spec.jsonSchema.title}"
+            label="${this.spec.jsonSchema.title ||
+            (Number.isNaN(Number(this.spec.id)) && this.spec.id) ||
+            ''}"
             helper-text="${ifDefined(this.spec.jsonSchema.description)}"
             class="${this.classes || ''} mist-form-field"
             @value-changed=${this.debouncedEventChange}
