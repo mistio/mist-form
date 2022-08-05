@@ -125,11 +125,11 @@ export class MistForm extends LitElement {
     super.connectedCallback();
     this.addEventListener(
       'field-value-changed',
-      debouncer(this._handleValueChanged, 200)
+      debouncer(this._handleValueChanged.bind(this), 200)
     );
     this.addEventListener(
       'validation-changed',
-      debouncer(this._validationChanged, 200)
+      debouncer(this._validationChanged.bind(this), 200)
     );
     this.addEventListener('loading', this._loadingStarted);
     this.addEventListener('loaded', this._loadingFinished);
@@ -167,8 +167,8 @@ export class MistForm extends LitElement {
       this.dereferencedSchema = undefined;
       this.evaluatedSchema = undefined;
       this.formError = '';
-      this.resolveSchema();
       this.submitting = false;
+      this.resolveSchema();
       this.validate();
     }
     // Update field values after formData updates
@@ -729,19 +729,19 @@ export class MistForm extends LitElement {
     // eslint-disable-next-line no-console
     console.debug('_handleValueChanged', e, this);
     e.stopPropagation();
-    if (!e.target || !e.target.jsonSchema) return;
-    e.target.formData = { ...e.target.formData, ...e.target.domValue };
-    const eventName = `${e.target.subform ? 'sub' : ''}form-data-changed`;
+    if (!this || !this.jsonSchema) return;
+    this.formData = { ...this.formData, ...this.domValue };
+    const eventName = `${this.subform ? 'sub' : ''}form-data-changed`;
     const formDataChangedEvent = new CustomEvent(eventName, {
       detail: {
-        id: e.target.jsonSchema.id,
+        id: this.jsonSchema.id,
       },
       bubbles: true,
       composed: true,
     });
-    e.target.dispatchEvent(formDataChangedEvent);
-    e.target.validate();
-    e.target.evaluatedSchema = e.target.evalSchema(e.target.dereferencedSchema);
+    this.evaluatedSchema = this.evalSchema(this.dereferencedSchema);
+    this.dispatchEvent(formDataChangedEvent);
+    this.validate();
   }
 
   validate() {
@@ -773,10 +773,10 @@ export class MistForm extends LitElement {
   }
 
   _validationChanged(e) {
-    if (e.target) {
+    if (this) {
       // eslint-disable-next-line no-console
       console.debug('validation-changed', e, this);
-      e.target.valid = e.detail.valid;
+      this.valid = e.detail.valid;
     }
   }
 
