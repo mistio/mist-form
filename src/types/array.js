@@ -14,11 +14,18 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
       }
       ul {
         padding-inline-start: 24px;
-        list-style: auto;
       }
       .mist-form-field {
         width: 192px;
         display: block;
+      }
+      span.field {
+        font-weight: 500;
+        display: block;
+        margin: 16px 0 8px;
+        color: rgba(27, 43, 65, 0.69);
+        font-family: var(--lumo-font-family);
+        font-size: 0.8125rem;
       }
     `;
   }
@@ -55,7 +62,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
     this.shadowRoot.querySelectorAll('.mist-form-field').forEach(f => {
       ret.push(f.payload);
     });
-    return ret;
+    return this.transform(ret);
   }
 
   cast(value) {
@@ -71,7 +78,7 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
       ? html`<h2>${this.spec.jsonSchema.title}</h2>`
       : html``;
     const description = this.spec.jsonSchema.description
-      ? html`<p>${this.spec.jsonSchema.description}</p>`
+      ? html`<span class="field">${this.spec.jsonSchema.description}</span>`
       : html``;
     let body;
     if (this.spec.jsonSchema.uniqueItems) {
@@ -86,7 +93,11 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         : ``;
     } else {
       body = html`
-        <ul>
+        <ul
+          style="${this.orderable(0, 0)
+            ? 'list-style: auto;'
+            : 'list-style: none;'}${this.css}"
+        >
           ${repeat(
             this.spec.formData || [],
             item => `item-${this.hash(JSON.stringify(item))}`,
@@ -145,23 +156,19 @@ export class MistFormArrayField extends fieldMixin(LitElement) {
         this.spec.uiSchema['ui:options'] === undefined ||
         this.spec.uiSchema['ui:options'].addable !== false
           ? html`
-              <vaadin-form-layout
-                .responsiveSteps=${this.parent.responsiveSteps}
-              >
-                <div style="display: flex">
-                  <div style="flex: 1; min-width: 248px;"></div>
-                  <div style="flex: 1;">
-                    <vaadin-button
-                      theme="icon"
-                      aria-label="Add"
-                      style="width: 134px"
-                      @click=${this._add}
-                    >
-                      <vaadin-icon icon="vaadin:plus"></vaadin-icon>
-                    </vaadin-button>
-                  </div>
+              <div style="display: flex">
+                <div style="flex: 1; min-width: 248px;"></div>
+                <div style="flex: 1;">
+                  <vaadin-button
+                    theme="icon"
+                    aria-label="Add"
+                    style="width: 134px"
+                    @click=${this._add}
+                  >
+                    <vaadin-icon icon="vaadin:plus"></vaadin-icon>
+                  </vaadin-button>
                 </div>
-              </vaadin-form-layout>
+              </div>
             `
           : ''}
       `;

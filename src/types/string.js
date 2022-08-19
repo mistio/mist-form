@@ -13,13 +13,14 @@ export class MistFormStringField extends fieldMixin(LitElement) {
   static get styles() {
     return [
       css`
-        label.field {
+        label.field,
+        span.field {
           font-weight: 500;
-          display: inline-flex;
+          display: block;
           margin: 16px 0 8px;
           color: rgba(27, 43, 65, 0.69);
           font-family: var(--lumo-font-family);
-          font-size: 14px;
+          font-size: 0.8125rem;
         }
 
         div.helper {

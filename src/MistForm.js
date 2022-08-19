@@ -14,6 +14,18 @@ export class MistForm extends LitElement {
   static get styles() {
     return css`
       :host {
+        display: block;
+        color: var(--mist-form-text-color, #000);
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
       }
 
       vaadin-form-layout {
