@@ -75,6 +75,7 @@ export class MistFormObjectField extends fieldMixin(LitElement) {
         .jsonSchema=${this.spec.jsonSchema}
         .uiSchema=${this.spec.uiSchema}
         .formData=${this.spec.formData}
+        .style=${this.css}
       ></mist-form>`;
   }
 

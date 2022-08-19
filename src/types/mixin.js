@@ -28,6 +28,8 @@ export const fieldMixin = superClass =>
               field._menuElement.selected = j;
           });
         }
+      } else if (this.widget === 'toggle') {
+        return field.checked;
       }
       return this.cast(
         field.value !== undefined ? field.value : field.getAttribute('value')
@@ -60,6 +62,15 @@ export const fieldMixin = superClass =>
 
     get suffix() {
       return this.spec && this.spec.uiSchema && this.spec.uiSchema['ui:suffix'];
+    }
+
+    get transform() {
+      return (
+        (this.spec &&
+          this.spec.uiSchema &&
+          this.spec.uiSchema['ui:transform']) ||
+        (x => x)
+      );
     }
 
     get autocomplete() {
@@ -602,7 +613,7 @@ export const fieldMixin = superClass =>
             />
             ${description}
           </div>`,
-        file: html` <label class="field" .style=${this.css}
+        file: html` <label class="field" .style=${`display: block; ${this.css}`}
             >${this.spec.jsonSchema.title}</label
           >
           <input
@@ -689,6 +700,18 @@ export const fieldMixin = superClass =>
           ${this.prefix && html`<div slot="prefix">${this.prefix}</div>`}
           ${this.suffix && html`<div slot="suffix">${this.suffix}</div>`}
         </vaadin-number-field>`,
+        toggle: html`
+          <div .style="${this.css}">
+            <span class="field">${this.spec.jsonSchema.title}</span>
+            <paper-toggle-button
+              class="${this.classes || ''} mist-form-field"
+              ?checked=${this.spec.formData}
+              .style=${this.css}
+              @checked-changed=${this.debouncedEventChange}
+            ></paper-toggle-button>
+            <span class="field">${this.spec.jsonSchema.description}</span>
+          </div>
+        `,
       };
     }
 
