@@ -14,8 +14,6 @@ export class MistForm extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: block;
-        color: var(--mist-form-text-color, #000);
       }
 
       vaadin-form-layout {
@@ -78,6 +76,7 @@ export class MistForm extends LitElement {
       // evaluatedSchema: { type: Object }, // JSONSchema spec after evaluating oneOf/allOf/ifthen/etc
       action: { type: String, reflect: true }, // Where to submit data?
       method: { type: String, reflect: true }, // Request method
+      headers: { type: Object }, // HTTP request headers
       subform: { type: Boolean, reflect: true }, // Are we a subform?
       toggles: { type: Boolean, reflect: true }, // Do we have a toggle button?
       enabled: { type: Boolean, reflect: true },
@@ -239,7 +238,10 @@ export class MistForm extends LitElement {
       this.prefetchRefs(remoteRefs);
     } else {
       this.dereferencedSchema = this.resolveLocalRefs(this.resolvedSchema);
-      this.evaluatedSchema = this.evalSchema(this.dereferencedSchema);
+      this.evaluatedSchema = this.evalSchema(
+        this.dereferencedSchema,
+        this.domValue
+      );
       setTimeout(() => {
         this.requestUpdate();
       }, 100);
@@ -353,7 +355,7 @@ export class MistForm extends LitElement {
     return target;
   }
 
-  evalSchema(obj) {
+  evalSchema(obj, domValue) {
     if (
       !obj ||
       typeof obj !== 'object' ||
@@ -365,7 +367,7 @@ export class MistForm extends LitElement {
     mergeDeep(ret, obj);
     if (ret.allOf) {
       ret.allOf.forEach(i => {
-        mergeDeep(ret, this.evalSchema(i));
+        mergeDeep(ret, this.evalSchema(i, domValue));
       });
       delete ret.allOf;
     }
@@ -373,8 +375,11 @@ export class MistForm extends LitElement {
       let discriminator = {};
       let discriminatorValue;
       if (ret.discriminator) {
-        if (this.domValue && this.domValue[ret.discriminator.propertyName]) {
-          discriminatorValue = this.domValue[ret.discriminator.propertyName];
+        if (
+          domValue &&
+          domValue[ret.discriminator.propertyName] !== undefined
+        ) {
+          discriminatorValue = domValue[ret.discriminator.propertyName];
         }
       } else {
         discriminator = {
@@ -405,19 +410,37 @@ export class MistForm extends LitElement {
               obj
             )
           );
+          let transform = x => x;
+          if (
+            this.uiSchema &&
+            this.uiSchema[ret.discriminator.propertyName] &&
+            this.uiSchema[ret.discriminator.propertyName].transform
+          ) {
+            transform = this.uiSchema[ret.discriminator.propertyName].transform;
+          }
+          this.formData = transform(this.formData);
         }
         if (ret.oneOf[discriminatorValue]) {
-          mergeDeep(ret, this.evalSchema(ret.oneOf[discriminatorValue]));
+          mergeDeep(
+            ret,
+            this.evalSchema(ret.oneOf[discriminatorValue], domValue)
+          );
         }
       }
       delete ret.oneOf;
+    }
+    if (ret.allOf) {
+      ret.allOf.forEach(i => {
+        mergeDeep(ret, this.evalSchema(i, domValue));
+      });
+      delete ret.allOf;
     }
     if (ret.anyOf) {
       let discriminator = {};
       let discriminatorValue;
       if (ret.discriminator) {
-        if (this.domValue && this.domValue[ret.discriminator.propertyName]) {
-          discriminatorValue = this.domValue[ret.discriminator.propertyName];
+        if (domValue && domValue[ret.discriminator.propertyName]) {
+          discriminatorValue = domValue[ret.discriminator.propertyName];
         }
       } else {
         discriminator = {
@@ -446,7 +469,7 @@ export class MistForm extends LitElement {
             let index = ret.anyOf.findIndex(el => el.title === dv);
             if (index === -1) index = dv;
             if (ret.anyOf[index]) {
-              const schema = this.evalSchema(ret.anyOf[index]);
+              const schema = this.evalSchema(ret.anyOf[index], domValue);
               if (schema.title) delete schema.title;
               mergeDeep(ret, schema);
             } else if (
@@ -476,9 +499,9 @@ export class MistForm extends LitElement {
         }
       });
       if (satisfied) {
-        mergeDeep(ret, this.evalSchema(ret.then));
+        mergeDeep(ret, this.evalSchema(ret.then, domValue));
       } else if (ret.else) {
-        mergeDeep(ret, this.evalSchema(ret.else));
+        mergeDeep(ret, this.evalSchema(ret.else, domValue));
         delete ret.else;
       }
       delete ret.if;
@@ -489,7 +512,10 @@ export class MistForm extends LitElement {
       // eslint-disable-next-line func-names
       k => {
         // eslint-disable-next-line no-param-reassign
-        ret[k] = this.evalSchema(ret[k]);
+        ret[k] = this.evalSchema(
+          ret[k],
+          typeof domValue === 'object' && k in domValue ? domValue[k] : domValue
+        );
       }
     );
     return ret;
@@ -721,6 +747,9 @@ export class MistForm extends LitElement {
       });
       xhr.open(this.method, this.action);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      Object.keys(this.headers).forEach(k => {
+        xhr.setRequestHeader(k, this.headers[k]);
+      });
       xhr.send(JSON.stringify(payload));
     }
   }
@@ -739,7 +768,10 @@ export class MistForm extends LitElement {
       bubbles: true,
       composed: true,
     });
-    this.evaluatedSchema = this.evalSchema(this.dereferencedSchema);
+    this.evaluatedSchema = this.evalSchema(
+      this.dereferencedSchema,
+      this.domValue
+    );
     this.dispatchEvent(formDataChangedEvent);
     this.validate();
   }
