@@ -577,8 +577,28 @@ export class MistForm extends LitElement {
               ${(this.dialog && this.displayCancelButton()) || ''}
               ${this.displaySubmitButton(this)}
               ${(!this.dialog && this.displayCancelButton()) || ''}
+              ${this.submitting
+                ? html`<div class="loading">
+                    <div class="lds-ripple">
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>`
+                : ''}
             </vaadin-horizontal-layout>
-            <div class="formError">${this.formError}</div>
+            <div class="formError">
+              ${this.formError.length
+                ? html` <p><strong>${this.formError}</strong></p> `
+                : html`
+                    <p>
+                      <strong
+                        >${this.formError.status}
+                        ${this.formError.title}</strong
+                      >
+                    </p>
+                    <p>${this.formError.detail}</p>
+                  `}
+            </div>
           `;
 
       const title =
@@ -728,6 +748,8 @@ export class MistForm extends LitElement {
 
   submitForm() {
     const { payload } = this;
+    this.submitting = true;
+    this.formError = {};
     this.dispatchEvent(
       new CustomEvent('submit', {
         detail: {
@@ -737,7 +759,6 @@ export class MistForm extends LitElement {
         },
       })
     );
-    this.submitting = true;
     if (this.action) {
       const xhr = new XMLHttpRequest();
       xhr.addEventListener('load', e => {
@@ -754,7 +775,7 @@ export class MistForm extends LitElement {
           })
         );
         if (e.currentTarget.status > 299) {
-          this.formError = e.currentTarget.response;
+          this.formError = JSON.parse(e.currentTarget.response);
         }
       });
       xhr.open(this.method, this.action);
