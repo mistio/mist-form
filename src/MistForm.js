@@ -107,7 +107,7 @@ export class MistForm extends LitElement {
   get payload() {
     const ret = {};
     const { properties } = this.evaluatedSchema;
-    if (this.enabled) {
+    if (this.enabled && properties !== undefined) {
       Object.keys(properties).forEach(k => {
         if (properties[k] !== undefined && !properties[k].omit) {
           ret[k] = this.shadowRoot.querySelector(
@@ -780,9 +780,11 @@ export class MistForm extends LitElement {
       });
       xhr.open(this.method, this.action);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-      Object.keys(this.headers).forEach(k => {
-        xhr.setRequestHeader(k, this.headers[k]);
-      });
+      if (this.headers) {
+        Object.keys(this.headers).forEach(k => {
+          xhr.setRequestHeader(k, this.headers[k]);
+        });
+      }
       xhr.send(JSON.stringify(payload));
     }
   }
